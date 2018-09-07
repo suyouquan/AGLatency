@@ -1,0 +1,73 @@
+﻿<!doctype html>
+<html>
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta charset="UTF-8">
+    <title>AlwaysON Data Movement Latency Report</title>
+    <script>
+        String.prototype.format = function () {
+            for (var t = this, n = 0; n < arguments.length; ++n)
+                t = t.replace(new RegExp("\\{" + n + "\\}", "g"), arguments[n]);
+            return t
+        };
+
+        String.prototype.encodeHTML = function () {
+            return this.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        };
+    </script>
+    <script src="src/jquery-3.2.0.min.js"></script>
+    <link href="src/page.css" rel="stylesheet">
+    <link href="css/font-awesome.min.css" rel="stylesheet">
+    <link type="image/x-icon" rel="shortcut icon" mce_href="images/favicon.ico" href="images/favicon.ico" />
+
+
+
+</head>
+
+<body style="height:100%;margin:0 auto; ">
+    <script type="text/javascript">
+        var ifrm_resize = function (event) {
+            //  if (event.origin !== "*") {  return; }
+
+            var div_iframe = document.getElementById('iframeDiv');
+            if (div_iframe) {
+
+                div_iframe.style.width = event.data.maxWidth +80 +"px";
+                div_iframe.style.height = event.data.maxHeight +80 + "px";
+                UpdatePageWidthHeight(reportApp.currentPageId,event.data);
+                //alert(div_iframe.style.width );
+
+
+            }
+        }
+       
+        //iframe html page will post message about its size change.
+        //listen to this event and dynamically change iframeDiv's width and height
+        //to avoid scrollbar appear
+        if (window.addEventListener) {
+            window.addEventListener("message", ifrm_resize, false);
+        } else if (window.attachEvent) {
+            window.attachEvent("onmessage", ifrm_resize);
+        }
+
+    </script>
+
+    <div id="group-menu">
+        <span style='margin-left:8px;'><a id="group-toggle" class="expanded" href="javascript:void(0)">&#x2212; Collapse all</a></span>
+    </div>
+   	<div id='LoadingTip' style='margin-left:270px;color:blue;'><span style="color:goldenrod;font-size:150%;"><i class="fa fa-lightbulb-o"></i></span>&nbsp;It may take some time to load.<br><br />Loading <i class="fa fa-spinner fa-spin   fa-fw"></i><br /><br /></div>
+ 
+    <div id="Ytrace" style='display:none;position:fixed; float:right;top:200px;left:800px;width:400px;height:230px;z-index:999;background-color:green;color:yellow;'>position</div>
+    
+    <div id="iframeDiv">
+
+    </div>
+    <div><br><br></div>
+    <script src="reports/menuItems.js"></script>
+    <script src="src/group-menu.js"></script>
+    <script src="src/reportApp.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,183 @@
+div.dt-button-info {
+	border-radius: 3px; border: 2px solid rgb(17, 17, 17); border-image: none; left: 50%; top: 50%; width: 400px; text-align: center; margin-top: -100px; margin-left: -200px; position: fixed; z-index: 21; box-shadow: 3px 3px 8px rgba(0,0,0,0.3); background-color: white;
+}
+div.dt-button-info h2 {
+	margin: 0px; padding: 0.5em; font-weight: normal; border-bottom-color: rgb(221, 221, 221); border-bottom-width: 1px; border-bottom-style: solid; background-color: rgb(243, 243, 243);
+}
+div.dt-button-info > div {
+	padding: 1em;
+}
+button.dt-button {
+	padding: 0.5em 1em; border-radius: 2px; border: 1px solid rgb(153, 153, 153); border-image: none; color: black; line-height: 1.6em; overflow: hidden; font-size: 0.88em; text-decoration: none; margin-right: 0.33em; margin-bottom: 0.33em; display: inline-block; white-space: nowrap; position: relative; cursor: pointer; box-sizing: border-box; -ms-user-select: none; background-image: linear-gradient(rgb(255, 255, 255) 0%, rgb(233, 233, 233) 100%); background-color: rgb(233, 233, 233); -webkit-user-select: none; -moz-user-select: none; user-select: none;
+}
+div.dt-button {
+	padding: 0.5em 1em; border-radius: 2px; border: 1px solid rgb(153, 153, 153); border-image: none; color: black; line-height: 1.6em; overflow: hidden; font-size: 0.88em; text-decoration: none; margin-right: 0.33em; margin-bottom: 0.33em; display: inline-block; white-space: nowrap; position: relative; cursor: pointer; box-sizing: border-box; -ms-user-select: none; background-image: linear-gradient(rgb(255, 255, 255) 0%, rgb(233, 233, 233) 100%); background-color: rgb(233, 233, 233); -webkit-user-select: none; -moz-user-select: none; user-select: none;
+}
+a.dt-button {
+	padding: 0.5em 1em; border-radius: 2px; border: 1px solid rgb(153, 153, 153); border-image: none; color: black; line-height: 1.6em; overflow: hidden; font-size: 0.88em; text-decoration: none; margin-right: 0.33em; margin-bottom: 0.33em; display: inline-block; white-space: nowrap; position: relative; cursor: pointer; box-sizing: border-box; -ms-user-select: none; background-image: linear-gradient(rgb(255, 255, 255) 0%, rgb(233, 233, 233) 100%); background-color: rgb(233, 233, 233); -webkit-user-select: none; -moz-user-select: none; user-select: none;
+}
+button.dt-button.disabled {
+	border: 1px solid rgb(208, 208, 208); border-image: none; color: rgb(153, 153, 153); cursor: default; background-image: linear-gradient(rgb(255, 255, 255) 0%, rgb(249, 249, 249) 100%); background-color: rgb(249, 249, 249);
+}
+div.dt-button.disabled {
+	border: 1px solid rgb(208, 208, 208); border-image: none; color: rgb(153, 153, 153); cursor: default; background-image: linear-gradient(rgb(255, 255, 255) 0%, rgb(249, 249, 249) 100%); background-color: rgb(249, 249, 249);
+}
+a.dt-button.disabled {
+	border: 1px solid rgb(208, 208, 208); border-image: none; color: rgb(153, 153, 153); cursor: default; background-image: linear-gradient(rgb(255, 255, 255) 0%, rgb(249, 249, 249) 100%); background-color: rgb(249, 249, 249);
+}
+button:not(.disabled).dt-button:active {
+	box-shadow: inset 1px 1px 3px #999999; background-image: linear-gradient(rgb(243, 243, 243) 0%, rgb(226, 226, 226) 100%); background-color: rgb(226, 226, 226);
+}
+button:not(.disabled).dt-button.active {
+	box-shadow: inset 1px 1px 3px #999999; background-image: linear-gradient(rgb(243, 243, 243) 0%, rgb(226, 226, 226) 100%); background-color: rgb(226, 226, 226);
+}
+div:not(.disabled).dt-button:active {
+	box-shadow: inset 1px 1px 3px #999999; background-image: linear-gradient(rgb(243, 243, 243) 0%, rgb(226, 226, 226) 100%); background-color: rgb(226, 226, 226);
+}
+div:not(.disabled).dt-button.active {
+	box-shadow: inset 1px 1px 3px #999999; background-image: linear-gradient(rgb(243, 243, 243) 0%, rgb(226, 226, 226) 100%); background-color: rgb(226, 226, 226);
+}
+a:not(.disabled).dt-button:active {
+	box-shadow: inset 1px 1px 3px #999999; background-image: linear-gradient(rgb(243, 243, 243) 0%, rgb(226, 226, 226) 100%); background-color: rgb(226, 226, 226);
+}
+a:not(.disabled).dt-button.active {
+	box-shadow: inset 1px 1px 3px #999999; background-image: linear-gradient(rgb(243, 243, 243) 0%, rgb(226, 226, 226) 100%); background-color: rgb(226, 226, 226);
+}
+button:not(.disabled):not(.disabled).dt-button:hover:active {
+	box-shadow: inset 1px 1px 3px #999999; background-image: linear-gradient(rgb(234, 234, 234) 0%, rgb(204, 204, 204) 100%); background-color: rgb(204, 204, 204);
+}
+button:not(.disabled):not(.disabled).dt-button.active:hover {
+	box-shadow: inset 1px 1px 3px #999999; background-image: linear-gradient(rgb(234, 234, 234) 0%, rgb(204, 204, 204) 100%); background-color: rgb(204, 204, 204);
+}
+div:not(.disabled):not(.disabled).dt-button:hover:active {
+	box-shadow: inset 1px 1px 3px #999999; background-image: linear-gradient(rgb(234, 234, 234) 0%, rgb(204, 204, 204) 100%); background-color: rgb(204, 204, 204);
+}
+div:not(.disabled):not(.disabled).dt-button.active:hover {
+	box-shadow: inset 1px 1px 3px #999999; background-image: linear-gradient(rgb(234, 234, 234) 0%, rgb(204, 204, 204) 100%); background-color: rgb(204, 204, 204);
+}
+a:not(.disabled):not(.disabled).dt-button:hover:active {
+	box-shadow: inset 1px 1px 3px #999999; background-image: linear-gradient(rgb(234, 234, 234) 0%, rgb(204, 204, 204) 100%); background-color: rgb(204, 204, 204);
+}
+a:not(.disabled):not(.disabled).dt-button.active:hover {
+	box-shadow: inset 1px 1px 3px #999999; background-image: linear-gradient(rgb(234, 234, 234) 0%, rgb(204, 204, 204) 100%); background-color: rgb(204, 204, 204);
+}
+button.dt-button:hover {
+	text-decoration: none;
+}
+div.dt-button:hover {
+	text-decoration: none;
+}
+a.dt-button:hover {
+	text-decoration: none;
+}
+button:not(.disabled).dt-button:hover {
+	border: 1px solid rgb(102, 102, 102); border-image: none; background-image: linear-gradient(rgb(249, 249, 249) 0%, rgb(224, 224, 224) 100%); background-color: rgb(224, 224, 224);
+}
+div:not(.disabled).dt-button:hover {
+	border: 1px solid rgb(102, 102, 102); border-image: none; background-image: linear-gradient(rgb(249, 249, 249) 0%, rgb(224, 224, 224) 100%); background-color: rgb(224, 224, 224);
+}
+a:not(.disabled).dt-button:hover {
+	border: 1px solid rgb(102, 102, 102); border-image: none; background-image: linear-gradient(rgb(249, 249, 249) 0%, rgb(224, 224, 224) 100%); background-color: rgb(224, 224, 224);
+}
+button:not(.disabled).dt-button:focus {
+	border: 1px solid rgb(66, 108, 158); border-image: none; text-shadow: 0px 1px 0px #c4def1; background-image: linear-gradient(rgb(189, 222, 244) 0%, rgb(121, 172, 233) 100%); background-color: rgb(121, 172, 233);
+}
+div:not(.disabled).dt-button:focus {
+	border: 1px solid rgb(66, 108, 158); border-image: none; text-shadow: 0px 1px 0px #c4def1; background-image: linear-gradient(rgb(189, 222, 244) 0%, rgb(121, 172, 233) 100%); background-color: rgb(121, 172, 233);
+}
+a:not(.disabled).dt-button:focus {
+	border: 1px solid rgb(66, 108, 158); border-image: none; text-shadow: 0px 1px 0px #c4def1; background-image: linear-gradient(rgb(189, 222, 244) 0%, rgb(121, 172, 233) 100%); background-color: rgb(121, 172, 233);
+}
+.dt-button embed {
+	
+}
+div.dt-buttons {
+	float: left; position: relative;
+}
+div.dt-buttons.buttons-right {
+	float: right;
+}
+div.dt-button-collection {
+	padding: 8px 8px 4px; border-radius: 5px; border: 1px solid rgba(0, 0, 0, 0.4); border-image: none; left: 0px; top: 0px; width: 150px; overflow: hidden; margin-top: 3px; position: absolute; z-index: 2002; box-shadow: 3px 3px 5px rgba(0,0,0,0.3); column-gap: 8px; background-color: white; -webkit-column-gap: 8px; -moz-column-gap: 8px; -ms-column-gap: 8px; -o-column-gap: 8px;
+}
+div.dt-button-collection button.dt-button {
+	left: 0px; width: 100%; right: 0px; margin-right: 0px; margin-bottom: 4px; float: none; display: block; position: relative;
+}
+div.dt-button-collection div.dt-button {
+	left: 0px; width: 100%; right: 0px; margin-right: 0px; margin-bottom: 4px; float: none; display: block; position: relative;
+}
+div.dt-button-collection a.dt-button {
+	left: 0px; width: 100%; right: 0px; margin-right: 0px; margin-bottom: 4px; float: none; display: block; position: relative;
+}
+div.dt-button-collection button:not(.disabled).dt-button:active {
+	box-shadow: inset 1px 1px 3px #666; background-image: linear-gradient(rgb(240, 240, 240) 0%, rgb(218, 218, 218) 100%); background-color: rgb(218, 218, 218);
+}
+div.dt-button-collection button:not(.disabled).dt-button.active {
+	box-shadow: inset 1px 1px 3px #666; background-image: linear-gradient(rgb(240, 240, 240) 0%, rgb(218, 218, 218) 100%); background-color: rgb(218, 218, 218);
+}
+div.dt-button-collection div:not(.disabled).dt-button:active {
+	box-shadow: inset 1px 1px 3px #666; background-image: linear-gradient(rgb(240, 240, 240) 0%, rgb(218, 218, 218) 100%); background-color: rgb(218, 218, 218);
+}
+div.dt-button-collection div:not(.disabled).dt-button.active {
+	box-shadow: inset 1px 1px 3px #666; background-image: linear-gradient(rgb(240, 240, 240) 0%, rgb(218, 218, 218) 100%); background-color: rgb(218, 218, 218);
+}
+div.dt-button-collection a:not(.disabled).dt-button:active {
+	box-shadow: inset 1px 1px 3px #666; background-image: linear-gradient(rgb(240, 240, 240) 0%, rgb(218, 218, 218) 100%); background-color: rgb(218, 218, 218);
+}
+div.dt-button-collection a:not(.disabled).dt-button.active {
+	box-shadow: inset 1px 1px 3px #666; background-image: linear-gradient(rgb(240, 240, 240) 0%, rgb(218, 218, 218) 100%); background-color: rgb(218, 218, 218);
+}
+div.dt-button-collection.fixed {
+	border-radius: 0px; left: 50%; top: 50%; margin-left: -75px; position: fixed;
+}
+div.dt-button-collection.fixed.two-column {
+	margin-left: -150px;
+}
+div.dt-button-collection.fixed.three-column {
+	margin-left: -225px;
+}
+div.dt-button-collection.fixed.four-column {
+	margin-left: -300px;
+}
+div.dt-button-collection > * {
+	break-inside: avoid; -webkit-column-break-inside: avoid;
+}
+div.dt-button-collection.two-column {
+	width: 300px; padding-bottom: 1px; column-count: 2; -webkit-column-count: 2; -moz-column-count: 2; -ms-column-count: 2; -o-column-count: 2;
+}
+div.dt-button-collection.three-column {
+	width: 450px; padding-bottom: 1px; column-count: 3; -webkit-column-count: 3; -moz-column-count: 3; -ms-column-count: 3; -o-column-count: 3;
+}
+div.dt-button-collection.four-column {
+	width: 600px; padding-bottom: 1px; column-count: 4; -webkit-column-count: 4; -moz-column-count: 4; -ms-column-count: 4; -o-column-count: 4;
+}
+div.dt-button-collection .dt-button {
+	border-radius: 0px;
+}
+div.dt-button-background {
+	background: radial-gradient(at center, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.7) 100%); left: 0px; top: 0px; width: 100%; height: 100%; position: fixed; z-index: 2001;
+}
+@media screen and (max-width:640px)
+{
+div.dt-buttons {
+	text-align: center; float: none !important;
+}
+}
+button.dt-button.processing {
+	color: rgba(0, 0, 0, 0.2);
+}
+div.dt-button.processing {
+	color: rgba(0, 0, 0, 0.2);
+}
+a.dt-button.processing {
+	color: rgba(0, 0, 0, 0.2);
+}
+button.dt-button.processing::after {
+	border-width: 2px; border-style: solid; border-color: rgb(40, 40, 40) transparent; margin: -8px 0px 0px -8px; border-radius: 50%; animation:dtb-spinner 1500ms linear infinite; border-image: none; left: 50%; top: 50%; width: 16px; height: 16px; display: block; position: absolute; content: " "; box-sizing: border-box; -webkit-animation: dtb-spinner 1500ms infinite linear; -o-animation: dtb-spinner 1500ms infinite linear; -moz-animation: dtb-spinner 1500ms infinite linear;
+}
+div.dt-button.processing::after {
+	border-width: 2px; border-style: solid; border-color: rgb(40, 40, 40) transparent; margin: -8px 0px 0px -8px; border-radius: 50%; animation:dtb-spinner 1500ms linear infinite; border-image: none; left: 50%; top: 50%; width: 16px; height: 16px; display: block; position: absolute; content: " "; box-sizing: border-box; -webkit-animation: dtb-spinner 1500ms infinite linear; -o-animation: dtb-spinner 1500ms infinite linear; -moz-animation: dtb-spinner 1500ms infinite linear;
+}
+a.dt-button.processing::after {
+	border-width: 2px; border-style: solid; border-color: rgb(40, 40, 40) transparent; margin: -8px 0px 0px -8px; border-radius: 50%; animation:dtb-spinner 1500ms linear infinite; border-image: none; left: 50%; top: 50%; width: 16px; height: 16px; display: block; position: absolute; content: " "; box-sizing: border-box; -webkit-animation: dtb-spinner 1500ms infinite linear; -o-animation: dtb-spinner 1500ms infinite linear; -moz-animation: dtb-spinner 1500ms infinite linear;
+}

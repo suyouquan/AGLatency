@@ -1,0 +1,206 @@
+body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+}
+
+ul {
+    margin: 0;
+    padding: 0;
+}
+
+li {
+    list-style: none;
+}
+
+#group-menu {
+    float: left;
+    height: calc(100vh);
+    overflow-y: auto;
+    position: fixed;
+    width: 250px;
+    z-index: 9999;
+    background: #faf9fa;
+}
+
+#group-menu>div:last-child {
+    margin-bottom: 20px;
+}
+
+#group-menu ul.collapse {
+    display: none;
+}
+
+#group-menu h3 {
+    margin: 0;
+}
+
+#group-menu li,
+#group-menu h3 {
+    color: #563d7c;
+    cursor: pointer;
+    padding: 5px 10px;
+}
+
+#group-menu li:hover,
+#group-menu h3:hover {
+    background-color: lightyellow; 
+  
+}
+
+#data-area {
+    margin-left: 6px;
+    position: absolute;
+    overflow-y:hidden;
+}
+
+#iframeDiv {
+    margin-left: 6px;
+    position: absolute;
+	top:0px; 
+   
+}
+
+#table {
+    margin-top: 30px;
+}
+
+.both tr {
+    cursor: pointer;
+}
+
+.container table {
+    border-collapse: collapse;
+}
+
+.container table td {
+    border: 1px solid #ccc;
+    min-width: 100px;
+}
+
+.container .line {
+    margin: 15px 0;
+}
+
+.container .line>div {
+    display: table-cell;
+}
+
+table.vt {
+    border-collapse: collapse;
+    display: inline-block;
+    margin: 16px;/*5px 0 0 0;*/
+    vertical-align: top;
+	 
+}
+
+table.dataTable tbody td table.vt td {
+    border: 1px solid #ccc !important;
+}
+
+.vertical thead {
+    visibility: hidden;
+}
+
+table.dataTable.compact tbody th,
+table.dataTable.compact tbody td,
+table tbody td {
+    padding: 2px 4px;
+}
+
+pre {
+    margin: 4px 0;
+}
+
+#table .vt pre {
+    font-family: "Courier New", "Consolas", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+
+#table .vt tr:hover {
+    background-color: inherit;
+}
+
+#table .vt tr:nth-child(2n-1) {
+    background: rgb(245, 255, 246);
+}
+#table .vt tr:nth-child(2n) {
+    background: white;
+}
+
+#table.both table.display>tbody>tr>td:first-child {
+    background: url(collapse.png) no-repeat 0;
+    padding-left: 20px;
+}
+
+ 
+
+#table.both table.display>tbody>tr.expanded>td:first-child {
+    background: url(expand.png) no-repeat 0;
+}
+
+#table.both table.display>tbody>tr:hover>td:first-child {
+   background-color: lightyellow;
+   
+	   
+}
+
+#table.both table.display>tbody>tr.expanded:hover>td:first-child {
+   background-color: lightyellow;
+   
+	   
+}
+
+
+#table .vt td:nth-child(2n) {
+    color:blue;
+
+}
+
+ 
+
+#table .dataTables_length {
+    float: none;
+}
+
+#table .dataTables_filter {
+    float: none;
+    margin-left: 500px;
+    text-align: left;
+}
+.dataTables_filter input { width: 320px }
+
+#table .dataTables_info,
+#table .dataTables_paginate {
+    float: none;
+    text-align: left;
+}
+
+table.display {
+    table-layout: fixed;
+}
+/*
+table.display>tbody>tr:hover>td {
+    background: yellow;
+}
+*/
+
+table>tfoot>tr>td {
+    text-align: center;
+}
+
+
+
+table .vt tr:hover {
+    background-color: inherit;
+}
+
+table .vt tr:nth-child(2n-1) {
+    background: rgb(245, 255, 246);
+}
+table .vt tr:nth-child(2n) {
+    background: white;
+}
+
+table .vt td:nth-child(2n) {
+    color:blue;
+
+}

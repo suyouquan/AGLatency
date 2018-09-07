@@ -1,0 +1,124 @@
+﻿<!doctype html>
+<html>
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta charset="UTF-8">
+    <title></title>
+    <script>
+        String.prototype.format = function () {
+            for (var t = this, n = 0; n < arguments.length; ++n)
+                t = t.replace(new RegExp("\\{" + n + "\\}", "g"), arguments[n]);
+            return t
+        };
+
+        String.prototype.encodeHTML = function () {
+            return this.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        };
+    </script>
+    <script src="../src/jquery-3.2.0.min.js"></script>
+    <script src="../src/jquery.dataTables.min.js"></script>
+    <script src="../src/Moment.js"></script>
+    <script src="../src/Chart.js"></script>
+	 
+   <script src="../src/chartjs-plugin-datalabels.js"></script>
+ 
+    <link href="../src/jquery.dataTables.min.css" rel="stylesheet">
+    <link href="../css/zTreeStyle/zTreeStyle.css" type="text/css" rel="stylesheet">
+    <link href="../src/page.css" rel="stylesheet">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <link type="image/x-icon" rel="shortcut icon" mce_href="../images/favicon.ico" href="../images/favicon.ico" />
+
+    <script type="text/javascript" language="javascript" src="../src/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" language="javascript" src="../src/jszip.min.js"></script>
+    <script type="text/javascript" language="javascript" src="../src/buttons.html5.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../src/buttons.dataTables.min.css">
+    <script src="../src/jquery.ztree.core.js"></script>
+
+	 
+<script src="../src/highcharts.js"></script>
+<script src="../src/series-label.js"></script>
+<script src="../src/exporting.js"></script>
+
+
+</head>
+
+<body>
+  
+    <div id="data-area">
+        <h2 id="page-title"></h2>
+        <div id="page-description"></div><br />
+        <div id="page-table"></div>
+        <div id="page-summary"></div>
+     </div>
+    <div><br><br></div>
+	
+    <script src="reportTemplate.js"></script>
+	<script src="../src/tableData_v3.js"></script>
+	 
+  
+    
+ 
+
+<script>
+
+  function data_area_resize() {
+            var body = document.body;
+            var html = document.documentElement;
+            var maxHeight = Math.max(body.scrollHeight, body.offsetHeight,html.clientHeight, html.scrollHeight, html.offsetHeight);
+            //add screen width as well
+            var maxWidth = Math.max(body.scrollWidth, body.offsetWidth, html.clientWidth, html.scrollWidth, html.offsetWidth);
+            maxWidth = Math.max(maxWidth, Math.floor(window.screen.width-300));
+            
+            //set myselft width
+            var da = document.getElementById('data-area');
+            if (da) {
+
+                da.style.width =  maxWidth   + "px";
+                da.style.height = maxHeight  + "px";
+               
+            }
+
+            if (parent.postMessage) {
+                parent.postMessage({ "maxWidth": maxWidth, "maxHeight": maxHeight }, "*");
+            }
+        }
+
+
+$(document).ready(function() {
+
+tableDataModule.showPage();
+data_area_resize();
+}
+);
+</script>
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
