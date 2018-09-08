@@ -90,7 +90,7 @@ namespace AGLatency.Latency
             if (replicaDr == null) return null;
 
             List<string> replicas = new List<string>();
-
+            if (replicaDr == null) return dict;
             while (replicaDr.Read())
             {
                 replicas.Add(replicaDr.GetString(0));

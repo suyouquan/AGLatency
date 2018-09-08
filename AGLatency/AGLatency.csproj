@@ -157,9 +157,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="AGLatency.mp4">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="AGLatency.mp4" />
     <Content Include="AGLatency.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

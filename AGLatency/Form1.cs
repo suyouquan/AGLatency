@@ -78,6 +78,9 @@ namespace AGLatency
             //   this.textBox1.Text = @"C:\data\AGXevent_linkSpeedChange\primary";
             // this.textBox2.Text = @"C:\data\AGXevent_linkSpeedChange\async_slow_secondary";
             */
+
+            this.textBox1.Text = @"E:\xevent\9.7 AGLatency\CSNP00099B5A";
+            this.textBox2.Text=@"E:\xevent\9.7 AGLatency\CSNP00099B59";
         }
 
         //static readonly object _updateProgressLock = new object();

@@ -137,6 +137,8 @@ ON log_flush_start.log_block_id=log_flush_complete.log_block_id
 
             List<int> databases = new List<int>();
 
+            if (dbidDR == null) return dict;
+
             while (dbidDR.Read())
             {
                 databases.Add(dbidDR.GetInt16(0));
@@ -218,6 +220,7 @@ ON log_flush_start.log_block_id=log_flush_complete.log_block_id
 
             List<int> databases = new List<int>();
 
+            
             while (dbidDR.Read())
             {
                 databases.Add(dbidDR.GetInt16(0));

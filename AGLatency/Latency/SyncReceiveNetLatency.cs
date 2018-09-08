@@ -95,6 +95,7 @@ namespace AGLatency.Latency
             db.ExecuteReader(databaseNum);
 
             List<string> replicas = new List<string>();
+            if (null == replicaDr) return dict;
 
             while (replicaDr.Read())
             {
