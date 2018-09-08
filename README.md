@@ -17,7 +17,6 @@ https://blogs.msdn.microsoft.com/psssql/2018/04/05/troubleshooting-data-movement
 */
 
 --Note: Please run below script on both primary and secondary at the same time, for about 5-10 minutes, and then stop it.
-
 --You can change "c:\temp\" to other folder accordingly.
 
 CREATE EVENT SESSION [AGLatency] ON SERVER 
@@ -39,6 +38,7 @@ ALTER EVENT SESSION [AGLatency] ON SERVER STATE=START;
 
 /*
 --You can stop it this way:
+
 ALTER EVENT SESSION [AGLatency] ON SERVER STATE=STOP; 
 
 */
