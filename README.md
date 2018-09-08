@@ -27,6 +27,7 @@ https://blogs.msdn.microsoft.com/psssql/2018/04/05/troubleshooting-data-movement
 
 CREATE EVENT SESSION [AGLatency] ON SERVER <br>
 ADD EVENT sqlserver.hadr_capture_log_block,<br>
+ADD EVENT sqlserver.hadr_transport_receive_log_block_message,<br>
 ADD EVENT sqlserver.hadr_database_flow_control_action,<br>
 ADD EVENT sqlserver.hadr_receive_harden_lsn_message,<br>
 ADD EVENT sqlserver.hadr_send_harden_lsn_message,<br>
