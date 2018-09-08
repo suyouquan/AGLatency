@@ -2,15 +2,24 @@
 
 AGLatency is a tool to analyze AG log block movement latency between replicas and create report accordingly.
 
+![alt text](https://github.com/suyouquan/AGLatency/blob/master/AGLatency.png)
+
+
 You capture log block Xevent trace from both primary and secondary replica for 5-10 minutes and then this tool will 
 generate report about the latency of the log block movement.
+
+![alt text](https://github.com/suyouquan/AGLatency/blob/master/AGLatencyReport.png)
+
 
 /*
 Reference link:
 https://blogs.msdn.microsoft.com/psssql/2018/04/05/troubleshooting-data-movement-latency-between-synchronous-commit-always-on-availability-groups/
 */
+
 --Note: Please run below script on both primary and secondary at the same time, for about 5-10 minutes, and then stop it.
+
 --You can change "c:\temp\" to other folder accordingly.
+
 CREATE EVENT SESSION [AGLatency] ON SERVER 
 ADD EVENT sqlserver.hadr_capture_log_block,
 ADD EVENT sqlserver.hadr_database_flow_control_action,
