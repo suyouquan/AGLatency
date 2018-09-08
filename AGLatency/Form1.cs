@@ -31,11 +31,11 @@ namespace AGLatency
             try
             {
                 UpdateService myweb = new UpdateService(VersionUpdate);
-                  updateTD = new Thread(myweb.VersionUpdate);
+                updateTD = new Thread(myweb.VersionUpdate);
 
                 updateTD.Start();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Logger.LogException(e, Thread.CurrentThread);
             }
@@ -60,24 +60,24 @@ namespace AGLatency
             mylable2 = label2;
 
             DoStop(false);
-
+            /*
             // this.textBox1.Text = @"C:\AGLatency\data\PerfMon_AUSYDSQLC31N4\PerfMon\AlwaysOn_DataMove_Tracing_0_131751865495060000.xel";
-            this.textBox1.Text = @"C:\AGLatency\data\PerfMon_AUSYDSQLC31N4\PerfMon\";
-            this.textBox2.Text = @"C:\AGLatency\data\PerfMon_AUMELSQLR31N1\PerfMon";
+            this.textBox1.Text = @"C:\data\PerfMon_AUSYDSQLC31N4\PerfMon\";
+            this.textBox2.Text = @"C:\data\PerfMon_AUMELSQLR31N1\PerfMon";
 
             //  this.textBox1.Text = @"E:\xevent\Primary";
             //  this.textBox2.Text = @"E:\xevent\Third";
 
-            //this.textBox1.Text = @"C:\AGLatency\data\AGXevent\Primary";
-            //this.textBox2.Text = @"C:\AGLatency\data\AGXevent\SyncSecondary";
+            //this.textBox1.Text = @"C:\data\AGXevent\Primary";
+            //this.textBox2.Text = @"C:\data\AGXevent\SyncSecondary";
 
 
-            this.textBox1.Text = @"C:\AGLatency\data\AGxevent2_slowLink\primary";
-            this.textBox2.Text = @"C:\AGLatency\data\AGxevent2_slowLink\slow_secondary_sync";
+            this.textBox1.Text = @"C:\data\AGxevent2_slowLink\primary";
+            this.textBox2.Text = @"C:\data\AGxevent2_slowLink\slow_secondary_sync";
 
-                this.textBox1.Text = @"C:\AGLatency\data\AGXevent_linkSpeedChange\primary";
-            this.textBox2.Text = @"C:\AGLatency\data\AGXevent_linkSpeedChange\async_slow_secondary";
-
+            //   this.textBox1.Text = @"C:\data\AGXevent_linkSpeedChange\primary";
+            // this.textBox2.Text = @"C:\data\AGXevent_linkSpeedChange\async_slow_secondary";
+            */
         }
 
         //static readonly object _updateProgressLock = new object();
@@ -123,16 +123,16 @@ namespace AGLatency
 
         public void Done(string msg)
         {
-           
-                if (this.InvokeRequired) Form1.mylable1.BeginInvoke((MethodInvoker)delegate
-                {
 
-                    DoStop(false);
+            if (this.InvokeRequired) Form1.mylable1.BeginInvoke((MethodInvoker)delegate
+            {
+
+                DoStop(false);
 
 
 
-                });
-             
+            });
+
         }
 
         static readonly object _updateProgressLock2 = new object();
@@ -174,7 +174,7 @@ namespace AGLatency
         Latency.DBFlowControl dbFlowControl = null;
         public void WaitUntilDone()
         {
-            
+
             mythread2.Join();
             UpdateProgress2("Done.");
             mythread.Join();
@@ -212,7 +212,7 @@ namespace AGLatency
             prc.Start();
             prc.Close();
 
-            
+
         }
 
         public void CreateReport()
@@ -270,14 +270,14 @@ namespace AGLatency
                 }
             }
 
-            if (mythread!=null)
+            if (mythread != null)
             {
                 try
                 {
                     mythread.Abort();
-                    
+
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
 
                 }
@@ -322,7 +322,7 @@ namespace AGLatency
             }
 
 
-           
+
 
         }
         private void Start()
@@ -425,10 +425,10 @@ namespace AGLatency
         }
         private void button1_Click(object sender, EventArgs e)
         {
-            if(!isValidfolder(textBox1.Text))
-               
+            if (!isValidfolder(textBox1.Text))
+
             {
-               MessageBox.Show("Primary folder [" +textBox1.Text+"] doesn't exist!");
+                MessageBox.Show("Primary folder [" + textBox1.Text + "] doesn't exist!");
                 return;
 
             }
@@ -440,7 +440,7 @@ namespace AGLatency
 
             }
 
-            if(textBox1.Text.Trim()==textBox2.Text.Trim())
+            if (textBox1.Text.Trim() == textBox2.Text.Trim())
             {
                 MessageBox.Show("You cannot set primary and secondary to the same folder.");
                 return;
@@ -450,13 +450,13 @@ namespace AGLatency
             Controller.primaryFolder = textBox1.Text.Trim();
             Controller.secondaryFolder = textBox2.Text.Trim();
 
-         
 
-             button1.Enabled = false;
+
+            button1.Enabled = false;
 
             if (notStarted)
             {
-               
+
 
                 button1.Text = "   Stop";
                 button1.Image = Properties.Resources.red2;
@@ -470,7 +470,7 @@ namespace AGLatency
             {
                 DoStop(true);
             }
- 
+
             button1.Enabled = true;
 
         }
@@ -496,14 +496,14 @@ namespace AGLatency
         }
 
 
-        private string SelectFolder(string startFolder="")
+        private string SelectFolder(string startFolder = "")
         {
-               FolderBrowserDialog folderBrowserDialog1=new FolderBrowserDialog();
+            FolderBrowserDialog folderBrowserDialog1 = new FolderBrowserDialog();
             if (string.IsNullOrEmpty(startFolder))
                 folderBrowserDialog1.RootFolder = System.Environment.SpecialFolder.MyComputer;
             else
             {
-                if(Directory.Exists(startFolder))    folderBrowserDialog1.SelectedPath = startFolder;
+                if (Directory.Exists(startFolder)) folderBrowserDialog1.SelectedPath = startFolder;
                 else folderBrowserDialog1.RootFolder = System.Environment.SpecialFolder.MyComputer;
 
             }
@@ -522,8 +522,8 @@ namespace AGLatency
         private void button2_Click(object sender, EventArgs e)
         {
             string path = "";
-            if (isValidfolder(textBox1.Text)) 
-             path= SelectFolder(textBox1.Text);
+            if (isValidfolder(textBox1.Text))
+                path = SelectFolder(textBox1.Text);
             else path = SelectFolder();
 
             if (!String.IsNullOrEmpty(path)) this.textBox1.Text = path;
@@ -531,14 +531,14 @@ namespace AGLatency
 
         private void button3_Click(object sender, EventArgs e)
         {
-            
+
             string path = "";
             if (isValidfolder(textBox2.Text))
                 path = SelectFolder(textBox2.Text);
             else
             {
                 if (isValidfolder(textBox1.Text))
-                    path = SelectFolder( textBox1.Text );
+                    path = SelectFolder(textBox1.Text);
                 else path = SelectFolder();
             }
 
@@ -547,7 +547,7 @@ namespace AGLatency
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if(!notStarted)
+            if (!notStarted)
             {
                 DialogResult result = MessageBox.Show("Do you want to exit while there are still files beging processed? ", "Confirm to exit", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
                 if (result == DialogResult.OK)
@@ -568,7 +568,7 @@ namespace AGLatency
         private void logToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (!File.Exists(Logger.LogFile)) return;
-            var process = new   System.Diagnostics.Process();
+            var process = new System.Diagnostics.Process();
             process.StartInfo.FileName = "notepad.exe";
             process.StartInfo.Arguments = Logger.LogFile;
 
@@ -577,7 +577,7 @@ namespace AGLatency
 
         private void tSQLScriptToolStripMenuItem_Click(object sender, EventArgs e)
         {
-          
+
             var process = new System.Diagnostics.Process();
             process.StartInfo.FileName = "notepad.exe";
             var path = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
@@ -589,14 +589,22 @@ namespace AGLatency
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string msg = "AGLatency Report Tool. Version " + typeof(Program).Assembly.GetName().Version ;
+            string msg = "AGLatency Report Tool. Version " + typeof(Program).Assembly.GetName().Version + "\nhttps://github.com/suyouquan/AGLatency";
             MessageBox.Show(msg, "About");
         }
 
         private void lbVersion_Click(object sender, EventArgs e)
         {
-            string msg = "There is new version available in the web, please download it accordingly.";
+            string msg = "There is new version available in the web, please download it accordingly.\nhttps://github.com/suyouquan/AGLatency";
             MessageBox.Show(msg, "Version Update");
+        }
+
+        private void toolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+
+            var path = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            var file = Path.Combine(path, "AGLatency.mp4");
+            System.Diagnostics.Process.Start(file);       
         }
     }
 }
