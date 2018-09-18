@@ -121,6 +121,7 @@ namespace AGLatency.Latency
             string replicaId = NetworkLatency.replicaId;
 
             //Update time delta for each log blocks
+            //warning:i found that there could be two hadr_receive_harden_lsn_message events fired for same log block , all mode=1. maybe due to resend from replica?
             string update = @"UPDATE hadr_receive_harden_lsn_message set TimeDelta=
            (SELECT hadr_receive_harden_lsn_message.EventTimeStamp - hadr_send_harden_lsn_message.EventTimeStamp
             FROM hadr_send_harden_lsn_message  
