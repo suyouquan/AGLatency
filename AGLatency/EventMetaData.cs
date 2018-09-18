@@ -45,7 +45,13 @@ namespace AGLatency
             hadr_send_harden_lsn_message,
 
             //flow control
-            hadr_database_flow_control_action
+            hadr_database_flow_control_action,
+
+            //primary. Please be aware that below events will be fired for every transaction. so the trace could be very big.
+            hadr_db_commit_mgr_harden,
+            recovery_unit_harden_log_timestamps
+
+
         }
 
 

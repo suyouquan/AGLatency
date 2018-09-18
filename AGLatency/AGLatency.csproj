@@ -95,6 +95,8 @@
     </Compile>
     <Compile Include="Latency\DBFlowControl.cs" />
     <Compile Include="Latency\SyncReceiveNetLatency.cs" />
+    <Compile Include="Latency\TranProcessingTime.cs" />
+    <Compile Include="Latency\TranRemoteCommit.cs" />
     <Compile Include="Output\DataTable.cs" />
     <Compile Include="Output\HighCharts.cs" />
     <Compile Include="Output\HtmlPageOutput.cs" />
@@ -107,6 +109,8 @@
     <Compile Include="Latency\NetworkLatency.cs" />
     <Compile Include="Pages\AGLatencySummaryPage.cs" />
     <Compile Include="Pages\DBFlowControlPage.cs" />
+    <Compile Include="Pages\TranProcessingTimePage.cs" />
+    <Compile Include="Pages\TranRemoteCommitPage.cs" />
     <Compile Include="Pages\LogCapturePrimaryPage.cs" />
     <Compile Include="Pages\SyncReceiveNetLatencyPage.cs" />
     <Compile Include="Pages\NetworkLatencyPage.cs" />

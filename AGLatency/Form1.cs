@@ -175,6 +175,9 @@ namespace AGLatency
         Latency.LogCapturePrimary logCapturePrimary = null;
         Latency.SyncReceiveNetLatency syncReceiveNetLatency = null;
         Latency.DBFlowControl dbFlowControl = null;
+        Latency.TranRemoteCommit tranRemoteCommit = null;
+        Latency.TranProcessingTime tranProcessing = null;
+
         public void WaitUntilDone()
         {
 
@@ -241,6 +244,14 @@ namespace AGLatency
             UpdateProgress2("Creating DBFlowControlPage page");
             Logger.LogMessage("Creating DBFlowControlPage page");
             dbFlowControl.CreatePages();
+
+            UpdateProgress2("Creating Transaction Remote Commit page");
+            Logger.LogMessage("Creating Transaction Remote Commit page");
+            tranRemoteCommit.CreatePages();
+
+            UpdateProgress2("Creating Transaction Processing page");
+            Logger.LogMessage("Creating Transaction Processing page");
+            tranProcessing.CreatePages();
 
 
             UpdateProgress2("Creating Summary page");
@@ -362,12 +373,17 @@ namespace AGLatency
 
             syncReceiveNetLatency = new Latency.SyncReceiveNetLatency(NetworkDirection.Secondary_To_Primary);
             dbFlowControl = new Latency.DBFlowControl();
+
+            tranRemoteCommit = new Latency.TranRemoteCommit();
+            tranProcessing = new Latency.TranProcessingTime();
             //Register to XELoader
             primary_log_flush.Register();
             secondary_log_flush.Register();
             primary_secondary.Register();
             logCapturePrimary.Register();
             syncReceiveNetLatency.Register();
+            tranRemoteCommit.Register();
+            tranProcessing.Register();
 
             dbFlowControl.Register();
 
