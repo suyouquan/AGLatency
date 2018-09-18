@@ -49,3 +49,7 @@ ALTER EVENT SESSION [AGLatency] ON SERVER STATE=START;
 ALTER EVENT SESSION [AGLatency] ON SERVER STATE=STOP; 
 
 */
+
+Note:
+Your SQL server may need to be updated to support above xevents:
+https://support.microsoft.com/en-us/help/3173156/update-adds-alwayson-extended-events-and-performance-counters-in-sql-s
