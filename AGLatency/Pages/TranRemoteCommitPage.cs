@@ -125,7 +125,7 @@ namespace AGLatency.Pages
             this.page.pageTitle = title ;
 
 
-            this.page.pageDescription = "The report data is from xevent hadr_db_commit_mgr_harden. This xevent will fire for every transaction for sync replicas. In this event there is time_to_commit	field which is used to track the duration of the remote commit of a transaction. Remote commit means the transaction has been hardended to transaction log.";
+            this.page.pageDescription = "The report data is from xevent hadr_db_commit_mgr_harden. This xevent will fire for every transaction for sync replicas. In this event there is time_to_commit	field which is used to track the duration of the remote harden of a transaction. Remote harden means the transaction has been hardended to transaction log.";
 
 
 

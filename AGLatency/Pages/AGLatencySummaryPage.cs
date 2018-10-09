@@ -45,9 +45,10 @@ namespace AGLatency.Pages
 
 
             Dictionary<string, int> good = Controller.latencySummaryDict;
-            //sort the dict
+            
+            //Ignore the sort
 
-            good = good.OrderByDescending(p => p.Value).ToDictionary(x=>x.Key,x=>x.Value);
+            //good = good.OrderByDescending(p => p.Value).ToDictionary(x=>x.Key,x=>x.Value);
 
             string dictChart = OutputProcessor.ConvertDictionaryToHTMLTable(good);
 

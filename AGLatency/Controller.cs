@@ -14,6 +14,7 @@ namespace AGLatency
         public static string primaryFolder = "";
         public static string secondaryFolder = "";
 
+        public static List<Int32> databaseIds = new List<int>();
 
         public static int id = 1;
         public static void AddChartData(string name,List<string> data)

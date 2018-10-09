@@ -55,6 +55,15 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>LocalIntranet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>false</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.XE.Core, Version=13.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
@@ -94,6 +103,7 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Latency\DBFlowControl.cs" />
+    <Compile Include="Latency\EventProcessingTemplate.cs" />
     <Compile Include="Latency\SyncReceiveNetLatency.cs" />
     <Compile Include="Latency\TranProcessingTime.cs" />
     <Compile Include="Latency\TranRemoteCommit.cs" />
@@ -109,18 +119,13 @@
     <Compile Include="Latency\NetworkLatency.cs" />
     <Compile Include="Pages\AGLatencySummaryPage.cs" />
     <Compile Include="Pages\DBFlowControlPage.cs" />
+    <Compile Include="Pages\ProcessingTimePageTemplate.cs" />
     <Compile Include="Pages\TranProcessingTimePage.cs" />
     <Compile Include="Pages\TranRemoteCommitPage.cs" />
     <Compile Include="Pages\LogCapturePrimaryPage.cs" />
     <Compile Include="Pages\SyncReceiveNetLatencyPage.cs" />
     <Compile Include="Pages\NetworkLatencyPage.cs" />
     <Compile Include="Pages\LogBlockLocalHardenPage.cs" />
-    <Compile Include="PrimaryLocalHarden.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="PrimaryLocalHarden.Designer.cs">
-      <DependentUpon>PrimaryLocalHarden.cs</DependentUpon>
-    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SQLiteDB.cs" />
@@ -133,9 +138,6 @@
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="PrimaryLocalHarden.resx">
-      <DependentUpon>PrimaryLocalHarden.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -147,6 +149,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="packages.config" />
+    <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

@@ -60,7 +60,7 @@ namespace AGLatency
             mylable2 = label2;
 
             DoStop(false);
-            /*
+         
             // this.textBox1.Text = @"C:\AGLatency\data\PerfMon_AUSYDSQLC31N4\PerfMon\AlwaysOn_DataMove_Tracing_0_131751865495060000.xel";
             this.textBox1.Text = @"C:\data\PerfMon_AUSYDSQLC31N4\PerfMon\";
             this.textBox2.Text = @"C:\data\PerfMon_AUMELSQLR31N1\PerfMon";
@@ -74,13 +74,15 @@ namespace AGLatency
 
             this.textBox1.Text = @"C:\data\AGxevent2_slowLink\primary";
             this.textBox2.Text = @"C:\data\AGxevent2_slowLink\slow_secondary_sync";
+            /*
+                     //   this.textBox1.Text = @"C:\data\AGXevent_linkSpeedChange\primary";
+                     // this.textBox2.Text = @"C:\data\AGXevent_linkSpeedChange\async_slow_secondary";
+                     */
 
-            //   this.textBox1.Text = @"C:\data\AGXevent_linkSpeedChange\primary";
-            // this.textBox2.Text = @"C:\data\AGXevent_linkSpeedChange\async_slow_secondary";
-            */
-
-          //  this.textBox1.Text = @"E:\xevent\9.7 AGLatency\CSNP00099B5A";
-          //  this.textBox2.Text=@"E:\xevent\9.7 AGLatency\CSNP00099B59";
+            //  this.textBox1.Text = @"E:\xevent\9.7 AGLatency\CSNP00099B5A";
+            //  this.textBox2.Text=@"E:\xevent\9.7 AGLatency\CSNP00099B59";
+            this.textBox1.Text = @"C:\data\new\primary";
+            this.textBox2.Text = @"C:\data\new\secondary";
         }
 
         //static readonly object _updateProgressLock = new object();
@@ -178,6 +180,12 @@ namespace AGLatency
         Latency.TranRemoteCommit tranRemoteCommit = null;
         Latency.TranProcessingTime tranProcessing = null;
 
+        Latency.EventProcessingTemplate hadr_log_block_send_complete = null;
+        Latency.EventProcessingTemplate hadr_db_commit_mgr_harden = null;
+        Latency.EventProcessingTemplate recovery_unit_harden_log_timestamps = null;
+        Latency.EventProcessingTemplate log_flush_complete = null;
+
+
         public void WaitUntilDone()
         {
 
@@ -223,35 +231,122 @@ namespace AGLatency
 
         public void CreateReport()
         {
+
+
+            UpdateProgress2("Creating Transaction Processing page");
+            Logger.LogMessage("Creating Transaction Processing page");
+            tranProcessing.CreatePages();
+
             UpdateProgress2("Creating primary_log_flush page");
             Logger.LogMessage("Creating primary_log_flush page");
-
             primary_log_flush.CreatePages();
-            UpdateProgress2("Creating secondary_log_flush page");
-            Logger.LogMessage("Creating secondary_log_flush page");
-            secondary_log_flush.CreatePages();
-            UpdateProgress2("Creating primary_secondary page");
-            Logger.LogMessage("Creating primary_secondary page");
-            primary_secondary.CreatePages();
-            UpdateProgress2("Creating logCapturePrimary page");
-            Logger.LogMessage("Creating logCapturePrimary page");
-            logCapturePrimary.CreatePages();
-
-            UpdateProgress2("Creating syncReceiveNetLatency page");
-            Logger.LogMessage("Creating syncReceiveNetLatency page");
-            syncReceiveNetLatency.CreatePages();
-
-            UpdateProgress2("Creating DBFlowControlPage page");
-            Logger.LogMessage("Creating DBFlowControlPage page");
-            dbFlowControl.CreatePages();
 
             UpdateProgress2("Creating Transaction Remote Commit page");
             Logger.LogMessage("Creating Transaction Remote Commit page");
             tranRemoteCommit.CreatePages();
 
-            UpdateProgress2("Creating Transaction Processing page");
-            Logger.LogMessage("Creating Transaction Processing page");
-            tranProcessing.CreatePages();
+
+
+            UpdateProgress2("Creating secondary_log_flush page");
+            Logger.LogMessage("Creating secondary_log_flush page");
+            secondary_log_flush.CreatePages();
+            /*
+             * Don't get network latency becuase it is not accurate
+            UpdateProgress2("Creating primary_secondary page");
+            Logger.LogMessage("Creating primary_secondary page");
+            primary_secondary.CreatePages();
+            */
+            UpdateProgress2("Creating logCapturePrimary page");
+            Logger.LogMessage("Creating logCapturePrimary page");
+            logCapturePrimary.CreatePages();
+            /*
+             * * Don't get network latency becuase it is not accurate
+            UpdateProgress2("Creating syncReceiveNetLatency page");
+            Logger.LogMessage("Creating syncReceiveNetLatency page");
+            syncReceiveNetLatency.CreatePages();
+
+    */
+            UpdateProgress2("Creating DBFlowControlPage page");
+            Logger.LogMessage("Creating DBFlowControlPage page");
+            dbFlowControl.CreatePages();
+
+            /*************************/
+            UpdateProgress2("Creating hadr_log_block_send_complete page");
+            Logger.LogMessage("Creating hadr_log_block_send_complete page");
+            var list = hadr_log_block_send_complete.GetPerfPointData();
+            Pages.ProcessingTimePageTemplate sendPage = new Pages.ProcessingTimePageTemplate
+                (list, "Send", "Primary Statistics","Primary-Send");
+            sendPage.GetData();
+
+            PageTemplate.PageObject pageObj = new PageTemplate.PageObject("SEND", sendPage, PageTemplate.PageObjState.SaveToDiskOnly);
+            Controller.pageObjs.Add(pageObj);
+
+            /*************************/
+
+
+            /*************************/
+            UpdateProgress2("Creating hadr_db_commit_mgr_harden page");
+            Logger.LogMessage("Creating hadr_db_commit_mgr_harden page");
+            var list2 = hadr_db_commit_mgr_harden.GetPerfPointData();
+            Pages.ProcessingTimePageTemplate mgrPage = new Pages.ProcessingTimePageTemplate
+                (list2, "Remote Harden", "Primary Statistics", "Primary-RemoteHarden");
+            mgrPage.GetData();
+
+            PageTemplate.PageObject pageObj2 = new PageTemplate.PageObject("RemoteHarden", mgrPage, PageTemplate.PageObjState.SaveToDiskOnly);
+            Controller.pageObjs.Add(pageObj2);
+
+
+            //Time to get uniqueu database IDs for latter use
+
+            Controller.databaseIds = hadr_db_commit_mgr_harden.GetDatabaseIDs(hadr_db_commit_mgr_harden.eventLatency.eventDB.SQLiteDBFile);
+
+            /*************************/
+
+
+            /*************************/
+            UpdateProgress2("Creating recovery_unit_harden_log_timestamps page");
+            Logger.LogMessage("Creating recovery_unit_harden_log_timestamps page");
+
+            if (Controller.databaseIds != null && Controller.databaseIds.Count > 0)
+            {
+                string dbstr = " (" + String.Join(", ", Controller.databaseIds.ToArray()) + ")";
+                string exclude_NonAG_db = "DELETE FROM recovery_unit_harden_log_timestamps WHERE database_id NOT IN " + dbstr;
+                recovery_unit_harden_log_timestamps.preprocessingQueries= new List<string>();
+                recovery_unit_harden_log_timestamps.preprocessingQueries.Add(exclude_NonAG_db);
+            }
+
+            var list3 = recovery_unit_harden_log_timestamps.GetPerfPointData();
+            Pages.ProcessingTimePageTemplate commitPage = new Pages.ProcessingTimePageTemplate
+                (list3, "Commit", "Primary Statistics", "Primary-Commit");
+            commitPage.GetData();
+
+            PageTemplate.PageObject pageObj3 = new PageTemplate.PageObject("Commit", commitPage, PageTemplate.PageObjState.SaveToDiskOnly);
+            Controller.pageObjs.Add(pageObj3);
+
+            /*************************/
+
+
+            /*************************/
+            UpdateProgress2("Creating log_flush_complete page");
+            Logger.LogMessage("Creating log_flush_complete page");
+
+            if (Controller.databaseIds != null && Controller.databaseIds.Count > 0)
+            {
+                string dbstr = " (" + String.Join(", ", Controller.databaseIds.ToArray()) + ")";
+                string exclude_NonAG_db = "DELETE FROM log_flush_complete WHERE database_id NOT IN " + dbstr;
+                log_flush_complete.preprocessingQueries = new List<string>();
+                log_flush_complete.preprocessingQueries.Add(exclude_NonAG_db);
+            }
+
+            var list4 = log_flush_complete.GetPerfPointData();
+            Pages.ProcessingTimePageTemplate flushPage = new Pages.ProcessingTimePageTemplate
+                (list4, "Local Flush", "Primary Statistics", "Primary-LocalFlush");
+            flushPage.GetData();
+
+            PageTemplate.PageObject pageObj4 = new PageTemplate.PageObject("LocalFlush", flushPage, PageTemplate.PageObjState.SaveToDiskOnly);
+            Controller.pageObjs.Add(pageObj4);
+
+            /*************************/
 
 
             UpdateProgress2("Creating Summary page");
@@ -367,11 +462,14 @@ namespace AGLatency
             primary_log_flush = new Latency.LogBlockLocalHarden(Replica.Primary);
             secondary_log_flush = new Latency.LogBlockLocalHarden(Replica.Secondary);
 
-            primary_secondary = new Latency.NetworkLatency(NetworkDirection.Primary_To_Secondary);
+            //Ignore it now
+            //primary_secondary = new Latency.NetworkLatency(NetworkDirection.Primary_To_Secondary);
 
             logCapturePrimary = new Latency.LogCapturePrimary();
 
-            syncReceiveNetLatency = new Latency.SyncReceiveNetLatency(NetworkDirection.Secondary_To_Primary);
+            //Ignore it now
+            //syncReceiveNetLatency = new Latency.SyncReceiveNetLatency(NetworkDirection.Secondary_To_Primary);
+
             dbFlowControl = new Latency.DBFlowControl();
 
             tranRemoteCommit = new Latency.TranRemoteCommit();
@@ -379,15 +477,40 @@ namespace AGLatency
             //Register to XELoader
             primary_log_flush.Register();
             secondary_log_flush.Register();
-            primary_secondary.Register();
+
+            //Ignore it now
+            //primary_secondary.Register();
+            //syncReceiveNetLatency.Register();
+
             logCapturePrimary.Register();
-            syncReceiveNetLatency.Register();
+            
             tranRemoteCommit.Register();
             tranProcessing.Register();
 
             dbFlowControl.Register();
 
             //  Latency.LogBlockLocalHarden.GeneratePerfMonCSV(@"C:\AGLatency\AGLatency\bin\Debug\SQLiteDB\LocalHarden_Primary_perf.CSV"); 
+            bool IsPrimary = true;
+            hadr_log_block_send_complete
+                = new Latency.EventProcessingTemplate(IsPrimary,  "total_processing_time",
+                EventMetaData.xEvent.hadr_log_block_send_complete,  null);
+
+
+            hadr_db_commit_mgr_harden
+                = new Latency.EventProcessingTemplate(IsPrimary, "time_to_commit",
+                EventMetaData.xEvent.hadr_db_commit_mgr_harden, null);
+
+
+            recovery_unit_harden_log_timestamps
+                = new Latency.EventProcessingTemplate(IsPrimary, "processing_time",
+                EventMetaData.xEvent.recovery_unit_harden_log_timestamps, null);
+
+            log_flush_complete
+                = new Latency.EventProcessingTemplate(IsPrimary, "duration",
+                EventMetaData.xEvent.log_flush_complete, null);
+
+            
+
 
             Logger.LogMessage("Start...");
             //SQLiteDB lite = new SQLiteDB();

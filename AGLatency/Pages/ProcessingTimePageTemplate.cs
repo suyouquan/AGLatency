@@ -6,23 +6,24 @@ using System.Threading.Tasks;
 
 namespace AGLatency.Pages
 {
-   public class LogCapturePrimaryPage : PageTemplate.PageDataCommon
+   public class ProcessingTimePageTemplate: PageTemplate.PageDataCommon
     {
          
         public PageTemplate.HtmlPageOutput page = null;
-        public string replica;
+         
         string title;
-      
-        List<Latency.LogCapture_Sec> list = null;
+        
+        List<Latency.EventRecord_Sec> list = null;
+        string chartName = "";
         //can have multile instance with diffferent menuTitle.
-        public LogCapturePrimaryPage(string replicaStr, List<Latency.LogCapture_Sec> l,string menuTitle,string groupTitle)
+        public ProcessingTimePageTemplate(  List<Latency.EventRecord_Sec> l,string menuTitle,string groupTitle,string chart)
         {
             title = menuTitle;
-            this.replica  = replicaStr;
-            this.page = new PageTemplate.HtmlPageOutput("Replica ("+this.replica.Substring(0,8)+"...)", 
-                "Log Capture" );
+           
+            this.page = new PageTemplate.HtmlPageOutput(menuTitle, groupTitle );
             InitHtmlPage();
             list = l;
+            chartName = chart;
         }
 
         //this function will be called by SQLDumpData class. you implement your logic in it, say, call PopulateItems to fill items.
@@ -41,58 +42,65 @@ namespace AGLatency.Pages
 
         public string GetChart()
         {
-            
+
             Dictionary<string, string> summary = new Dictionary<string, string>();
             Int64 total = 0;
-            Int64 duration=0;
+            Int64 total_processingTime=0;
+            Int64 max_processingTime = 0;
 
-            foreach (Latency.LogCapture_Sec lb in list)
+            foreach (Latency.EventRecord_Sec lb in list)
             {
-                total += lb.LogBlocks;
-                duration += lb.Sum_Latency;
+                total += lb.Count;
+                total_processingTime += lb.Sum_ProcessingTime;
+                if (max_processingTime < lb.Max_ProcessingTime) max_processingTime = lb.Max_ProcessingTime;
             }
-            summary.Add("Total Log Blocks Processed", total.ToString());
-            summary.Add("Log Blocks Avg Latency", ((1.0*duration) / total).ToString("F") +" ms");
+            summary.Add("Events Processed", total.ToString());
+            summary.Add("Avg Processing Time", ((total_processingTime) / total)  +" microseconds");
+            summary.Add("Max Processing Time",  max_processingTime + " microseconds");
             string sumHtml = OutputProcessor.ConvertDictionaryToHTMLTable(summary);
 
-         //   Controller.latencySummaryDict.Add("LogCapture Replica (" + this.replica.Substring(0, 8) + "...)", (int)(duration / total));
-
-            Dictionary <string, List<string>> dict = new Dictionary<string, List<string>>();
+            
+                Controller.latencySummaryDict.Add(chartName+"->Avg Processing Time", (int)((total_processingTime) / total));
+            
+            
+            Dictionary<string, List<string>> dict = new Dictionary<string, List<string>>();
             /*Date.UTC(1970, 10, 25,10,20,55), 1*/
-            List<string> Avg_Latency = new List<string>();
-            foreach (Latency.LogCapture_Sec lb in list)
+            List<string> Avg_Duration = new List<string>();
+            foreach (Latency.EventRecord_Sec lb in list)
             {
                 string str = "Date.UTC("
                       + lb.EventTimeStamp.Year.ToString() + "," + lb.EventTimeStamp.Month.ToString() + ","
                       + lb.EventTimeStamp.Day.ToString() + "," + lb.EventTimeStamp.Hour.ToString()
                       + "," + lb.EventTimeStamp.Minute.ToString()
                       + "," + lb.EventTimeStamp.Second.ToString()
-                      + ")," + lb.Avg_Latency;
-                Avg_Latency.Add(str);
+                      + ")," + lb.Avg_ProcessingTime;
+                Avg_Duration.Add(str);
             }
-            dict.Add("Avg_Latency", Avg_Latency);
-          //  Controller.AddChartData("Log Capture", Avg_Latency);
+            dict.Add(chartName + "->Avg_ProcessingTime", Avg_Duration);
 
+           
+                Controller.AddChartData(chartName + "->Avg Processing time", Avg_Duration);
+             
             Dictionary<string, List<string>> dict2 = new Dictionary<string, List<string>>();
-            List<string> logBlocks = new List<string>();
-            foreach (Latency.LogCapture_Sec lb in list)
+            List<string> trans = new List<string>();
+            foreach (Latency.EventRecord_Sec lb in list)
             {
                 string str = "Date.UTC("
                       + lb.EventTimeStamp.Year.ToString() + "," + lb.EventTimeStamp.Month.ToString() + ","
                       + lb.EventTimeStamp.Day.ToString() + "," + lb.EventTimeStamp.Hour.ToString()
                       + "," + lb.EventTimeStamp.Minute.ToString()
                       + "," + lb.EventTimeStamp.Second.ToString()
-                      + ")," + lb.LogBlocks;
-                logBlocks.Add(str);
+                      + ")," + lb.Count;
+                trans.Add(str);
             }
-            dict2.Add("LogBlocks", logBlocks);
+            dict2.Add(chartName + "->Count/Sec", trans);
 
 
-            string chartHtml = Output.HighCharts.GetChartHtml("Primary-Log Block Log Capture Avg Latency Per Second", title,
-                "Time", "Latency (ms)", dict,"GREEN");
+            string chartHtml = Output.HighCharts.GetChartHtml(chartName + "->Avg ProcessingTime Per Second", title +" (Microseconds)",
+                "Time", "Duration (Microseconds)", dict, "#005c99");
 
-            string chartHtml2 = Output.HighCharts.GetChartHtml(" Log Blocks Sum Per Second", title,
-             "Time", "Log Blocks", dict2,"BLUE");
+            string chartHtml2 = Output.HighCharts.GetChartHtml(chartName + "->Count Per Second", title,
+             "Time", "Count", dict2, "#408000");
 
             return sumHtml+"<br>"+ chartHtml + "<br>"+chartHtml2;
         }
@@ -117,15 +125,11 @@ namespace AGLatency.Pages
         {
 
            // this.page.Group = "LocalHarden";
-            this.page.pageTitle = "Primary-Log Blocks Capture Latency - " +title;
+            this.page.pageTitle = title +" Statistics" ;
 
 
-            this.page.pageDescription = "The log block primary log capture latency is the time delta between:"
-                + "<br>1.The timestamp of hadr_capture_log_block where mode=1."
-                + "<br>2.The timestamp of hadr_capture_log_block where mode=4.";
+           // this.page.pageDescription = "The report data is from xevent recovery_unit_harden_log_timestamps. This xevent will fire for every transaction. In this event there is processing_time field which is used to track the duration of the commit of a transaction. This includes the wait of Local commit time or Remote commit delay.";
 
-
-            
 
 
             //   this.page.PagingCount = -1;

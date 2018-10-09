@@ -70,7 +70,7 @@ Highcharts.chart('container', {
   },
   tooltip: {
     headerFormat: '<b>{series.name}</b><br>',
-    pointFormat: '{point.x:%e. %b  %H:%M:%S.%L}: {point.y:.2f}'
+    pointFormat: '{point.x:%e. %b  %H:%M:%S.%L}: {point.y:.0f}'
   },
 
   plotOptions: {
@@ -152,7 +152,7 @@ Highcharts.chart('container', {
    <script>
 var chart=Highcharts.chart('" + divName + @"', {
     chart: {
-        type: 'bar'
+        type: 'column'
     },
     title: {
         text: '{TITLE}'
@@ -177,14 +177,22 @@ var chart=Highcharts.chart('" + divName + @"', {
         }
     },
     tooltip: {
-        valueSuffix: ' ms'
+        valueSuffix: ' microseconds'
     },
     plotOptions: {
+    series: {
+			borderWidth: 0,
+			dataLabels: {
+				enabled: true,
+				format: '{point.y:.0f} microseconds'
+			}
+		},
+
         bar: {
             dataLabels: {
                 enabled: true,
                formatter: function () {
-                         return this.y+' ms';
+                         return this.y+' microseconds';
                   }
     }
         }
@@ -195,7 +203,7 @@ var chart=Highcharts.chart('" + divName + @"', {
  series: [{
         name: '',
          showInLegend: false,      
-         pointWidth: 30,
+         pointWidth: 60,
         data: [{DATA}]
     }]
 

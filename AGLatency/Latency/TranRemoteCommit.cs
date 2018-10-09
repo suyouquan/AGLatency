@@ -73,7 +73,7 @@ namespace AGLatency.Latency
             foreach (KeyValuePair<int, List<Latency.TranRemoteCommit_Sec>> kv in dict)
             {
                 Pages.TranRemoteCommitPage page =
-                    new Pages.TranRemoteCommitPage(server, kv.Key, kv.Value,  "Remote Commit (db=" + kv.Key + ")", "Transactions");
+                    new Pages.TranRemoteCommitPage(server, kv.Key, kv.Value,  "Remote Harden (db=" + kv.Key + ")", "Primary Statistics");
 
                 page.GetData();
                 // page.SavePageToDisk();

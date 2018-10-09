@@ -133,7 +133,7 @@ namespace AGLatency.Pages
         {
 
            // this.page.Group = "LocalHarden";
-            this.page.pageTitle = title +" Log Local Harden";
+            this.page.pageTitle = title +" Statistics";
 
 
             this.page.pageDescription =  "The report data is from xevent log_flush_complete. The log blocks and their harden information is extracted from log_flush_complete trace "

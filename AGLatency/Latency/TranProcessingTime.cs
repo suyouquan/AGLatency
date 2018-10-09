@@ -73,7 +73,7 @@ namespace AGLatency.Latency
             foreach (KeyValuePair<int, List<Latency.TranProcessingTime_Sec>> kv in dict)
             {
                 Pages.TranProcessingTimePage page =
-                    new Pages.TranProcessingTimePage(server, kv.Key, kv.Value,  "Processing Time (db=" + kv.Key + ")", "Transactions");
+                    new Pages.TranProcessingTimePage(server, kv.Key, kv.Value,  "Commit (db=" + kv.Key + ")", "Primary Statistics");
 
                 page.GetData();
                 // page.SavePageToDisk();
@@ -84,6 +84,8 @@ namespace AGLatency.Latency
 
             }
         }
+
+
         public Dictionary<int, List<TranProcessingTime_Sec>> GetPerfPointData(string sqliteDBFile)
         {
             Dictionary<int, List<TranProcessingTime_Sec>> dict = new Dictionary<int, List<TranProcessingTime_Sec>>();

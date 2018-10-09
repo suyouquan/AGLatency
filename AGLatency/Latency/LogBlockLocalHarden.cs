@@ -108,10 +108,13 @@ ON log_flush_start.log_block_id=log_flush_complete.log_block_id
         {
             var dict = GetPerfPointData(eventLatency.eventDB.SQLiteDBFile);
 
-            foreach (KeyValuePair<int, List<Latency.LogBlockFlush_Sec>> kv in dict)
+            string groupName = "Primary Statistics";
+            if (server == Replica.Secondary) groupName = "Secondary Statistics";
+
+                foreach (KeyValuePair<int, List<Latency.LogBlockFlush_Sec>> kv in dict)
             {
                 Pages.LogBlockLocalHarden page = 
-                    new Pages.LogBlockLocalHarden(server,kv.Key, kv.Value, server.ToString() +" (db=" + kv.Key+")","Log Harden");
+                    new Pages.LogBlockLocalHarden(server,kv.Key, kv.Value, "Local Flush (db=" + kv.Key+")",groupName);
 
                 page.GetData();
                 // page.SavePageToDisk();
