@@ -17,10 +17,29 @@ namespace AGLatency
         public static List<Int32> databaseIds = new List<int>();
 
         public static int id = 1;
+
+        public static Dictionary<int,  KeyValuePair<string, int>> latencySummaryDict_new = new Dictionary<int, KeyValuePair<string, int>>();
+        public static Dictionary<int, KeyValuePair<string, List<string>> > chartsData_new = new Dictionary<int, KeyValuePair<string, List<string>>>();
+
+
         public static void AddChartData(string name,List<string> data)
         {
             chartsData.Add(id.ToString()+" "+name, data);
             id++;
+        }
+
+        public static void AddChartData_new(int order,string name, List<string> data)
+        {
+            chartsData_new.Add(order, new KeyValuePair<string, List<string>>(name, data));
+            
+        
+        }
+
+        public static void AddChartDataSummary_new(int order, string name, int value)
+        {
+            latencySummaryDict_new.Add(order, new KeyValuePair<string, int>( name, value));
+
+            
         }
 
         public static void Reset()

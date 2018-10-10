@@ -60,7 +60,7 @@ namespace AGLatency
             mylable2 = label2;
 
             DoStop(false);
-         
+
             // this.textBox1.Text = @"C:\AGLatency\data\PerfMon_AUSYDSQLC31N4\PerfMon\AlwaysOn_DataMove_Tracing_0_131751865495060000.xel";
             this.textBox1.Text = @"C:\data\PerfMon_AUSYDSQLC31N4\PerfMon\";
             this.textBox2.Text = @"C:\data\PerfMon_AUMELSQLR31N1\PerfMon";
@@ -184,7 +184,15 @@ namespace AGLatency
         Latency.EventProcessingTemplate hadr_db_commit_mgr_harden = null;
         Latency.EventProcessingTemplate recovery_unit_harden_log_timestamps = null;
         Latency.EventProcessingTemplate log_flush_complete = null;
+        Latency.EventProcessingTemplate hadr_log_block_compression = null;
+        Latency.EventProcessingTemplate hadr_log_block_decompression = null;
+        Latency.EventProcessingTemplate hadr_receive_harden_lsn_message = null;
+        Latency.EventProcessingTemplate hadr_transport_receive_log_block_message = null;
 
+        Latency.EventProcessingTemplate log_flush_complete_secondary = null;
+
+        Latency.EventProcessingTemplate hadr_lsn_send_complete = null;
+        Latency.EventProcessingTemplate hadr_lsn_send_complete2 = null;
 
         public void WaitUntilDone()
         {
@@ -231,7 +239,7 @@ namespace AGLatency
 
         public void CreateReport()
         {
-
+            /*
 
             UpdateProgress2("Creating Transaction Processing page");
             Logger.LogMessage("Creating Transaction Processing page");
@@ -250,15 +258,19 @@ namespace AGLatency
             UpdateProgress2("Creating secondary_log_flush page");
             Logger.LogMessage("Creating secondary_log_flush page");
             secondary_log_flush.CreatePages();
+            */
             /*
              * Don't get network latency becuase it is not accurate
             UpdateProgress2("Creating primary_secondary page");
             Logger.LogMessage("Creating primary_secondary page");
             primary_secondary.CreatePages();
             */
+
+            /*
             UpdateProgress2("Creating logCapturePrimary page");
             Logger.LogMessage("Creating logCapturePrimary page");
             logCapturePrimary.CreatePages();
+            */
             /*
              * * Don't get network latency becuase it is not accurate
             UpdateProgress2("Creating syncReceiveNetLatency page");
@@ -275,10 +287,10 @@ namespace AGLatency
             Logger.LogMessage("Creating hadr_log_block_send_complete page");
             var list = hadr_log_block_send_complete.GetPerfPointData();
             Pages.ProcessingTimePageTemplate sendPage = new Pages.ProcessingTimePageTemplate
-                (list, "Send", "Primary Statistics","Primary-Send");
+                (list, "Send", "Primary Statistics", "Primary-Send",11);
             sendPage.GetData();
 
-            PageTemplate.PageObject pageObj = new PageTemplate.PageObject("SEND", sendPage, PageTemplate.PageObjState.SaveToDiskOnly);
+            PageTemplate.PageObject pageObj = new PageTemplate.PageObject("SEND", sendPage, PageTemplate.PageObjState.SaveToDiskOnly,11);
             Controller.pageObjs.Add(pageObj);
 
             /*************************/
@@ -289,39 +301,16 @@ namespace AGLatency
             Logger.LogMessage("Creating hadr_db_commit_mgr_harden page");
             var list2 = hadr_db_commit_mgr_harden.GetPerfPointData();
             Pages.ProcessingTimePageTemplate mgrPage = new Pages.ProcessingTimePageTemplate
-                (list2, "Remote Harden", "Primary Statistics", "Primary-RemoteHarden");
+                (list2, "Remote Harden", "Primary Statistics", "Primary-RemoteHarden",13);
             mgrPage.GetData();
 
-            PageTemplate.PageObject pageObj2 = new PageTemplate.PageObject("RemoteHarden", mgrPage, PageTemplate.PageObjState.SaveToDiskOnly);
+            PageTemplate.PageObject pageObj2 = new PageTemplate.PageObject("RemoteHarden", mgrPage, PageTemplate.PageObjState.SaveToDiskOnly,13);
             Controller.pageObjs.Add(pageObj2);
 
 
             //Time to get uniqueu database IDs for latter use
 
             Controller.databaseIds = hadr_db_commit_mgr_harden.GetDatabaseIDs(hadr_db_commit_mgr_harden.eventLatency.eventDB.SQLiteDBFile);
-
-            /*************************/
-
-
-            /*************************/
-            UpdateProgress2("Creating recovery_unit_harden_log_timestamps page");
-            Logger.LogMessage("Creating recovery_unit_harden_log_timestamps page");
-
-            if (Controller.databaseIds != null && Controller.databaseIds.Count > 0)
-            {
-                string dbstr = " (" + String.Join(", ", Controller.databaseIds.ToArray()) + ")";
-                string exclude_NonAG_db = "DELETE FROM recovery_unit_harden_log_timestamps WHERE database_id NOT IN " + dbstr;
-                recovery_unit_harden_log_timestamps.preprocessingQueries= new List<string>();
-                recovery_unit_harden_log_timestamps.preprocessingQueries.Add(exclude_NonAG_db);
-            }
-
-            var list3 = recovery_unit_harden_log_timestamps.GetPerfPointData();
-            Pages.ProcessingTimePageTemplate commitPage = new Pages.ProcessingTimePageTemplate
-                (list3, "Commit", "Primary Statistics", "Primary-Commit");
-            commitPage.GetData();
-
-            PageTemplate.PageObject pageObj3 = new PageTemplate.PageObject("Commit", commitPage, PageTemplate.PageObjState.SaveToDiskOnly);
-            Controller.pageObjs.Add(pageObj3);
 
             /*************************/
 
@@ -336,17 +325,197 @@ namespace AGLatency
                 string exclude_NonAG_db = "DELETE FROM log_flush_complete WHERE database_id NOT IN " + dbstr;
                 log_flush_complete.preprocessingQueries = new List<string>();
                 log_flush_complete.preprocessingQueries.Add(exclude_NonAG_db);
+
+                //for log flush, need to *1000=microseconds
+                string multiply1000 = "UPDATE log_flush_complete SET duration=duration*1000";
+                log_flush_complete.preprocessingQueries.Add(multiply1000);
+
             }
 
             var list4 = log_flush_complete.GetPerfPointData();
             Pages.ProcessingTimePageTemplate flushPage = new Pages.ProcessingTimePageTemplate
-                (list4, "Local Flush", "Primary Statistics", "Primary-LocalFlush");
+                (list4, "Local Flush", "Primary Statistics", "Primary-LocalFlush",14);
             flushPage.GetData();
 
-            PageTemplate.PageObject pageObj4 = new PageTemplate.PageObject("LocalFlush", flushPage, PageTemplate.PageObjState.SaveToDiskOnly);
+            PageTemplate.PageObject pageObj4 = new PageTemplate.PageObject("LocalFlush", flushPage, PageTemplate.PageObjState.SaveToDiskOnly,14);
             Controller.pageObjs.Add(pageObj4);
 
             /*************************/
+
+
+
+
+            /*************************/
+            UpdateProgress2("Creating recovery_unit_harden_log_timestamps page");
+            Logger.LogMessage("Creating recovery_unit_harden_log_timestamps page");
+
+            if (Controller.databaseIds != null && Controller.databaseIds.Count > 0)
+            {
+                string dbstr = " (" + String.Join(", ", Controller.databaseIds.ToArray()) + ")";
+                string exclude_NonAG_db = "DELETE FROM recovery_unit_harden_log_timestamps WHERE database_id NOT IN " + dbstr;
+                recovery_unit_harden_log_timestamps.preprocessingQueries = new List<string>();
+                recovery_unit_harden_log_timestamps.preprocessingQueries.Add(exclude_NonAG_db);
+            }
+
+            var list3 = recovery_unit_harden_log_timestamps.GetPerfPointData();
+            Pages.ProcessingTimePageTemplate commitPage = new Pages.ProcessingTimePageTemplate
+                (list3, "Commit", "Primary Statistics", "Primary-Commit",15);
+            commitPage.GetData();
+
+            PageTemplate.PageObject pageObj3 = new PageTemplate.PageObject("Commit", commitPage, PageTemplate.PageObjState.SaveToDiskOnly,15);
+            Controller.pageObjs.Add(pageObj3);
+
+            /*************************/
+
+
+
+
+            /*************************/
+            UpdateProgress2("Creating hadr_log_block_compression page");
+            Logger.LogMessage("Creating hadr_log_block_compression page");
+
+            if (Controller.databaseIds != null && Controller.databaseIds.Count > 0)
+            {
+                string dbstr = " (" + String.Join(", ", Controller.databaseIds.ToArray()) + ")";
+                string exclude_NonAG_db = "DELETE FROM hadr_log_block_compression WHERE database_id NOT IN " + dbstr;
+                hadr_log_block_compression.preprocessingQueries = new List<string>();
+                hadr_log_block_compression.preprocessingQueries.Add(exclude_NonAG_db);
+            }
+
+            var list5 = hadr_log_block_compression.GetPerfPointData();
+            Pages.ProcessingTimePageTemplate compressionPage = new Pages.ProcessingTimePageTemplate
+                (list5, "Compression", "Primary Statistics", "Primary-Compression",10);
+            compressionPage.GetData();
+
+            PageTemplate.PageObject pageObj5 = new PageTemplate.PageObject("primaryCompression", compressionPage, PageTemplate.PageObjState.SaveToDiskOnly,10);
+            Controller.pageObjs.Add(pageObj5);
+
+            /*************************/
+
+            /*************************/
+            UpdateProgress2("Creating hadr_receive_harden_lsn_message page");
+            Logger.LogMessage("Creating hadr_receive_harden_lsn_message page");
+
+
+
+            var list7 = hadr_receive_harden_lsn_message.GetPerfPointData();
+            Pages.ProcessingTimePageTemplate recPage = new Pages.ProcessingTimePageTemplate
+                (list7, "Receive", "Primary Statistics", "Primary-Receive",12);
+            recPage.GetData();
+
+            PageTemplate.PageObject pageObj7 = new PageTemplate.PageObject("PrimaryReceive", recPage, PageTemplate.PageObjState.SaveToDiskOnly,12);
+            Controller.pageObjs.Add(pageObj7);
+
+            /*************************/
+
+
+
+
+
+            /*************************/
+            UpdateProgress2("Creating hadr_log_block_decompression page");
+            Logger.LogMessage("Creating hadr_log_block_decompression page");
+
+            if (Controller.databaseIds != null && Controller.databaseIds.Count > 0)
+            {
+                string dbstr = " (" + String.Join(", ", Controller.databaseIds.ToArray()) + ")";
+                string exclude_NonAG_db = "DELETE FROM hadr_log_block_decompression WHERE database_id NOT IN " + dbstr;
+                hadr_log_block_decompression.preprocessingQueries = new List<string>();
+                hadr_log_block_decompression.preprocessingQueries.Add(exclude_NonAG_db);
+            }
+
+            var list6 = hadr_log_block_decompression.GetPerfPointData();
+            Pages.ProcessingTimePageTemplate decompressionPage = new Pages.ProcessingTimePageTemplate
+                (list6, "Decompression", "Secondary Statistics", "Secondary-Decompression",22);
+            decompressionPage.GetData();
+
+            PageTemplate.PageObject pageObj6 = new PageTemplate.PageObject("SecondaryDescompression", decompressionPage, PageTemplate.PageObjState.SaveToDiskOnly,22);
+            Controller.pageObjs.Add(pageObj6);
+
+            /*************************/
+
+          
+
+
+            /*************************/
+            UpdateProgress2("Creating hadr_transport_receive_log_block_message page");
+            Logger.LogMessage("Creating hadr_transport_receive_log_block_message page");
+
+           
+
+            var list8 = hadr_transport_receive_log_block_message.GetPerfPointData();
+            Pages.ProcessingTimePageTemplate secReceivePage = new Pages.ProcessingTimePageTemplate
+                (list8, "Receive", "Secondary Statistics", "Secondary-Receive",21);
+            secReceivePage.GetData();
+
+            PageTemplate.PageObject pageObj8 = new PageTemplate.PageObject("SecondaryReceive", secReceivePage, PageTemplate.PageObjState.SaveToDiskOnly,21);
+            Controller.pageObjs.Add(pageObj8);
+
+            /*************************/
+
+
+
+            /*************************/
+            UpdateProgress2("Creating secondary log_flush_complete page");
+            Logger.LogMessage("Creating secondary log_flush_complete page");
+
+            if (Controller.databaseIds != null && Controller.databaseIds.Count > 0)
+            {
+                string dbstr = " (" + String.Join(", ", Controller.databaseIds.ToArray()) + ")";
+                string exclude_NonAG_db = "DELETE FROM log_flush_complete WHERE database_id NOT IN " + dbstr;
+                log_flush_complete_secondary.preprocessingQueries = new List<string>();
+                log_flush_complete_secondary.preprocessingQueries.Add(exclude_NonAG_db);
+
+                //for log flush, need to *1000=microseconds
+                string multiply1000 = "UPDATE log_flush_complete SET duration=duration*1000";
+                log_flush_complete_secondary.preprocessingQueries.Add(multiply1000);
+            }
+
+            var list9 = log_flush_complete_secondary.GetPerfPointData();
+            Pages.ProcessingTimePageTemplate flushSecPage = new Pages.ProcessingTimePageTemplate
+                (list9, "Local Flush", "Secondary Statistics", "Secondary-LocalFlush",23);
+            flushSecPage.GetData();
+
+            PageTemplate.PageObject pageObj9 = new PageTemplate.PageObject("LocalFlushSecondary", flushSecPage, PageTemplate.PageObjState.SaveToDiskOnly,23);
+            Controller.pageObjs.Add(pageObj9);
+
+            /*************************/
+
+
+
+            /*************************/
+            UpdateProgress2("Creating hadr_lsn_send_complete page");
+            Logger.LogMessage("Creating hadr_lsn_send_complete page");
+
+
+
+            var list10 = hadr_lsn_send_complete.GetPerfPointData();
+            Pages.ProcessingTimePageTemplate lsnSendPage = new Pages.ProcessingTimePageTemplate
+                (list10, "Send", "Secondary Statistics", "Secondary-Send",24);
+            lsnSendPage.GetData();
+
+            PageTemplate.PageObject pageObj10 = new PageTemplate.PageObject("SecondarySend", lsnSendPage, PageTemplate.PageObjState.SaveToDiskOnly,24);
+            Controller.pageObjs.Add(pageObj10);
+
+            /*************************/
+
+
+            /*************************/
+            UpdateProgress2("Creating hadr_lsn_send_complete2 page");
+            Logger.LogMessage("Creating hadr_lsn_send_complete2 page");
+
+
+
+            var list11 = hadr_lsn_send_complete2.GetPerfPointData();
+            Pages.ProcessingTimePageTemplate lsnSendPage2 = new Pages.ProcessingTimePageTemplate
+                (list11, "Processing", "Secondary Statistics", "Secondary-Processing",25);
+            lsnSendPage2.GetData();
+
+            PageTemplate.PageObject pageObj11 = new PageTemplate.PageObject("SecondaryProcessing", lsnSendPage2, PageTemplate.PageObjState.SaveToDiskOnly,25);
+            Controller.pageObjs.Add(pageObj11);
+
+            /*************************/
+
 
 
             UpdateProgress2("Creating Summary page");
@@ -355,6 +524,8 @@ namespace AGLatency
             Pages.AGLatencySummaryPage sum = new Pages.AGLatencySummaryPage(Latency.NetworkLatency.replicaId, "Summary", "");
             sum.SavePageToDisk();
 
+
+            Controller.pageObjs = Controller.pageObjs.OrderBy(p => p.outputOrder).ToList();
             //Now save other pages,this way, the summayr page will be the first page
             foreach (PageTemplate.PageObject pg in Controller.pageObjs)
             {
@@ -459,6 +630,8 @@ namespace AGLatency
 
             Logger.LogMessage("Output folder:" + PageTemplate.HtmlPageOutput.reportOutputFolder);
 
+
+            /*
             primary_log_flush = new Latency.LogBlockLocalHarden(Replica.Primary);
             secondary_log_flush = new Latency.LogBlockLocalHarden(Replica.Secondary);
 
@@ -469,9 +642,9 @@ namespace AGLatency
 
             //Ignore it now
             //syncReceiveNetLatency = new Latency.SyncReceiveNetLatency(NetworkDirection.Secondary_To_Primary);
-
+            */
             dbFlowControl = new Latency.DBFlowControl();
-
+            /*
             tranRemoteCommit = new Latency.TranRemoteCommit();
             tranProcessing = new Latency.TranProcessingTime();
             //Register to XELoader
@@ -483,33 +656,67 @@ namespace AGLatency
             //syncReceiveNetLatency.Register();
 
             logCapturePrimary.Register();
-            
+
             tranRemoteCommit.Register();
             tranProcessing.Register();
-
+ */
             dbFlowControl.Register();
-
+           
             //  Latency.LogBlockLocalHarden.GeneratePerfMonCSV(@"C:\AGLatency\AGLatency\bin\Debug\SQLiteDB\LocalHarden_Primary_perf.CSV"); 
             bool IsPrimary = true;
+
             hadr_log_block_send_complete
-                = new Latency.EventProcessingTemplate(IsPrimary,  "total_processing_time",
-                EventMetaData.xEvent.hadr_log_block_send_complete,  null);
+                = new Latency.EventProcessingTemplate(IsPrimary, "total_processing_time",
+                EventMetaData.xEvent.hadr_log_block_send_complete);
 
 
             hadr_db_commit_mgr_harden
                 = new Latency.EventProcessingTemplate(IsPrimary, "time_to_commit",
-                EventMetaData.xEvent.hadr_db_commit_mgr_harden, null);
+                EventMetaData.xEvent.hadr_db_commit_mgr_harden);
 
 
             recovery_unit_harden_log_timestamps
                 = new Latency.EventProcessingTemplate(IsPrimary, "processing_time",
-                EventMetaData.xEvent.recovery_unit_harden_log_timestamps, null);
+                EventMetaData.xEvent.recovery_unit_harden_log_timestamps);
 
             log_flush_complete
                 = new Latency.EventProcessingTemplate(IsPrimary, "duration",
-                EventMetaData.xEvent.log_flush_complete, null);
+                EventMetaData.xEvent.log_flush_complete);
 
-            
+            log_flush_complete_secondary
+              = new Latency.EventProcessingTemplate(!IsPrimary, "duration",
+              EventMetaData.xEvent.log_flush_complete);
+
+
+            hadr_log_block_compression
+             = new Latency.EventProcessingTemplate(IsPrimary, "processing_time",
+             EventMetaData.xEvent.hadr_log_block_compression);
+
+
+         
+
+            hadr_receive_harden_lsn_message
+               = new Latency.EventProcessingTemplate(IsPrimary, "processing_time",
+               EventMetaData.xEvent.hadr_receive_harden_lsn_message,2);
+
+
+            hadr_log_block_decompression
+             = new Latency.EventProcessingTemplate(!IsPrimary, "processing_time",
+             EventMetaData.xEvent.hadr_log_block_decompression);
+
+            hadr_transport_receive_log_block_message
+                  = new Latency.EventProcessingTemplate(!IsPrimary, "processing_time",
+               EventMetaData.xEvent.hadr_transport_receive_log_block_message, 2);
+
+
+            hadr_lsn_send_complete  
+                  = new Latency.EventProcessingTemplate(!IsPrimary, "total_sending_time",
+               EventMetaData.xEvent.hadr_lsn_send_complete);
+
+
+            hadr_lsn_send_complete2
+              = new Latency.EventProcessingTemplate(!IsPrimary, "total_processing_time",
+           EventMetaData.xEvent.hadr_lsn_send_complete);
 
 
             Logger.LogMessage("Start...");
@@ -746,7 +953,7 @@ namespace AGLatency
 
             var path = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             var file = Path.Combine(path, "AGLatency.mp4");
-            System.Diagnostics.Process.Start(file);       
+            System.Diagnostics.Process.Start(file);
         }
     }
 }

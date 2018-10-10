@@ -44,7 +44,24 @@ namespace AGLatency.Pages
             Dictionary<string, string> summary = new Dictionary<string, string>();
 
 
-            Dictionary<string, int> good = Controller.latencySummaryDict;
+            Dictionary<string, int> good =new Dictionary<string, int>() ;
+            Dictionary<string, List<string>> curlve = new Dictionary<string, List<string>>();
+
+            var sum = Controller.latencySummaryDict_new.OrderBy(p => p.Key);
+            int i = 1;
+            foreach (var p in sum)
+            {
+                good.Add(i.ToString()+" "+p.Value.Key, p.Value.Value);
+                i++;
+            }
+
+            var charts = Controller.chartsData_new.OrderBy(p => p.Key);
+              i = 1;
+            foreach(var p in charts)
+            {
+                curlve.Add(i.ToString()+" "+p.Value.Key, p.Value.Value);
+                i++;
+            }
             
             //Ignore the sort
 
@@ -57,10 +74,10 @@ namespace AGLatency.Pages
 
             //  return dictChart+ "<br>"+ barChartHtml;
 
-            string barJs = Output.HighCharts.GetBarHtml("SummaryBar", "Avg Latency Summary", "", "", "Time (ms)", good);
+            string barJs = Output.HighCharts.GetBarHtml("SummaryBar", "Avg Latency Summary", "", "", "Time (Microsecond)", good);
 
-            string chartHtml = Output.HighCharts.GetChartHtml("Latency charts", "",
-              "Time", "Latency (ms)", Controller.chartsData, "RED",600);
+            string chartHtml = Output.HighCharts.GetChartHtml("Latency charts-Avg Processing Time", "",
+              "Time", "Latency (Microsecond)", curlve, "RED",600);
 
             string AGLatencyImg = "<br><br><hr><span style='color:goldenrod; font-size:150%;'><i class='fa fa-lightbulb-o'></i></span>&nbsp;<b>Explanation</b><br>Below figure shows how the latency is caculated. <br><img src='../images/AGLatency.png' height='600'/>";
 

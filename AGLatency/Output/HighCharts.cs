@@ -83,7 +83,7 @@ Highcharts.chart('container', {
     }
   },
  
-  colors: ['{COLOR}','#357EC7', 'green', 'cyan', 'pink','gold'],
+  colors: ['{COLOR}','#357EC7', 'green', 'cyan', 'pink','gold'], 
 
   // Define the data points. All series have a dummy year
   // of 1970/71 in order to be compared on the same x axis. Note
@@ -184,7 +184,7 @@ var chart=Highcharts.chart('" + divName + @"', {
 			borderWidth: 0,
 			dataLabels: {
 				enabled: true,
-				format: '{point.y:.0f} microseconds'
+				format: '{point.y:.0f}'
 			}
 		},
 
@@ -192,7 +192,7 @@ var chart=Highcharts.chart('" + divName + @"', {
             dataLabels: {
                 enabled: true,
                formatter: function () {
-                         return this.y+' microseconds';
+                         return this.y+'';
                   }
     }
         }
@@ -209,19 +209,21 @@ var chart=Highcharts.chart('" + divName + @"', {
 
     });
 
-
+ 
 var max = 7;
- var colors= ['#ff9999', '#ffcc00', ' #66b3ff','#00cc7a','#33cc00','#269900','green']
+ var colors= ['#ff9999', '#ffcc00', ' #66b3ff','#00cc7a','#33cc00','#FFCC99','green']
 var len=chart.series[0].data.length;
 $.each(chart.series[0].data, function(i,data){
 
    for (var n = 0; n <= len; n++) {
-      var k=n;
+      var k=n%max;
 	  if(k>=max)k=max-1;
       chart.series[0].data[n].update({color:colors[k]});
 
    }
-}); </script>
+});  
+
+</script>
 ";
             return bar;
         }

@@ -49,7 +49,12 @@ namespace AGLatency
 
             //primary. Please be aware that below events will be fired for every transaction. so the trace could be very big.
             hadr_db_commit_mgr_harden,
-            recovery_unit_harden_log_timestamps
+            recovery_unit_harden_log_timestamps,
+
+      
+            hadr_log_block_decompression,
+            hadr_lsn_send_complete
+
 
 
         }

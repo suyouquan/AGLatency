@@ -16,7 +16,9 @@ namespace AGLatency.Pages
         List<Latency.EventRecord_Sec> list = null;
         string chartName = "";
         //can have multile instance with diffferent menuTitle.
-        public ProcessingTimePageTemplate(  List<Latency.EventRecord_Sec> l,string menuTitle,string groupTitle,string chart)
+
+        Int32 order = 0;//use to know the order of the chart
+        public ProcessingTimePageTemplate(  List<Latency.EventRecord_Sec> l,string menuTitle,string groupTitle,string chart,int ordr)
         {
             title = menuTitle;
            
@@ -24,6 +26,7 @@ namespace AGLatency.Pages
             InitHtmlPage();
             list = l;
             chartName = chart;
+            order = ordr;
         }
 
         //this function will be called by SQLDumpData class. you implement your logic in it, say, call PopulateItems to fill items.
@@ -60,7 +63,7 @@ namespace AGLatency.Pages
             string sumHtml = OutputProcessor.ConvertDictionaryToHTMLTable(summary);
 
             
-                Controller.latencySummaryDict.Add(chartName+"->Avg Processing Time", (int)((total_processingTime) / total));
+                Controller.AddChartDataSummary_new(order,chartName , (int)((total_processingTime) / total));
             
             
             Dictionary<string, List<string>> dict = new Dictionary<string, List<string>>();
@@ -79,7 +82,7 @@ namespace AGLatency.Pages
             dict.Add(chartName + "->Avg_ProcessingTime", Avg_Duration);
 
            
-                Controller.AddChartData(chartName + "->Avg Processing time", Avg_Duration);
+                Controller.AddChartData_new(order,chartName , Avg_Duration);
              
             Dictionary<string, List<string>> dict2 = new Dictionary<string, List<string>>();
             List<string> trans = new List<string>();
@@ -96,10 +99,10 @@ namespace AGLatency.Pages
             dict2.Add(chartName + "->Count/Sec", trans);
 
 
-            string chartHtml = Output.HighCharts.GetChartHtml(chartName + "->Avg ProcessingTime Per Second", title +" (Microseconds)",
-                "Time", "Duration (Microseconds)", dict, "#005c99");
+            string chartHtml = Output.HighCharts.GetChartHtml(chartName ,   "Avg ProcessingTime Per Second (Microsecond)",
+                "Time", "Duration (Microsecond)", dict, "#005c99");
 
-            string chartHtml2 = Output.HighCharts.GetChartHtml(chartName + "->Count Per Second", title,
+            string chartHtml2 = Output.HighCharts.GetChartHtml(chartName ,  "Count Per Second",
              "Time", "Count", dict2, "#408000");
 
             return sumHtml+"<br>"+ chartHtml + "<br>"+chartHtml2;

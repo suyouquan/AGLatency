@@ -44,12 +44,12 @@ namespace AGLatency.Latency
         public List<Int32> databaseIDs = new List<int>();
         
         public List<string> preprocessingQueries = new List<string>();
-        public EventProcessingTemplate(bool isPri,string timeField, EventMetaData.xEvent evt,List<string> queries=null)
+        public EventProcessingTemplate(bool isPri,string timeField, EventMetaData.xEvent evt, int mode=-1, List<string> queries=null)
         {
             isPrimary = isPri;
             processTimeFieldName = timeField;
             eventName = evt.ToString(); ;
-            Register(evt);
+            Register(evt,mode);
            
             preprocessingQueries = queries;
         }
@@ -75,7 +75,7 @@ namespace AGLatency.Latency
 
         //Multiple database, need to take care of that. 
 
-        public void Register(EventMetaData.xEvent evt)
+        public void Register(EventMetaData.xEvent evt,int mode)
         {
             string tag = "_primary";
             if (!isPrimary) tag = "_secondary";
@@ -83,12 +83,12 @@ namespace AGLatency.Latency
 
             if (isPrimary  )
             {
-                eventLatency.primaryEvents.Add(new EventWithMode(evt));           
+                eventLatency.primaryEvents.Add(new EventWithMode(evt,mode));           
             }
 
             else
             {
-                eventLatency.secondaryEvents.Add(new EventWithMode(evt));
+                eventLatency.secondaryEvents.Add(new EventWithMode(evt,mode));
             }
 
             XELoader.AddEventLatency(eventLatency);
@@ -165,6 +165,8 @@ namespace AGLatency.Latency
                  + processTimeFieldName + ") as Max_ProcessingTime, MIN("
                  + processTimeFieldName + ") as Min_ProcessingTime  FROM "
                  + eventName+"    GROUP BY EventTimeStamp/10000000 ";
+
+            Logger.LogMessage(select);
 
             SQLiteDataReader dr =
             db.ExecuteReader(select);
