@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace AGLatency.Pages
 {
@@ -75,11 +76,25 @@ namespace AGLatency.Pages
             //  return dictChart+ "<br>"+ barChartHtml;
 
             string barJs = Output.HighCharts.GetBarHtml("SummaryBar", "Avg Latency Summary", "", "", "Time (Microsecond)", good);
+            string link = "The terms of the delay here has the same meaning as in below link:<br><a href='https://blogs.msdn.microsoft.com/sql_server_team/new-in-ssms-always-on-availability-group-latency-reports/'>https://blogs.msdn.microsoft.com/sql_server_team/new-in-ssms-always-on-availability-group-latency-reports/</a><br><br>";
 
             string chartHtml = Output.HighCharts.GetChartHtml("Latency charts-Avg Processing Time", "",
               "Time", "Latency (Microsecond)", curlve, "RED",600);
 
-            string AGLatencyImg = "<br><br><hr><span style='color:goldenrod; font-size:150%;'><i class='fa fa-lightbulb-o'></i></span>&nbsp;<b>Explanation</b><br>Below figure shows how the latency is caculated. <br><img src='../images/AGLatency.png' height='600'/>";
+
+            string explain = link+ @"<b>primary->commit time</b>: Avg. Time to commit a transaction on the Primary Replica<br>
+                       <b>remote Harden Time</b>: Time elapsed between sending a log block to a secondary replica and getting the associated harden_lsn message back from the secondary replicas.<br>
+                     <b>secondary->processing time</b>:Time elapsed on the secondary between the log block getting received  and ack lsn sending out completed. This is basically the total time of a log block being processed on secondary.<br><br>
+               So on primary:<br>
+<b>remote Harden time </b>= primary->send +  network wire+ secondary->processing + network wire+ primary->receive +other processing time on primary.<br>
+<b>secondary->processing</b> =secondary:receive + decompression + local flush +  send + other <br>
+<b>primary->Commit</b>= max(primary->local flush, primary->remote harden) <br>
+                    ";
+
+
+            string AGLatencyImg = @"<br><br><hr><span style='color:goldenrod; font-size:150%;'><i class='fa fa-lightbulb-o'></i></span>&nbsp;<b>Annotation</b><br>Below figure shows how the latency is caculated. <br><br>"
++ HttpUtility.JavaScriptStringEncode( explain) +
+"<img src='../images/AG-datamovement.png' height='600'/>";
 
             return barJs+   "<br>" + chartHtml+AGLatencyImg;
         }

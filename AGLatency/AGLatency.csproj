@@ -166,12 +166,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="AGLatency.mp4" />
-    <Content Include="AGLatency.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="AGLatencyReport.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="green2.png" />
     <Content Include="red2.png" />
     <Content Include="TSQL_XEvent.sql">
