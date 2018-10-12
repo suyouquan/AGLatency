@@ -21,6 +21,8 @@ namespace AGLatency
         public static Dictionary<int,  KeyValuePair<string, int>> latencySummaryDict_new = new Dictionary<int, KeyValuePair<string, int>>();
         public static Dictionary<int, KeyValuePair<string, List<string>> > chartsData_new = new Dictionary<int, KeyValuePair<string, List<string>>>();
 
+        public static AGInfo primaryInfo;
+        public static AGInfo secondaryInfo;
 
         public static void AddChartData(string name,List<string> data)
         {
@@ -48,7 +50,8 @@ namespace AGLatency
             chartsData.Clear();
             pageObjs.Clear();
             latencySummaryDict.Clear();
-
+            latencySummaryDict_new.Clear();
+            chartsData_new.Clear();
         }
 
     }

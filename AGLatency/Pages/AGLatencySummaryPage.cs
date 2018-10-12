@@ -107,14 +107,21 @@ namespace AGLatency.Pages
             this.page.pageTitle = "AG Latency Summary";
 
             string chart = GetChart();
-            this.page.pageDescription = "This is the summary of the latency information between primary and replica "+replica+".";
+            this.page.pageDescription = "This is the summary of the latency information between replicas.";
             this.page.pageDescription += "<br><br>  Primary folder : " + Controller.primaryFolder.Replace("\\","/");
             this.page.pageDescription += "<br>Secondary folder : " + Controller.secondaryFolder.Replace("\\", "/"); ;
-            this.page.pageDescription += "<br><br>"+chart;
+         
 
-            
+            if (Controller.primaryInfo != null && Controller.primaryInfo.nodes != null && Controller.primaryInfo.nodes.Count > 0)
+            {
 
+                string AGInfo= OutputProcessor.Convert2HTMLTable<ReplicaNode>(Controller.primaryInfo.nodes, true, false);
 
+                //  dt.tableDescription= GetChart();
+                this.page.pageDescription +="<br><br>"+ AGInfo;
+            }
+
+            this.page.pageDescription += "<br><br>" + chart;
             //   this.page.PagingCount = -1;
 
 

@@ -51,7 +51,7 @@ namespace AGLatency.Latency
             eventName = evt.ToString(); ;
             Register(evt,mode);
            
-            preprocessingQueries = queries;
+           if(queries!=null)  preprocessingQueries = queries;
         }
 
         private void PreProcessing(SQLiteDB db,List<string> queries)

@@ -93,6 +93,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AGInfo.cs" />
     <Compile Include="Controller.cs" />
     <Compile Include="EventLatency.cs" />
     <Compile Include="EventMetaData.cs" />

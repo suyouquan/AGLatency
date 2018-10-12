@@ -200,6 +200,19 @@ var chart=Highcharts.chart('" + divName + @"', {
     credits: {
         enabled: false
     },
+
+legend: {
+        layout: 'vertical',
+        align: 'right',
+        verticalAlign: 'top',
+        x: -40,
+        y: 80,
+        floating: true,
+        borderWidth: 1,
+        backgroundColor: ((Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'),
+        shadow: true
+    },
+
  series: [{
         name: '',
          showInLegend: false,      
@@ -211,7 +224,7 @@ var chart=Highcharts.chart('" + divName + @"', {
 
  
 var max = 7;
- var colors= ['#ff9999', '#ffcc00', ' #66b3ff','#00cc7a','#33cc00','#FFCC99','green']
+ var colors= ['#ff9999', '#ffcc00', ' #66b3ff','#00cc7a','#CC99FF','#339999','green']
 var len=chart.series[0].data.length;
 $.each(chart.series[0].data, function(i,data){
 

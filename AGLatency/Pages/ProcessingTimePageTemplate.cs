@@ -45,6 +45,7 @@ namespace AGLatency.Pages
 
         public string GetChart()
         {
+            if (list == null || list.Count == 0) return "";
 
             Dictionary<string, string> summary = new Dictionary<string, string>();
             Int64 total = 0;
@@ -170,9 +171,10 @@ namespace AGLatency.Pages
             if (list.Count < 5) dt.columnFilterEnabled = false;
             this.page.AddDataTable(dt);
 
+            
             this.page.pageContent = dt.GetHtmlStr();
 
-           
+            if (list == null || list.Count == 0) this.page.pageContent += "<p>No data</p>";
 
 
         }

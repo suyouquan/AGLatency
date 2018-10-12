@@ -81,8 +81,8 @@ namespace AGLatency
 
             //  this.textBox1.Text = @"E:\xevent\9.7 AGLatency\CSNP00099B5A";
             //  this.textBox2.Text=@"E:\xevent\9.7 AGLatency\CSNP00099B59";
-            this.textBox1.Text = @"C:\data\new\primary";
-            this.textBox2.Text = @"C:\data\new\secondary";
+            this.textBox1.Text = @"C:\data\report testing\primary";
+            this.textBox2.Text = @"C:\data\report testing\sync secondary\";
         }
 
         //static readonly object _updateProgressLock = new object();
@@ -188,11 +188,13 @@ namespace AGLatency
         Latency.EventProcessingTemplate hadr_log_block_decompression = null;
         Latency.EventProcessingTemplate hadr_receive_harden_lsn_message = null;
         Latency.EventProcessingTemplate hadr_transport_receive_log_block_message = null;
+        Latency.EventProcessingTemplate hadr_database_flow_control_action = null;
 
         Latency.EventProcessingTemplate log_flush_complete_secondary = null;
 
         Latency.EventProcessingTemplate hadr_lsn_send_complete = null;
         Latency.EventProcessingTemplate hadr_lsn_send_complete2 = null;
+        
 
         public void WaitUntilDone()
         {
@@ -277,11 +279,11 @@ namespace AGLatency
             Logger.LogMessage("Creating syncReceiveNetLatency page");
             syncReceiveNetLatency.CreatePages();
 
-    */
+   
             UpdateProgress2("Creating DBFlowControlPage page");
             Logger.LogMessage("Creating DBFlowControlPage page");
             dbFlowControl.CreatePages();
-
+ */
             /*************************/
             UpdateProgress2("Creating hadr_log_block_send_complete page");
             Logger.LogMessage("Creating hadr_log_block_send_complete page");
@@ -310,7 +312,7 @@ namespace AGLatency
 
             //Time to get uniqueu database IDs for latter use
 
-            Controller.databaseIds = hadr_db_commit_mgr_harden.GetDatabaseIDs(hadr_db_commit_mgr_harden.eventLatency.eventDB.SQLiteDBFile);
+           // Controller.databaseIds = hadr_db_commit_mgr_harden.GetDatabaseIDs(hadr_db_commit_mgr_harden.eventLatency.eventDB.SQLiteDBFile);
 
             /*************************/
 
@@ -318,19 +320,22 @@ namespace AGLatency
             /*************************/
             UpdateProgress2("Creating log_flush_complete page");
             Logger.LogMessage("Creating log_flush_complete page");
-
-            if (Controller.databaseIds != null && Controller.databaseIds.Count > 0)
+            log_flush_complete.preprocessingQueries = new List<string>();
+            if(Controller.primaryInfo!=null && Controller.primaryInfo.database_id!=null 
+                && Controller.primaryInfo.database_id.Count>0)
+            //if (Controller.databaseIds != null && Controller.databaseIds.Count > 0)
             {
-                string dbstr = " (" + String.Join(", ", Controller.databaseIds.ToArray()) + ")";
+                string dbstr = " (" + String.Join(", ", Controller.primaryInfo.database_id.ToArray()) + ")";
                 string exclude_NonAG_db = "DELETE FROM log_flush_complete WHERE database_id NOT IN " + dbstr;
-                log_flush_complete.preprocessingQueries = new List<string>();
+         
                 log_flush_complete.preprocessingQueries.Add(exclude_NonAG_db);
+
+
+            }
 
                 //for log flush, need to *1000=microseconds
                 string multiply1000 = "UPDATE log_flush_complete SET duration=duration*1000";
                 log_flush_complete.preprocessingQueries.Add(multiply1000);
-
-            }
 
             var list4 = log_flush_complete.GetPerfPointData();
             Pages.ProcessingTimePageTemplate flushPage = new Pages.ProcessingTimePageTemplate
@@ -349,9 +354,11 @@ namespace AGLatency
             UpdateProgress2("Creating recovery_unit_harden_log_timestamps page");
             Logger.LogMessage("Creating recovery_unit_harden_log_timestamps page");
 
-            if (Controller.databaseIds != null && Controller.databaseIds.Count > 0)
+            if (Controller.primaryInfo != null && Controller.primaryInfo.database_id != null
+             && Controller.primaryInfo.database_id.Count > 0)
+            //if (Controller.databaseIds != null && Controller.databaseIds.Count > 0)
             {
-                string dbstr = " (" + String.Join(", ", Controller.databaseIds.ToArray()) + ")";
+                string dbstr = " (" + String.Join(", ", Controller.primaryInfo.database_id.ToArray()) + ")";
                 string exclude_NonAG_db = "DELETE FROM recovery_unit_harden_log_timestamps WHERE database_id NOT IN " + dbstr;
                 recovery_unit_harden_log_timestamps.preprocessingQueries = new List<string>();
                 recovery_unit_harden_log_timestamps.preprocessingQueries.Add(exclude_NonAG_db);
@@ -373,10 +380,11 @@ namespace AGLatency
             /*************************/
             UpdateProgress2("Creating hadr_log_block_compression page");
             Logger.LogMessage("Creating hadr_log_block_compression page");
-
-            if (Controller.databaseIds != null && Controller.databaseIds.Count > 0)
+            if (Controller.primaryInfo != null && Controller.primaryInfo.database_id != null
+             && Controller.primaryInfo.database_id.Count > 0)
+                //if (Controller.databaseIds != null && Controller.databaseIds.Count > 0)
             {
-                string dbstr = " (" + String.Join(", ", Controller.databaseIds.ToArray()) + ")";
+                string dbstr = " (" + String.Join(", ", Controller.primaryInfo.database_id.ToArray()) + ")";
                 string exclude_NonAG_db = "DELETE FROM hadr_log_block_compression WHERE database_id NOT IN " + dbstr;
                 hadr_log_block_compression.preprocessingQueries = new List<string>();
                 hadr_log_block_compression.preprocessingQueries.Add(exclude_NonAG_db);
@@ -408,6 +416,22 @@ namespace AGLatency
 
             /*************************/
 
+            /*************************/
+            UpdateProgress2("Creating hadr_database_flow_control_action page");
+            Logger.LogMessage("Creating hadr_database_flow_control_action page");
+
+            hadr_database_flow_control_action.preprocessingQueries.Add("DELETE from hadr_database_flow_control_action where control_action='Set'");
+
+            var list74 = hadr_database_flow_control_action.GetPerfPointData();
+            Pages.ProcessingTimePageTemplate flowPage = new Pages.ProcessingTimePageTemplate
+                (list74, "Flow Control", "Primary Statistics", "Primary-FlowControl", 19);//last section, so set it to 19
+            flowPage.GetData();
+
+            PageTemplate.PageObject pageObj74 = new PageTemplate.PageObject("PrimaryFlowControl", flowPage, PageTemplate.PageObjState.SaveToDiskOnly, 19);
+            Controller.pageObjs.Add(pageObj74);
+
+            /*************************/
+
 
 
 
@@ -416,9 +440,12 @@ namespace AGLatency
             UpdateProgress2("Creating hadr_log_block_decompression page");
             Logger.LogMessage("Creating hadr_log_block_decompression page");
 
-            if (Controller.databaseIds != null && Controller.databaseIds.Count > 0)
+            if (Controller.secondaryInfo != null && Controller.secondaryInfo.database_id != null
+             && Controller.secondaryInfo.database_id.Count > 0)
+
+            //if (Controller.databaseIds != null && Controller.databaseIds.Count > 0)
             {
-                string dbstr = " (" + String.Join(", ", Controller.databaseIds.ToArray()) + ")";
+                string dbstr = " (" + String.Join(", ", Controller.secondaryInfo.database_id.ToArray()) + ")";
                 string exclude_NonAG_db = "DELETE FROM hadr_log_block_decompression WHERE database_id NOT IN " + dbstr;
                 hadr_log_block_decompression.preprocessingQueries = new List<string>();
                 hadr_log_block_decompression.preprocessingQueries.Add(exclude_NonAG_db);
@@ -458,18 +485,21 @@ namespace AGLatency
             /*************************/
             UpdateProgress2("Creating secondary log_flush_complete page");
             Logger.LogMessage("Creating secondary log_flush_complete page");
+           log_flush_complete_secondary.preprocessingQueries = new List<string>();
+            if (Controller.secondaryInfo != null && Controller.secondaryInfo.database_id != null
+        && Controller.secondaryInfo.database_id.Count > 0)
 
-            if (Controller.databaseIds != null && Controller.databaseIds.Count > 0)
             {
-                string dbstr = " (" + String.Join(", ", Controller.databaseIds.ToArray()) + ")";
+                string dbstr = " (" + String.Join(", ", Controller.secondaryInfo.database_id.ToArray()) + ")";
                 string exclude_NonAG_db = "DELETE FROM log_flush_complete WHERE database_id NOT IN " + dbstr;
-                log_flush_complete_secondary.preprocessingQueries = new List<string>();
+             
                 log_flush_complete_secondary.preprocessingQueries.Add(exclude_NonAG_db);
 
                 //for log flush, need to *1000=microseconds
-                string multiply1000 = "UPDATE log_flush_complete SET duration=duration*1000";
-                log_flush_complete_secondary.preprocessingQueries.Add(multiply1000);
+               
             }
+         multiply1000 = "UPDATE log_flush_complete SET duration=duration*1000";
+                log_flush_complete_secondary.preprocessingQueries.Add(multiply1000);
 
             var list9 = log_flush_complete_secondary.GetPerfPointData();
             Pages.ProcessingTimePageTemplate flushSecPage = new Pages.ProcessingTimePageTemplate
@@ -612,7 +642,7 @@ namespace AGLatency
             //cleanup db, create db mapping
             XELoader.Reset();
             Controller.Reset();
-
+          
 
             //delete files in the sqldb folder
             SQLiteDB.DeleteOldFile();
@@ -643,7 +673,7 @@ namespace AGLatency
             //Ignore it now
             //syncReceiveNetLatency = new Latency.SyncReceiveNetLatency(NetworkDirection.Secondary_To_Primary);
             */
-            dbFlowControl = new Latency.DBFlowControl();
+           // dbFlowControl = new Latency.DBFlowControl();
             /*
             tranRemoteCommit = new Latency.TranRemoteCommit();
             tranProcessing = new Latency.TranProcessingTime();
@@ -659,9 +689,9 @@ namespace AGLatency
 
             tranRemoteCommit.Register();
             tranProcessing.Register();
- */
+
             dbFlowControl.Register();
-           
+   */         
             //  Latency.LogBlockLocalHarden.GeneratePerfMonCSV(@"C:\AGLatency\AGLatency\bin\Debug\SQLiteDB\LocalHarden_Primary_perf.CSV"); 
             bool IsPrimary = true;
 
@@ -698,6 +728,12 @@ namespace AGLatency
             hadr_receive_harden_lsn_message
                = new Latency.EventProcessingTemplate(IsPrimary, "processing_time",
                EventMetaData.xEvent.hadr_receive_harden_lsn_message,2);
+
+            hadr_database_flow_control_action
+               = new Latency.EventProcessingTemplate(IsPrimary, "duration",
+               EventMetaData.xEvent.hadr_database_flow_control_action);
+
+             
 
 
             hadr_log_block_decompression
@@ -798,6 +834,30 @@ namespace AGLatency
             }
             Controller.primaryFolder = textBox1.Text.Trim();
             Controller.secondaryFolder = textBox2.Text.Trim();
+
+            //check to see if primary.xml and secondary.xml exists or not:
+
+            if(!File.Exists(Path.Combine(Controller.primaryFolder,"primary.xml")))
+            {
+                MessageBox.Show("primary.xml not found in ["+Controller.primaryFolder+"]");
+                return;
+
+            }
+
+            if (!File.Exists(Path.Combine(Controller.primaryFolder, "primary.xml")))
+            {
+                MessageBox.Show("secondary.xml not found in [" + Controller.secondaryFolder + "]");
+                return;
+
+            }
+
+            //Now time to load AGinfo
+            Controller.primaryInfo = null;
+            Controller.secondaryInfo = null;
+            Logger.LogMessage("Parsing primary.xml and secondary.xml...");
+            Controller.primaryInfo=AGInfo.LoadAGInfo(Path.Combine(Controller.primaryFolder, "primary.xml"));
+            Controller.secondaryInfo = AGInfo.LoadAGInfo(Path.Combine(Controller.secondaryFolder, "secondary.xml"));
+
 
 
 
