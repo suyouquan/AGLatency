@@ -94,6 +94,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AGInfo.cs" />
+    <Compile Include="Annotation.cs" />
     <Compile Include="Controller.cs" />
     <Compile Include="EventLatency.cs" />
     <Compile Include="EventMetaData.cs" />

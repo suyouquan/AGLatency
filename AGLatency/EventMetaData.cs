@@ -23,6 +23,25 @@ namespace AGLatency
             Primary_To_Secondary,
             Secondary_To_Primary
         }
+
+    public enum LatencyEvent
+    {
+        Primary_Compression,
+        Primary_Send,
+        Primary_Receive,
+        Primary_RemoteHarden,
+        Primary_LocalFlush,
+        Primary_Commit,
+        Primary_FlowControl,
+
+        Secondary_Receive,
+        Secondary_Decompression,
+        Secondary_LocalFlush,
+        Secondary_Send,
+        Secondary_Processing,
+        Secondary_ApplyLogBlock
+
+    }
     public static class EventMetaData
     {
      

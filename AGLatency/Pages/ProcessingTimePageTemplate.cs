@@ -100,10 +100,10 @@ namespace AGLatency.Pages
             dict2.Add(chartName + "->Count/Sec", trans);
 
 
-            string chartHtml = Output.HighCharts.GetChartHtml(chartName ,   "Avg ProcessingTime Per Second (Microsecond)",
+            string chartHtml = Output.HighCharts.GetChartHtml(chartName +"->Avg ProcessingTime/sec","",
                 "Time", "Duration (Microsecond)", dict, "#005c99");
 
-            string chartHtml2 = Output.HighCharts.GetChartHtml(chartName ,  "Count Per Second",
+            string chartHtml2 = Output.HighCharts.GetChartHtml(chartName +"->Count/sec","",
              "Time", "Count", dict2, "#408000");
 
             return sumHtml+"<br>"+ chartHtml + "<br>"+chartHtml2;

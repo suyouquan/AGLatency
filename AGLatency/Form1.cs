@@ -62,8 +62,8 @@ namespace AGLatency
             DoStop(false);
 
             // this.textBox1.Text = @"C:\AGLatency\data\PerfMon_AUSYDSQLC31N4\PerfMon\AlwaysOn_DataMove_Tracing_0_131751865495060000.xel";
-            this.textBox1.Text = @"C:\data\PerfMon_AUSYDSQLC31N4\PerfMon\";
-            this.textBox2.Text = @"C:\data\PerfMon_AUMELSQLR31N1\PerfMon";
+           // this.textBox1.Text = @"C:\data\PerfMon_AUSYDSQLC31N4\PerfMon\";
+           // this.textBox2.Text = @"C:\data\PerfMon_AUMELSQLR31N1\PerfMon";
 
             //  this.textBox1.Text = @"E:\xevent\Primary";
             //  this.textBox2.Text = @"E:\xevent\Third";
@@ -72,8 +72,8 @@ namespace AGLatency
             //this.textBox2.Text = @"C:\data\AGXevent\SyncSecondary";
 
 
-            this.textBox1.Text = @"C:\data\AGxevent2_slowLink\primary";
-            this.textBox2.Text = @"C:\data\AGxevent2_slowLink\slow_secondary_sync";
+           // this.textBox1.Text = @"C:\data\AGxevent2_slowLink\primary";
+          //  this.textBox2.Text = @"C:\data\AGxevent2_slowLink\slow_secondary_sync";
             /*
                      //   this.textBox1.Text = @"C:\data\AGXevent_linkSpeedChange\primary";
                      // this.textBox2.Text = @"C:\data\AGXevent_linkSpeedChange\async_slow_secondary";
@@ -81,8 +81,8 @@ namespace AGLatency
 
             //  this.textBox1.Text = @"E:\xevent\9.7 AGLatency\CSNP00099B5A";
             //  this.textBox2.Text=@"E:\xevent\9.7 AGLatency\CSNP00099B59";
-            this.textBox1.Text = @"C:\data\report testing\primary";
-            this.textBox2.Text = @"C:\data\report testing\sync secondary\";
+          //  this.textBox1.Text = @"C:\data\report testing\primary";
+           // this.textBox2.Text = @"C:\data\report testing\sync secondary\";
         }
 
         //static readonly object _updateProgressLock = new object();
@@ -291,7 +291,7 @@ namespace AGLatency
             Pages.ProcessingTimePageTemplate sendPage = new Pages.ProcessingTimePageTemplate
                 (list, "Send", "Primary Statistics", "Primary-Send",11);
             sendPage.GetData();
-
+            sendPage.page.pageDescription = Annotation.GetExplain(LatencyEvent.Primary_Send);
             PageTemplate.PageObject pageObj = new PageTemplate.PageObject("SEND", sendPage, PageTemplate.PageObjState.SaveToDiskOnly,11);
             Controller.pageObjs.Add(pageObj);
 
@@ -305,6 +305,10 @@ namespace AGLatency
             Pages.ProcessingTimePageTemplate mgrPage = new Pages.ProcessingTimePageTemplate
                 (list2, "Remote Harden", "Primary Statistics", "Primary-RemoteHarden",13);
             mgrPage.GetData();
+
+            mgrPage.page.pageDescription = Annotation.GetExplain(LatencyEvent.Primary_RemoteHarden);
+            mgrPage.page.pageSummary = "<br>Here is the xevent of <b>hadr_db_commit_mgr_harden:</b><br><br><img src='../images/hadr_db_commit_mgr_harden.png' height='300'/>";
+
 
             PageTemplate.PageObject pageObj2 = new PageTemplate.PageObject("RemoteHarden", mgrPage, PageTemplate.PageObjState.SaveToDiskOnly,13);
             Controller.pageObjs.Add(pageObj2);
@@ -342,6 +346,8 @@ namespace AGLatency
                 (list4, "Local Flush", "Primary Statistics", "Primary-LocalFlush",14);
             flushPage.GetData();
 
+            flushPage.page.pageDescription = Annotation.GetExplain(LatencyEvent.Primary_LocalFlush);
+
             PageTemplate.PageObject pageObj4 = new PageTemplate.PageObject("LocalFlush", flushPage, PageTemplate.PageObjState.SaveToDiskOnly,14);
             Controller.pageObjs.Add(pageObj4);
 
@@ -369,6 +375,10 @@ namespace AGLatency
                 (list3, "Commit", "Primary Statistics", "Primary-Commit",15);
             commitPage.GetData();
 
+            
+            commitPage.page.pageDescription =  Annotation.GetExplain(LatencyEvent.Primary_Commit);
+            commitPage.page.pageSummary = "<br>Here is the xevent of <b>recovery_unit_harden_log_timestamps:</b><br><br><img src='../images/recovery_unit_harden_log_timestamps.png' height='300'/>";
+
             PageTemplate.PageObject pageObj3 = new PageTemplate.PageObject("Commit", commitPage, PageTemplate.PageObjState.SaveToDiskOnly,15);
             Controller.pageObjs.Add(pageObj3);
 
@@ -395,6 +405,8 @@ namespace AGLatency
                 (list5, "Compression", "Primary Statistics", "Primary-Compression",10);
             compressionPage.GetData();
 
+            compressionPage.page.pageDescription = Annotation.GetExplain(LatencyEvent.Primary_Compression);
+
             PageTemplate.PageObject pageObj5 = new PageTemplate.PageObject("primaryCompression", compressionPage, PageTemplate.PageObjState.SaveToDiskOnly,10);
             Controller.pageObjs.Add(pageObj5);
 
@@ -411,6 +423,7 @@ namespace AGLatency
                 (list7, "Receive", "Primary Statistics", "Primary-Receive",12);
             recPage.GetData();
 
+            recPage.page.pageDescription = Annotation.GetExplain(LatencyEvent.Primary_Receive);
             PageTemplate.PageObject pageObj7 = new PageTemplate.PageObject("PrimaryReceive", recPage, PageTemplate.PageObjState.SaveToDiskOnly,12);
             Controller.pageObjs.Add(pageObj7);
 
@@ -427,6 +440,8 @@ namespace AGLatency
                 (list74, "Flow Control", "Primary Statistics", "Primary-FlowControl", 19);//last section, so set it to 19
             flowPage.GetData();
 
+
+            flowPage.page.pageDescription = Annotation.GetExplain(LatencyEvent.Primary_FlowControl);
             PageTemplate.PageObject pageObj74 = new PageTemplate.PageObject("PrimaryFlowControl", flowPage, PageTemplate.PageObjState.SaveToDiskOnly, 19);
             Controller.pageObjs.Add(pageObj74);
 
@@ -456,6 +471,8 @@ namespace AGLatency
                 (list6, "Decompression", "Secondary Statistics", "Secondary-Decompression",22);
             decompressionPage.GetData();
 
+            decompressionPage.page.pageDescription = Annotation.GetExplain(LatencyEvent.Secondary_Decompression);
+
             PageTemplate.PageObject pageObj6 = new PageTemplate.PageObject("SecondaryDescompression", decompressionPage, PageTemplate.PageObjState.SaveToDiskOnly,22);
             Controller.pageObjs.Add(pageObj6);
 
@@ -475,6 +492,7 @@ namespace AGLatency
                 (list8, "Receive", "Secondary Statistics", "Secondary-Receive",21);
             secReceivePage.GetData();
 
+            secReceivePage.page.pageDescription = Annotation.GetExplain(LatencyEvent.Secondary_Receive);
             PageTemplate.PageObject pageObj8 = new PageTemplate.PageObject("SecondaryReceive", secReceivePage, PageTemplate.PageObjState.SaveToDiskOnly,21);
             Controller.pageObjs.Add(pageObj8);
 
@@ -506,6 +524,7 @@ namespace AGLatency
                 (list9, "Local Flush", "Secondary Statistics", "Secondary-LocalFlush",23);
             flushSecPage.GetData();
 
+            flushSecPage.page.pageDescription = Annotation.GetExplain(LatencyEvent.Secondary_LocalFlush);  
             PageTemplate.PageObject pageObj9 = new PageTemplate.PageObject("LocalFlushSecondary", flushSecPage, PageTemplate.PageObjState.SaveToDiskOnly,23);
             Controller.pageObjs.Add(pageObj9);
 
@@ -524,6 +543,7 @@ namespace AGLatency
                 (list10, "Send", "Secondary Statistics", "Secondary-Send",24);
             lsnSendPage.GetData();
 
+            lsnSendPage.page.pageDescription = Annotation.GetExplain(LatencyEvent.Secondary_Send);
             PageTemplate.PageObject pageObj10 = new PageTemplate.PageObject("SecondarySend", lsnSendPage, PageTemplate.PageObjState.SaveToDiskOnly,24);
             Controller.pageObjs.Add(pageObj10);
 
@@ -540,6 +560,8 @@ namespace AGLatency
             Pages.ProcessingTimePageTemplate lsnSendPage2 = new Pages.ProcessingTimePageTemplate
                 (list11, "Processing", "Secondary Statistics", "Secondary-Processing",25);
             lsnSendPage2.GetData();
+            lsnSendPage2.page.pageDescription = Annotation.GetExplain(LatencyEvent.Secondary_Processing);
+            lsnSendPage2.page.pageSummary = "<br>Here is the xevent of <b>hadr_lsn_send_complete:</b><br><br><img src='../images/hadr_lsn_send_complete.png' height='300'/>";
 
             PageTemplate.PageObject pageObj11 = new PageTemplate.PageObject("SecondaryProcessing", lsnSendPage2, PageTemplate.PageObjState.SaveToDiskOnly,25);
             Controller.pageObjs.Add(pageObj11);

@@ -82,17 +82,17 @@ namespace AGLatency.Pages
               "Time", "Latency (Microsecond)", curlve, "RED",600);
 
 
-            string explain = link+ @"<b>primary->commit time</b>: Avg. Time to commit a transaction on the Primary Replica<br>
-                       <b>remote Harden Time</b>: Time elapsed between sending a log block to a secondary replica and getting the associated harden_lsn message back from the secondary replicas.<br>
-                     <b>secondary->processing time</b>:Time elapsed on the secondary between the log block getting received  and ack lsn sending out completed. This is basically the total time of a log block being processed on secondary.<br><br>
+            string explain = link+ @"<b>Primary->commit time</b>: Avg. Time to commit a transaction on the Primary Replica<br>
+                       <b>Remote Harden Time</b>: Time elapsed between sending a log block to a secondary replica and getting the associated harden_lsn message back from the secondary replicas.<br>
+                     <b>Secondary->processing time</b>:Time elapsed on the secondary between the log block getting received  and ack lsn sending out completed. This is basically the total time of a log block being processed on secondary.<br><br>
                So on primary:<br>
-<b>remote Harden time </b>= primary->send +  network wire+ secondary->processing + network wire+ primary->receive +other processing time on primary.<br>
-<b>secondary->processing</b> =secondary:receive + decompression + local flush +  send + other <br>
-<b>primary->Commit</b>= max(primary->local flush, primary->remote harden) <br>
+<b>Remote Harden time </b>= primary->send +  network wire+ secondary->processing + network wire+ primary->receive +other processing time on primary.<br>
+<b>Secondary->processing</b> =secondary:receive + decompression + local flush +  send + other <br>
+<b>Primary->Commit</b>= max(primary->local flush, primary->remote harden) <br>
                     ";
 
 
-            string AGLatencyImg = @"<br><br><hr><span style='color:goldenrod; font-size:150%;'><i class='fa fa-lightbulb-o'></i></span>&nbsp;<b>Annotation</b><br>Below figure shows how the latency is caculated. <br><br>"
+            string AGLatencyImg = @"<br><br><hr><span style='color:goldenrod; font-size:150%;'><i class='fa fa-lightbulb-o'></i></span>&nbsp;<b>Annotation</b><br>Below figure shows how the latency is caculated. <br>"
 + HttpUtility.JavaScriptStringEncode( explain) +
 "<img src='../images/AG-datamovement.png' height='600'/>";
 
@@ -125,7 +125,8 @@ namespace AGLatency.Pages
             this.page.pageDescription = "This is the summary of the latency information between replicas.";
             this.page.pageDescription += "<br><br>  Primary folder : " + Controller.primaryFolder.Replace("\\","/");
             this.page.pageDescription += "<br>Secondary folder : " + Controller.secondaryFolder.Replace("\\", "/"); ;
-         
+            this.page.pageDescription += "<br>Time unit: microsecond (1000 microseconds = 1 milisecond, 1000 miliseconds = 1 second)"; ;
+
 
             if (Controller.primaryInfo != null && Controller.primaryInfo.nodes != null && Controller.primaryInfo.nodes.Count > 0)
             {
