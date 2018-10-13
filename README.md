@@ -48,7 +48,19 @@ join sys.dm_hadr_availability_replica_states ReplicaState
 on ReplicaState.replica_id = ClusterState.replica_id   
 join sys.dm_hadr_database_replica_states DatabaseState   
 on ReplicaState.replica_id=DatabaseState.replica_id  
-for XML  RAW, ROOT('AGInfoRoot')   
+for XML  RAW, ROOT('AGInfoRoot')    
+
+Note: Please copy only the xml format to the result file, like below:  
+
+<AGInfoRoot>
+<row group_name="AG2016" replica_server_name="NODE1\SQLAG" node_name="NODE1" role="1" role_desc="PRIMARY" is_local="1" database_id="6" database_name="memClerks" group_database_id="4F966D84-D3C9-4824-A539-7265B933E92F" is_commit_participant="1" is_primary_replica="1" synchronization_state_desc="SYNCHRONIZED" synchronization_health_desc="HEALTHY" group_id="216DFF44-9FAA-41D6-8758-C155576C7F84" replica_id="20944245-5A76-41AC-8CC7-985AB3B4E068" />  
+<row group_name="AG2016" replica_server_name="NODE1\SQLAG" node_name="NODE1" role="1" role_desc="PRIMARY" is_local="1" database_id="7" database_name="slowDB" group_database_id="F3400915-BB03-42A0-8C5E-26D35506A893" is_commit_participant="1" is_primary_replica="1" synchronization_state_desc="SYNCHRONIZED" synchronization_health_desc="HEALTHY" group_id="216DFF44-9FAA-41D6-8758-C155576C7F84" replica_id="20944245-5A76-41AC-8CC7-985AB3B4E068" />  
+<row group_name="AG2016" replica_server_name="NODE2\SQLAG" node_name="NODE2" role="2" role_desc="SECONDARY" is_local="0" database_id="6" database_name="memClerks" group_database_id="4F966D84-D3C9-4824-A539-7265B933E92F" is_commit_participant="1" is_primary_replica="0" synchronization_state_desc="SYNCHRONIZED" synchronization_health_desc="HEALTHY" group_id="216DFF44-9FAA-41D6-8758-C155576C7F84" replica_id="6DBAD5CA-2423-4BB1-88E7-E53A9EC00F20" />  
+<row group_name="AG2016" replica_server_name="NODE2\SQLAG" node_name="NODE2" role="2" role_desc="SECONDARY" is_local="0" database_id="7" database_name="slowDB" group_database_id="F3400915-BB03-42A0-8C5E-26D35506A893" is_commit_participant="1" is_primary_replica="0" synchronization_state_desc="SYNCHRONIZED" synchronization_health_desc="HEALTHY" group_id="216DFF44-9FAA-41D6-8758-C155576C7F84" replica_id="6DBAD5CA-2423-4BB1-88E7-E53A9EC00F20" />  
+<row group_name="AG2016" replica_server_name="NODE3" node_name="NODE3" role="2" role_desc="SECONDARY" is_local="0" database_id="6" database_name="memClerks" group_database_id="4F966D84-D3C9-4824-A539-7265B933E92F" is_commit_participant="0" is_primary_replica="0" synchronization_state_desc="SYNCHRONIZING" synchronization_health_desc="HEALTHY" group_id="216DFF44-9FAA-41D6-8758-C155576C7F84" replica_id="D66EF97C-1924-43BE-AA82-783A4D4FE4DB" />  
+<row group_name="AG2016" replica_server_name="NODE3" node_name="NODE3" role="2" role_desc="SECONDARY" is_local="0" database_id="7" database_name="slowDB" group_database_id="F3400915-BB03-42A0-8C5E-26D35506A893" is_commit_participant="0" is_primary_replica="0" synchronization_state_desc="SYNCHRONIZING" synchronization_health_desc="HEALTHY" group_id="216DFF44-9FAA-41D6-8758-C155576C7F84" replica_id="D66EF97C-1924-43BE-AA82-783A4D4FE4DB" />  
+</AGInfoRoot>
+
 
 ##### Step 2: Run below script on both primary and secondary at the same time, for about 5-10 minutes, and then stop it.
 <br>--You can change "c:\temp\" to other folder accordingly.  
