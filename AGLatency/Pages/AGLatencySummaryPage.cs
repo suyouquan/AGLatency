@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using System.Reflection;
 
 namespace AGLatency.Pages
 {
@@ -174,7 +175,8 @@ namespace AGLatency.Pages
             this.page.AddDataTable(dt);
 
             this.page.pageContent = dt.GetHtmlStr();
-
+            string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            this.page.pageSummary = "<hr>AGLatency Report tool. Version " + version;
            
 
 
