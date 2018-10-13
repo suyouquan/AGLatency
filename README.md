@@ -85,6 +85,7 @@ ALTER EVENT SESSION [AGLatency] ON SERVER STATE=START;
 ALTER EVENT SESSION [AGLatency] ON SERVER STATE=STOP;   
 
 */ 
+##### Step 3: put AlwaysOn_Data_Movement_Tracing.xel and primary.xml from primary to a folder, say, c:\data\primary, and put AlwaysOn_Data_Movement_Tracing.xel from secondary and secondary.xml to another folder, say, c:\data\secondary. And then feed the tool with these two folders, click "Start" to generate the report. 
 
 Note:
 Your SQL server may need to be updated to support above xevents:<br>

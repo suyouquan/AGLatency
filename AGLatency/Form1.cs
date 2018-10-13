@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.Windows.Forms;
 using System.IO;
-
+using System.Reflection;
 using Microsoft.SqlServer.XEvent;
 using Microsoft.SqlServer.XEvent.Linq;
 
@@ -54,6 +54,9 @@ namespace AGLatency
 
         public void Init()
         {
+
+            string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            this.Text = "AGLatency Report tool, Version " + version;
             lbVersion.Text = "";
 
             mylable1 = label1;
