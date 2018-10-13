@@ -50,7 +50,7 @@ join sys.dm_hadr_database_replica_states DatabaseState
 on ReplicaState.replica_id=DatabaseState.replica_id  
 for XML  RAW, ROOT('AGInfoRoot')    
 
-Note: Please copy only the xml format to the result file, like below:  
+Note: Please copy only the xml data to the result file, like below primary.xml:  
 ![alt text](https://github.com/suyouquan/AGLatency/blob/master/primary.xml.png)
 
 
