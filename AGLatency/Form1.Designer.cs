@@ -43,6 +43,9 @@
             this.logToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lbVersion = new System.Windows.Forms.Label();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.userManualToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -138,7 +141,8 @@
             // 
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(32, 32);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
+            this.fileToolStripMenuItem,
+            this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1384, 42);
@@ -158,21 +162,21 @@
             // tSQLScriptToolStripMenuItem
             // 
             this.tSQLScriptToolStripMenuItem.Name = "tSQLScriptToolStripMenuItem";
-            this.tSQLScriptToolStripMenuItem.Size = new System.Drawing.Size(236, 38);
+            this.tSQLScriptToolStripMenuItem.Size = new System.Drawing.Size(268, 38);
             this.tSQLScriptToolStripMenuItem.Text = "TSQL Script";
             this.tSQLScriptToolStripMenuItem.Click += new System.EventHandler(this.tSQLScriptToolStripMenuItem_Click);
             // 
             // logToolStripMenuItem
             // 
             this.logToolStripMenuItem.Name = "logToolStripMenuItem";
-            this.logToolStripMenuItem.Size = new System.Drawing.Size(236, 38);
+            this.logToolStripMenuItem.Size = new System.Drawing.Size(268, 38);
             this.logToolStripMenuItem.Text = "Log";
             this.logToolStripMenuItem.Click += new System.EventHandler(this.logToolStripMenuItem_Click);
             // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(236, 38);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(268, 38);
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
@@ -186,6 +190,29 @@
             this.lbVersion.TabIndex = 10;
             this.lbVersion.Text = "lbVersion";
             this.lbVersion.Click += new System.EventHandler(this.lbVersion_Click);
+            // 
+            // helpToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.userManualToolStripMenuItem,
+            this.aboutToolStripMenuItem1});
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(77, 38);
+            this.helpToolStripMenuItem.Text = "Help";
+            // 
+            // userManualToolStripMenuItem
+            // 
+            this.userManualToolStripMenuItem.Name = "userManualToolStripMenuItem";
+            this.userManualToolStripMenuItem.Size = new System.Drawing.Size(268, 38);
+            this.userManualToolStripMenuItem.Text = "User Manual";
+            this.userManualToolStripMenuItem.Click += new System.EventHandler(this.userManualToolStripMenuItem_Click);
+            // 
+            // aboutToolStripMenuItem1
+            // 
+            this.aboutToolStripMenuItem1.Name = "aboutToolStripMenuItem1";
+            this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(268, 38);
+            this.aboutToolStripMenuItem1.Text = "About";
+            this.aboutToolStripMenuItem1.Click += new System.EventHandler(this.aboutToolStripMenuItem1_Click);
             // 
             // Form1
             // 
@@ -231,6 +258,9 @@
         private System.Windows.Forms.ToolStripMenuItem logToolStripMenuItem;
         private System.Windows.Forms.Label lbVersion;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem userManualToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem1;
     }
 }
 

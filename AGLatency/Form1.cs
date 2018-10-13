@@ -1040,5 +1040,26 @@ namespace AGLatency
             var file = Path.Combine(path, "AGLatency.mp4");
             System.Diagnostics.Process.Start(file);
         }
+
+        private void aboutToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+
+            string msg = "AGLatency Report Tool. Version " + typeof(Program).Assembly.GetName().Version + "\nhttps://github.com/suyouquan/AGLatency";
+            MessageBox.Show(msg, "About");
+        }
+
+        private void userManualToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var path = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                var file = Path.Combine(path, "AGLatency_UserManual.pdf");
+                System.Diagnostics.Process.Start(file);
+            }
+            catch(Exception ex )
+            {
+                Logger.LogException(ex, Thread.CurrentThread);
+            }
+        }
     }
 }
