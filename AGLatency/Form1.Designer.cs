@@ -41,10 +41,10 @@
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tSQLScriptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.logToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.lbVersion = new System.Windows.Forms.Label();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.userManualToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.lbVersion = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -53,14 +53,14 @@
             this.textBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBox1.Location = new System.Drawing.Point(69, 96);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(1102, 38);
+            this.textBox1.Size = new System.Drawing.Size(1009, 38);
             this.textBox1.TabIndex = 0;
             // 
             // button1
             // 
             this.button1.Image = global::AGLatency.Properties.Resources.green2;
             this.button1.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.button1.Location = new System.Drawing.Point(537, 381);
+            this.button1.Location = new System.Drawing.Point(537, 378);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(201, 92);
             this.button1.TabIndex = 1;
@@ -93,7 +93,7 @@
             this.textBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBox2.Location = new System.Drawing.Point(69, 248);
             this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(1102, 38);
+            this.textBox2.Size = new System.Drawing.Size(1009, 38);
             this.textBox2.TabIndex = 6;
             // 
             // label3
@@ -118,7 +118,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(1195, 93);
+            this.button2.Location = new System.Drawing.Point(1106, 93);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(118, 47);
             this.button2.TabIndex = 8;
@@ -128,7 +128,7 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(1195, 245);
+            this.button3.Location = new System.Drawing.Point(1106, 245);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(118, 47);
             this.button3.TabIndex = 8;
@@ -144,7 +144,7 @@
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1384, 40);
+            this.menuStrip1.Size = new System.Drawing.Size(1311, 40);
             this.menuStrip1.TabIndex = 9;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -160,16 +160,39 @@
             // tSQLScriptToolStripMenuItem
             // 
             this.tSQLScriptToolStripMenuItem.Name = "tSQLScriptToolStripMenuItem";
-            this.tSQLScriptToolStripMenuItem.Size = new System.Drawing.Size(268, 38);
+            this.tSQLScriptToolStripMenuItem.Size = new System.Drawing.Size(236, 38);
             this.tSQLScriptToolStripMenuItem.Text = "TSQL Script";
             this.tSQLScriptToolStripMenuItem.Click += new System.EventHandler(this.tSQLScriptToolStripMenuItem_Click);
             // 
             // logToolStripMenuItem
             // 
             this.logToolStripMenuItem.Name = "logToolStripMenuItem";
-            this.logToolStripMenuItem.Size = new System.Drawing.Size(268, 38);
+            this.logToolStripMenuItem.Size = new System.Drawing.Size(236, 38);
             this.logToolStripMenuItem.Text = "Log";
             this.logToolStripMenuItem.Click += new System.EventHandler(this.logToolStripMenuItem_Click);
+            // 
+            // helpToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.userManualToolStripMenuItem,
+            this.aboutToolStripMenuItem1});
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(77, 36);
+            this.helpToolStripMenuItem.Text = "Help";
+            // 
+            // userManualToolStripMenuItem
+            // 
+            this.userManualToolStripMenuItem.Name = "userManualToolStripMenuItem";
+            this.userManualToolStripMenuItem.Size = new System.Drawing.Size(248, 38);
+            this.userManualToolStripMenuItem.Text = "User Manual";
+            this.userManualToolStripMenuItem.Click += new System.EventHandler(this.userManualToolStripMenuItem_Click);
+            // 
+            // aboutToolStripMenuItem1
+            // 
+            this.aboutToolStripMenuItem1.Name = "aboutToolStripMenuItem1";
+            this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(248, 38);
+            this.aboutToolStripMenuItem1.Text = "About";
+            this.aboutToolStripMenuItem1.Click += new System.EventHandler(this.aboutToolStripMenuItem1_Click);
             // 
             // lbVersion
             // 
@@ -182,34 +205,11 @@
             this.lbVersion.Text = "lbVersion";
             this.lbVersion.Click += new System.EventHandler(this.lbVersion_Click);
             // 
-            // helpToolStripMenuItem
-            // 
-            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.userManualToolStripMenuItem,
-            this.aboutToolStripMenuItem1});
-            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(77, 38);
-            this.helpToolStripMenuItem.Text = "Help";
-            // 
-            // userManualToolStripMenuItem
-            // 
-            this.userManualToolStripMenuItem.Name = "userManualToolStripMenuItem";
-            this.userManualToolStripMenuItem.Size = new System.Drawing.Size(268, 38);
-            this.userManualToolStripMenuItem.Text = "User Manual";
-            this.userManualToolStripMenuItem.Click += new System.EventHandler(this.userManualToolStripMenuItem_Click);
-            // 
-            // aboutToolStripMenuItem1
-            // 
-            this.aboutToolStripMenuItem1.Name = "aboutToolStripMenuItem1";
-            this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(268, 38);
-            this.aboutToolStripMenuItem1.Text = "About";
-            this.aboutToolStripMenuItem1.Click += new System.EventHandler(this.aboutToolStripMenuItem1_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1384, 520);
+            this.ClientSize = new System.Drawing.Size(1311, 520);
             this.Controls.Add(this.lbVersion);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.button2);
