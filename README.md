@@ -10,6 +10,9 @@ https://github.com/suyouquan/AGLatency/releases/download/v2.0/AGLatencyV2.0.zip
 Video:
 https://github.com/suyouquan/AGLatency/blob/master/AGLatency_HowTo.mp4
 
+Manual:  
+https://github.com/suyouquan/AGLatency/blob/master/AGLatencyTool_UserManual_V2.pdf
+
 
 You capture log block Xevent trace from both primary and secondary replica for 5-10 minutes and then this tool will 
 generate report about the latency of the log block movement.
