@@ -1033,13 +1033,7 @@ namespace AGLatency
             MessageBox.Show(msg, "Version Update");
         }
 
-        private void toolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-
-            var path = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            var file = Path.Combine(path, "AGLatency.mp4");
-            System.Diagnostics.Process.Start(file);
-        }
+        
 
         private void aboutToolStripMenuItem1_Click(object sender, EventArgs e)
         {
@@ -1053,10 +1047,24 @@ namespace AGLatency
             try
             {
                 var path = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-                var file = Path.Combine(path, "AGLatency_UserManual.pdf");
+                var file = Path.Combine(path, "AGLatencyTool_UserManual_V2.pdf");
                 System.Diagnostics.Process.Start(file);
             }
             catch(Exception ex )
+            {
+                Logger.LogException(ex, Thread.CurrentThread);
+            }
+        }
+
+        private void videoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var path = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                var file = Path.Combine(path, "AGLatency_HowTo.mp4");
+                System.Diagnostics.Process.Start(file);
+            }
+            catch (Exception ex)
             {
                 Logger.LogException(ex, Thread.CurrentThread);
             }
