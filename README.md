@@ -73,7 +73,9 @@ ADD EVENT sqlserver.hadr_log_block_send_complete,
 ADD EVENT sqlserver.hadr_lsn_send_complete,  
 ADD EVENT sqlserver.hadr_receive_harden_lsn_message,  
 ADD EVENT sqlserver.hadr_send_harden_lsn_message,  
+ADD EVENT sqlserver.hadr_database_flow_control_action,
 ADD EVENT sqlserver.hadr_transport_flow_control_action,  
+ADD EVENT ucs.ucs_connection_flow_control,
 ADD EVENT sqlserver.hadr_transport_receive_log_block_message,  
 ADD EVENT sqlserver.log_block_pushed_to_logpool,  
 ADD EVENT sqlserver.log_flush_complete ,   
@@ -84,12 +86,12 @@ MEMORY_PARTITION_MODE=NONE,TRACK_CAUSALITY=OFF,STARTUP_STATE=ON)
 GO   
 
 --Now start it and keep it running for 10 minutes <br>  
-ALTER EVENT SESSION [AGLatency] ON SERVER STATE=START;   
+ALTER EVENT SESSION [AlwaysOn_Data_Movement_Tracing] ON SERVER STATE=START;   
 
 /*  
 --You can stop it this way:  
 
-ALTER EVENT SESSION [AGLatency] ON SERVER STATE=STOP;   
+ALTER EVENT SESSION [AlwaysOn_Data_Movement_Tracing] ON SERVER STATE=STOP;   
 
 */   
 
