@@ -9,11 +9,12 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AGLatency</RootNamespace>
     <AssemblyName>AGLatency</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -65,13 +66,13 @@
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.SqlServer.XE.Core, Version=13.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=AMD64">
+    <Reference Include="Microsoft.SqlServer.XE.Core, Version=16.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>XEvent\Microsoft.SqlServer.XE.Core.dll</HintPath>
+      <HintPath>XEvent\SQL2022\Microsoft.SqlServer.XE.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.SqlServer.XEvent.Linq, Version=13.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=AMD64">
+    <Reference Include="Microsoft.SqlServer.XEvent.Linq, Version=16.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>XEvent\Microsoft.SqlServer.XEvent.Linq.dll</HintPath>
+      <HintPath>XEvent\SQL2022\Microsoft.SqlServer.XEvent.Linq.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
