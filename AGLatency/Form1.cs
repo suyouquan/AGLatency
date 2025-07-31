@@ -21,12 +21,15 @@ namespace AGLatency
         static Control mylable1;
         static Control mylable2;
         static Control mylable3;
+        private FormXMLFiles xmlFilesForm = new FormXMLFiles();
+
         Thread updateTD;
         public Form1()
         {
             InitializeComponent();
 
             Init();
+
 
             try
             {
@@ -826,23 +829,17 @@ namespace AGLatency
             }
         }
 
-        private bool isValidfolder(string path)
-        {
-            if (String.IsNullOrEmpty(path)) return false;
-            if (Directory.Exists(path)) return true;
-            else return false;
 
-        }
         private void button1_Click(object sender, EventArgs e)
         {
-            if (!isValidfolder(textBox1.Text))
+            if (!Utility.isValidfolder(textBox1.Text))
 
             {
                 MessageBox.Show("Primary folder [" + textBox1.Text + "] doesn't exist!");
                 return;
 
             }
-            if (!isValidfolder(textBox2.Text))
+            if (!Utility.isValidfolder(textBox2.Text))
 
             {
                 MessageBox.Show("Secondary folder [" + textBox2.Text + "] doesn't exist!");
@@ -857,32 +854,35 @@ namespace AGLatency
 
 
             }
+
+          
             Controller.primaryFolder = textBox1.Text.Trim();
             Controller.secondaryFolder = textBox2.Text.Trim();
+            
+            if (String.IsNullOrEmpty(Controller.primaryXmlFile))
+            {
+                xmlFilesForm.ShowDialog();
+            }
+            //Controller.primaryXmlFile = txtBxPrimaryXMLFile.Text.Trim();
+            //Controller.secondaryXmlFile = txtBxSecondaryXMLFile.Text.Trim();
 
             //check to see if primary.xml and secondary.xml exists or not:
 
-            if(!File.Exists(Path.Combine(Controller.primaryFolder,"primary.xml")))
+            if (!File.Exists(Path.Combine(Controller.primaryFolder,Controller.primaryXmlFile)))
             {
                 MessageBox.Show("primary.xml not found in ["+Controller.primaryFolder+"]");
                 return;
 
             }
 
-            if (!File.Exists(Path.Combine(Controller.primaryFolder, "primary.xml")))
-            {
-                MessageBox.Show("secondary.xml not found in [" + Controller.secondaryFolder + "]");
-                return;
-
-            }
+         
 
             //Now time to load AGinfo
             Controller.primaryInfo = null;
             Controller.secondaryInfo = null;
             Logger.LogMessage("Parsing primary.xml and secondary.xml...");
-            Controller.primaryInfo=AGInfo.LoadAGInfo(Path.Combine(Controller.primaryFolder, "primary.xml"));
-            Controller.secondaryInfo = AGInfo.LoadAGInfo(Path.Combine(Controller.secondaryFolder, "secondary.xml"));
-
+            Controller.primaryInfo=AGInfo.LoadAGInfo(Path.Combine(Controller.primaryFolder, Controller.primaryXmlFile));
+            Controller.secondaryInfo = AGInfo.LoadAGInfo(Path.Combine(Controller.secondaryFolder, Controller.secondaryXmlFile));
 
 
 
@@ -929,6 +929,36 @@ namespace AGLatency
 
         }
 
+        private string selectFile (string startFolder="")
+        {
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            // Set filter to allow only XML files
+            openFileDialog1.Filter = "XML files (*.xml)|*.xml";
+            openFileDialog1.FilterIndex = 1;
+            openFileDialog1.RestoreDirectory = true;
+            openFileDialog1.Title = "Select AG Topology XML file";
+
+            if (string.IsNullOrEmpty(startFolder))
+                openFileDialog1.InitialDirectory = System.Environment.SpecialFolder.MyComputer.ToString();
+            else
+            {
+                if (Directory.Exists(startFolder)) openFileDialog1.InitialDirectory = startFolder;
+                else openFileDialog1.InitialDirectory = System.Environment.SpecialFolder.MyComputer.ToString();
+            }
+            // Prevent navigating above the initial directory
+            openFileDialog1.CheckFileExists = true;
+            openFileDialog1.CheckPathExists = true;
+            openFileDialog1.Multiselect = false; // Allow only single file selection
+
+            DialogResult result = openFileDialog1.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                // the code here will be executed if the user presses Open in
+                // the dialog.
+                return Path.GetFileName(openFileDialog1.FileName);
+            }
+            return "";
+        }
 
         private string SelectFolder(string startFolder = "")
         {
@@ -953,30 +983,75 @@ namespace AGLatency
             return "";
         }
 
+        private bool TryFindTopologyXml(string folderPath, out string fileName)
+        {
+            fileName = null;
+            if (string.IsNullOrEmpty(folderPath) || !Directory.Exists(folderPath))
+                return false;
+
+            // Search for "primary.xml" and "*GetAGTopology.xml" in the folder (not recursive)
+            var files = Directory.GetFiles(folderPath, "primary.xml", SearchOption.TopDirectoryOnly)
+                .Concat(Directory.GetFiles(folderPath, "*GetAGTopology.xml", SearchOption.TopDirectoryOnly))
+                .Concat(Directory.GetFiles(folderPath, "secondary.xml", SearchOption.TopDirectoryOnly))
+                .ToList();
+
+            if (files.Count == 1)
+            {
+                fileName = Path.GetFileName(files[0]);
+                return true;
+            }
+            // If more than one or none found, return false
+            return false;
+        }
+
+
         private void button2_Click(object sender, EventArgs e)
         {
             string path = "";
-            if (isValidfolder(textBox1.Text))
+            if (Utility.isValidfolder(textBox1.Text))
                 path = SelectFolder(textBox1.Text);
             else path = SelectFolder();
 
-            if (!String.IsNullOrEmpty(path)) this.textBox1.Text = path;
+            if (!String.IsNullOrEmpty(path))
+            {
+                string fileName = "";
+                this.textBox1.Text = path;
+                if (TryFindTopologyXml(path, out fileName))
+                {
+                    Controller.primaryXmlFile = fileName;
+                } else
+                {
+                    Controller.primaryXmlFile = string.Empty; 
+                }    
+            }
+
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
 
             string path = "";
-            if (isValidfolder(textBox2.Text))
+            if (Utility.isValidfolder(textBox2.Text))
                 path = SelectFolder(textBox2.Text);
             else
             {
-                if (isValidfolder(textBox1.Text))
+                if (Utility.isValidfolder(textBox1.Text))
                     path = SelectFolder(textBox1.Text);
                 else path = SelectFolder();
             }
 
-            if (!String.IsNullOrEmpty(path)) this.textBox2.Text = path;
+            if (!String.IsNullOrEmpty(path))
+            {
+                string fileName = "";
+                this.textBox2.Text = path;
+                if (TryFindTopologyXml(path, out fileName))
+                {
+                    Controller.secondaryXmlFile = fileName;
+                } else
+                {
+                    Controller.secondaryXmlFile = string.Empty;
+                }
+            }
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)

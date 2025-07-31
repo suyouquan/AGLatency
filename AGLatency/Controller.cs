@@ -13,6 +13,8 @@ namespace AGLatency
         public static Dictionary<string, List<string>> chartsData = new Dictionary<string, List<string>>();
         public static string primaryFolder = "";
         public static string secondaryFolder = "";
+        public static string primaryXmlFile = string.Empty;
+        public static string secondaryXmlFile = string.Empty;
 
         public static List<Int32> databaseIds = new List<int>();
 

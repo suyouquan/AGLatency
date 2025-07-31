@@ -76,49 +76,58 @@ namespace AGLatency
         }
         public QueryableXEventData Open(string fileName)
         {
-
             return new QueryableXEventData(fileName);
-
-            
-
         }
 
         public void GetTotalEventCount()
         {
-            UInt64 count = 0;
-
-            if (File.Exists(fileOrFolder))
+            try
             {
 
-                fileNum2++;
-                var data = Open(fileOrFolder);
-                count = GetCount(data);
-                Logger.LogMessage("GetEventCount:" + fileOrFolder + "==>" + count);
-            }
 
-            else //if it is folder
-            {
-                if (Directory.Exists(fileOrFolder))
+                UInt64 count = 0;
+
+                if (File.Exists(fileOrFolder))
                 {
-                    var masks = new[] { "*.xel" };
-                    var xelFiles = Utility.GetFileListFromFolder(fileOrFolder, masks);
-                    totalFile = xelFiles.Count;
-                    foreach (string f in xelFiles)
+
+                    fileNum2++;
+                    var data = Open(fileOrFolder);
+                    count = GetCount(data);
+                    Logger.LogMessage("GetEventCount:" + fileOrFolder + "==>" + count);
+                }
+
+                else //if it is folder
+                {
+                    if (Directory.Exists(fileOrFolder))
                     {
-                        fileNum2++;
-                           var data = Open(f);
-                        UInt64 k= GetCount(data);
-                        Logger.LogMessage("GetEventCount:" + f+"==>"+k);
-                        count += k;
+                        var masks = new[] { "*.xel" };
+                        var xelFiles = Utility.GetFileListFromFolder(fileOrFolder, masks);
+                        totalFile = xelFiles.Count;
+                        foreach (string f in xelFiles)
+                        {
+                            fileNum2++;
+                            var data = Open(f);
+                            UInt64 k = GetCount(data);
+                            Logger.LogMessage("GetEventCount:" + f + "==>" + k);
+                            count += k;
+                        }
                     }
+
                 }
 
             }
-
-
-         
-
+            catch (Microsoft.SqlServer.XEvent.Linq.XEventException ex)
+            {
+                Logger.LogException(ex, Thread.CurrentThread);
+                Logger.LogMessage($"Invalid XEL file: {fileOrFolder}. Exception: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException(ex, Thread.CurrentThread);
+                Logger.LogMessage("Error in GetTotalEventCount:" + ex.Message);
+            }
         }
+
         public void Start()
         {
             if (File.Exists(fileOrFolder))

@@ -65,6 +65,9 @@
   <PropertyGroup>
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>AGLatency_icon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.XE.Core, Version=16.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
@@ -105,6 +108,12 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormXMLFiles.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormXMLFiles.Designer.cs">
+      <DependentUpon>FormXMLFiles.cs</DependentUpon>
+    </Compile>
     <Compile Include="Latency\DBFlowControl.cs" />
     <Compile Include="Latency\EventProcessingTemplate.cs" />
     <Compile Include="Latency\SyncReceiveNetLatency.cs" />
@@ -141,6 +150,9 @@
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="FormXMLFiles.resx">
+      <DependentUpon>FormXMLFiles.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -176,6 +188,9 @@
     <Content Include="AGLatency.mp4" />
     <Content Include="AGLatency_HowTo.mp4">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="AGLatency_icon.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="green2.png" />
     <Content Include="red2.png" />

@@ -79,6 +79,11 @@ namespace AGLatency
             catch (WebException exception)
             {
                 string responseText;
+                if (exception.Response == null)
+                {
+                    Logger.LogMessage("WebException without response: " + exception.Message);
+                    return "";
+                }
 
                 using (var reader = new StreamReader(exception.Response.GetResponseStream()))
                 {

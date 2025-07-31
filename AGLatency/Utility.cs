@@ -136,5 +136,20 @@ namespace AGLatency
             return files;
         }
 
+        public static bool isValidFile(string file)
+        {
+            if (String.IsNullOrEmpty(file)) return false;
+            if (File.Exists(file)) return true;
+            else return false;
+        }
+
+        public static bool isValidfolder(string path)
+        {
+            if (String.IsNullOrEmpty(path)) return false;
+            if (Directory.Exists(path)) return true;
+            else return false;
+
+        }
+
     }
 }
