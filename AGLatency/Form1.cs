@@ -929,37 +929,6 @@ namespace AGLatency
 
         }
 
-        private string selectFile (string startFolder="")
-        {
-            OpenFileDialog openFileDialog1 = new OpenFileDialog();
-            // Set filter to allow only XML files
-            openFileDialog1.Filter = "XML files (*.xml)|*.xml";
-            openFileDialog1.FilterIndex = 1;
-            openFileDialog1.RestoreDirectory = true;
-            openFileDialog1.Title = "Select AG Topology XML file";
-
-            if (string.IsNullOrEmpty(startFolder))
-                openFileDialog1.InitialDirectory = System.Environment.SpecialFolder.MyComputer.ToString();
-            else
-            {
-                if (Directory.Exists(startFolder)) openFileDialog1.InitialDirectory = startFolder;
-                else openFileDialog1.InitialDirectory = System.Environment.SpecialFolder.MyComputer.ToString();
-            }
-            // Prevent navigating above the initial directory
-            openFileDialog1.CheckFileExists = true;
-            openFileDialog1.CheckPathExists = true;
-            openFileDialog1.Multiselect = false; // Allow only single file selection
-
-            DialogResult result = openFileDialog1.ShowDialog();
-            if (result == DialogResult.OK)
-            {
-                // the code here will be executed if the user presses Open in
-                // the dialog.
-                return Path.GetFileName(openFileDialog1.FileName);
-            }
-            return "";
-        }
-
         private string SelectFolder(string startFolder = "")
         {
             FolderBrowserDialog folderBrowserDialog1 = new FolderBrowserDialog();
@@ -1070,6 +1039,13 @@ namespace AGLatency
                 {
                     e.Cancel = true;
                 }
+            } else
+            {
+                // MessageBox.Show("You haven't started the process yet, so you can exit now.", "Exit Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                DoStop(true);
+                e.Cancel = false;  //点击OK
+                Application.Exit();
+                Environment.Exit(0);
             }
 
         }

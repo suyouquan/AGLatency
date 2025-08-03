@@ -1,12 +1,13 @@
-﻿using System;
+﻿using Microsoft.SqlServer.XEvent;
+using Microsoft.SqlServer.XEvent.Linq;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.SqlServer.XEvent;
-using Microsoft.SqlServer.XEvent.Linq;
-using System.IO;
+using System.Windows.Forms;
 
 
 namespace AGLatency
@@ -76,7 +77,15 @@ namespace AGLatency
         }
         public QueryableXEventData Open(string fileName)
         {
-            return new QueryableXEventData(fileName);
+            try
+            {
+                return new QueryableXEventData(fileName);
+            } catch (Microsoft.SqlServer.XEvent.Linq.XEventException ex)
+            {
+                Logger.LogException(ex, Thread.CurrentThread);
+                return null;
+            }
+            
         }
 
         public void GetTotalEventCount()
@@ -92,8 +101,16 @@ namespace AGLatency
 
                     fileNum2++;
                     var data = Open(fileOrFolder);
-                    count = GetCount(data);
-                    Logger.LogMessage("GetEventCount:" + fileOrFolder + "==>" + count);
+                    if (data != null)
+                    {
+                        count = GetCount(data);
+                        Logger.LogMessage("GetEventCount:" + fileOrFolder + "==>" + count);
+                    }
+                    else
+                    {
+                        Logger.LogMessage("GetEventCount: " + fileOrFolder + " is not a valid XEL file.");
+
+                    }
                 }
 
                 else //if it is folder
@@ -102,14 +119,22 @@ namespace AGLatency
                     {
                         var masks = new[] { "*.xel" };
                         var xelFiles = Utility.GetFileListFromFolder(fileOrFolder, masks);
+ 
                         totalFile = xelFiles.Count;
                         foreach (string f in xelFiles)
                         {
                             fileNum2++;
                             var data = Open(f);
-                            UInt64 k = GetCount(data);
-                            Logger.LogMessage("GetEventCount:" + f + "==>" + k);
-                            count += k;
+                            if (data != null)
+                            {
+                                UInt64 k = GetCount(data);
+                                Logger.LogMessage("GetEventCount:" + f + "==>" + k);
+                                count += k;
+                            } 
+                            else 
+                            {
+                                Logger.LogMessage("GetEventCount: " + f + " is not a valid XEL file.");
+                            }
                         }
                     }
 
@@ -137,6 +162,11 @@ namespace AGLatency
                 totalFile = 1;
                 Logger.LogMessage("Processing File:" + fileOrFolder);
                 var data = Open(fileOrFolder);
+                if (data == null)
+                {
+                    Logger.LogMessage("File is not a valid XEL file: " + fileOrFolder);
+                    return;
+                }
                 CreateTablesFromMetadata(data);
                 ProcessEvent(data);
             }
@@ -148,12 +178,18 @@ namespace AGLatency
                     var masks = new[] { "*.xel" };
                     var xelFiles = Utility.GetFileListFromFolder(fileOrFolder, masks);
                     totalFile = xelFiles.Count;
+                    
                     foreach (string f in xelFiles)
                     {
                         fileName = Path.GetFileName(f);
                         fileNum++;
                         Logger.LogMessage("Processing File:" + f);
                         var data = Open(f);
+                        if (data == null)
+                        {
+                            Logger.LogMessage("File is not a valid XEL file: " + f);
+                            continue;
+                        }
                         CreateTablesFromMetadata(data);
                         ProcessEvent(data);
 
