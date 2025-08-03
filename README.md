@@ -28,6 +28,7 @@ New in SSMS – Always On Availability Group Latency Reports
 https://blogs.msdn.microsoft.com/sql_server_team/new-in-ssms-always-on-availability-group-latency-reports/
 
 #### Steps to capture logs to feed the tool:
+You can collect AG Latency scripts by running Sql LogScout AlwaysOn Scenario against your primary and secondary nodes where latency is suspected.  The tool will collect needed xevents as well as topology xml files which are now detected automatically by the tool.
 
 ##### Step 1:Run below SQL statement from both primary and secondary, and save the result as primary.xml and secondary.xml accordingly.
 select   
