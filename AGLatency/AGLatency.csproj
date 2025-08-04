@@ -9,7 +9,7 @@
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
     <ApplicationIcon>AGLatency_icon.ico</ApplicationIcon>
 	<VersionPrefix>3.0.0</VersionPrefix>
-	<VersionSuffix>Beta</VersionSuffix>
+	<VersionSuffix>Core</VersionSuffix>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <OutputPath>bin\x64\Debug\</OutputPath>
@@ -67,4 +67,10 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+<ItemGroup>
+  <Content Include="..\html\**\*.*">
+      <Link>Html\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  </Content>
+</ItemGroup>
 </Project>

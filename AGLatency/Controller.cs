@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AGLatency
@@ -25,6 +26,7 @@ namespace AGLatency
 
         public static AGInfo primaryInfo;
         public static AGInfo secondaryInfo;
+        public static CancellationToken CancellationToken = new CancellationToken();
 
         public static void AddChartData(string name,List<string> data)
         {

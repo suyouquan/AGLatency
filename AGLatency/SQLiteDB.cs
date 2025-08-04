@@ -15,6 +15,7 @@ namespace AGLatency
 {
     public class SQLiteDB
     {
+        private CancellationTokenSource cts = new CancellationTokenSource();
         public string SQLiteDBFile = "";
         public string databaseName = "";
         SQLiteConnection sqliteConn;
@@ -72,10 +73,10 @@ namespace AGLatency
             StartDataLoopThread();
         }
 
-  
+
         public void StartDataLoopThread()
         {
-            dataLoopThread = new Thread(DataLoop);
+            dataLoopThread = new Thread(() => DataLoop(cts.Token));
             dataLoopThread.Start();
         }
 
@@ -114,7 +115,13 @@ namespace AGLatency
             }
 
             CloseConnection();
-            if (dataLoopThread != null) dataLoopThread.Abort();
+            if (dataLoopThread != null)
+            {
+                Logger.LogMessage("Cancelling data loop thread.");
+                cts.Cancel();
+               // dataLoopThread.Join();
+            }
+
         }
 
 
@@ -246,12 +253,17 @@ namespace AGLatency
 
 
 
-        public void ProcessEvent()
+        public void ProcessEvent(CancellationToken token)
         {
             PublishedEvent e = null;
             // Logger.LogMessage("ProcessEvent:" + eventsQueue.Count);
             while (eventsQueue.Count > 0)
             {
+                if (token.IsCancellationRequested)
+                {
+                    break;
+                }
+
                 lock (_lock)
                 {
                     e = eventsQueue.Dequeue();
@@ -322,28 +334,18 @@ namespace AGLatency
            
             
         }
-        public void DataLoop()
+        public void DataLoop(CancellationToken token)
         {
             while (true)
             {
+                if (token.IsCancellationRequested) return;
+
                 autoEvent.WaitOne();
                 //Now data arrive, process it.
-                ProcessEvent();
-
-
+                ProcessEvent(cts.Token);
             }
 
         }
-
-
-
-
-
-
-
-
-
-
 
     }
 }

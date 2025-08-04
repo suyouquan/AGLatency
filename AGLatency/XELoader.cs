@@ -123,6 +123,11 @@ namespace AGLatency
                         totalFile = xelFiles.Count;
                         foreach (string f in xelFiles)
                         {
+                            if (Controller.CancellationToken.IsCancellationRequested)
+                            {
+                                Logger.LogMessage("Cancellation requested");
+                                return;
+                            }
                             fileNum2++;
                             var data = Open(f);
                             if (data != null)
@@ -181,6 +186,11 @@ namespace AGLatency
                     
                     foreach (string f in xelFiles)
                     {
+                        if (Controller.CancellationToken.IsCancellationRequested)
+                        {
+                            Logger.LogMessage("Processing cancelled by user.");
+                            return;
+                        }
                         fileName = Path.GetFileName(f);
                         fileNum++;
                         Logger.LogMessage("Processing File:" + f);
@@ -206,6 +216,11 @@ namespace AGLatency
 
             foreach (EventLatency el in eventLatencies)
             {
+                if (Controller.CancellationToken.IsCancellationRequested)
+                {
+                    Logger.LogMessage("Cancellation requested by user.");
+                    return cnt;
+                }
                 cnt = cnt + el.eventDB.GetQueueLength();
             }
 
@@ -218,6 +233,11 @@ namespace AGLatency
             UInt64 cnt = 0;
             foreach (EventLatency el in eventLatencies)
             {
+                if (Controller.CancellationToken.IsCancellationRequested)
+                {
+                    Logger.LogMessage("Cancellation requested by user.");
+                    return cnt;
+                }   
                 cnt = cnt + el.eventDB.count;
             }
             return cnt;
@@ -231,7 +251,7 @@ namespace AGLatency
 
         public static void CleanUp()
         {
-            Logger.LogMessage("Clean Up...");
+            Logger.LogMessage($"Clean Up {eventLatencies.Count} events ..." );
 
             foreach (EventLatency el in eventLatencies)
             {
@@ -240,12 +260,14 @@ namespace AGLatency
                 el.eventDB.Signal();
 
             }
+            Logger.LogMessage("Finished EventLatency");
 
             while (true)
             {
                 //wait for queue to be drain up
                 foreach (EventLatency el in eventLatencies)
                 {
+                    Logger.LogMessage("Signal eventDB");
 
                     //  imp.CleanUp();
                     //last chance to get them drain up their queue
@@ -282,7 +304,13 @@ namespace AGLatency
            
             foreach (PublishedEvent x_event in data)
             {
-             if(eventCount % 8000==0)
+                if (Controller.CancellationToken.IsCancellationRequested)
+                {
+                    Logger.LogMessage("Cancellation requested by user");
+                    return eventCount;
+                }
+
+                if (eventCount % 8000==0)
                 {
                     fn_UpdateMsg("File:" + fileNum2 + "/" + totalFile + ", Caculating " + eventCount);
                 }
@@ -298,6 +326,12 @@ namespace AGLatency
 
             foreach (PublishedEvent x_event in data)
             {
+                if (Controller.CancellationToken.IsCancellationRequested)
+                {
+                    Logger.LogMessage("Processing cancelled by user.");
+                    return;
+                }
+
                 string name = x_event.Name;
                 reads++;
 
@@ -331,6 +365,12 @@ namespace AGLatency
                     {
                         foreach (EventWithMode em in el.secondaryEvents)
                         {
+                            if (Controller.CancellationToken.IsCancellationRequested)
+                            {
+                                Logger.LogMessage("Cancellation requested by user.");
+                                return;
+                            }
+
                             if (em.e.ToString() == name)
                             {
                                 if (em.mode == -1 || em.mode == EventMetaData.GetEventMode(x_event))

@@ -25,8 +25,13 @@ namespace AGLatency
         private FormXMLFiles xmlFilesForm = new FormXMLFiles();
 
         Thread updateTD;
+        private CancellationTokenSource cTokenSource;
+
         public Form1()
         {
+            cTokenSource = new CancellationTokenSource();
+            Controller.CancellationToken = cTokenSource.Token;
+
             InitializeComponent();
 
             Init();
@@ -220,8 +225,8 @@ namespace AGLatency
 
             UInt64 reads = xel.GetReads() + xel2.GetReads();
             UInt64 cnt = XELoader.GetAllCount();
-            Logger.LogMessage("All Done, Total Reads:" + reads + " Total Committed:" + cnt);
-            UpdateProgress1("All Done, Total Reads:" + reads + " Total Committed:" + cnt);
+            Logger.LogMessage($"All Done, Total Reads:{ reads } Total Committed:{ cnt }");
+            UpdateProgress1($"All Done, Total Reads:{ reads } Total Committed:{ cnt }");
             UpdateProgress2("Done.Creating report...");
             CreateReport();
             //Now kick off network latency
@@ -230,16 +235,18 @@ namespace AGLatency
 
             string outputPath = PageTemplate.HtmlPageOutput.reportOutputFolder;
 
-            string url = outputPath + "/report.html";// Path.Combine(outputPath, "data");
+            string url = Path.Combine(outputPath, "report.html");// Path.Combine(outputPath, "data");
 
-            UpdateProgress2("Done.Report created:" + url);
-            Logger.LogMessage("Done.Report created." + url);
+            UpdateProgress2($"Done.Report created:{ url }");
+            Logger.LogMessage($"Done.Report created:{ url }");
 
             Done("");
 
-            System.Diagnostics.Process.Start(outputPath);
+            //System.Diagnostics.Process.Start(outputPath);
+            System.Diagnostics.Process.Start("explorer.exe", outputPath);
             System.Diagnostics.Process prc = new System.Diagnostics.Process();
             prc.StartInfo.FileName = url;
+            prc.StartInfo.UseShellExecute = true;
             prc.Start();
             prc.Close();
 
@@ -595,73 +602,34 @@ namespace AGLatency
         {
             isAbort = flag;
 
+            cTokenSource.Cancel();
 
             if (updateTD != null)
             {
-                try
-                {
-                    updateTD.Abort();
-                    updateTD = null;
-                }
-                catch (Exception ex)
-                {
-
-                }
+                updateTD.Join();
             }
 
             if (mythread != null)
             {
-                try
-                {
-                    mythread.Abort();
-
-                }
-                catch (Exception ex)
-                {
-
-                }
+                mythread.Join();
             }
             if (mythread2 != null)
             {
-                try
-                {
-                    mythread2.Abort();
-
-                }
-                catch (Exception ex)
-                {
-
-                }
+                mythread2.Join();
             }
 
             if (td1 != null)
             {
-                try
-                {
-                    td1.Abort();
-
-                }
-                catch (Exception ex)
-                {
-
-                }
+                td1.Join();
             }
 
             if (td2 != null)
             {
-                try
-                {
-                    td2.Abort();
-
-                }
-                catch (Exception ex)
-                {
-
-                }
+                td2.Join();
             }
-
-
-
+            cTokenSource.Dispose();
+            cTokenSource = new CancellationTokenSource();
+            Controller.CancellationToken = cTokenSource.Token;
 
         }
         private void Start()
@@ -685,7 +653,10 @@ namespace AGLatency
             if (!Directory.Exists(PageTemplate.HtmlPageOutput.reportOutputFolder))
                 Directory.CreateDirectory(PageTemplate.HtmlPageOutput.reportOutputFolder);
 
-            Utility.CopyHtmlFiles(PageTemplate.HtmlPageOutput.reportOutputFolder);
+            if (!Utility.CopyHtmlFiles(PageTemplate.HtmlPageOutput.reportOutputFolder))
+            {
+                Done("Failed to copy HTML files to output folder.");
+            }    
 
             Logger.LogMessage("Output folder:" + PageTemplate.HtmlPageOutput.reportOutputFolder);
 
@@ -796,6 +767,8 @@ namespace AGLatency
             xel = new XELoader(this.textBox1.Text, Replica.Primary, UpdateProgress1);
 
 
+
+            
             mythread = new Thread(xel.Start);
 
 

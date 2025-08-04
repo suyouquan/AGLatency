@@ -63,7 +63,7 @@ namespace AGLatency
             }
         }
 
-        public static void CopyHtmlFiles(string outputPath)
+        public static bool CopyHtmlFiles(string outputPath)
         {
             string htmlPath = Path.Combine(System.IO.Path.GetDirectoryName(
              System.Reflection.Assembly.GetExecutingAssembly().Location),  "html");
@@ -73,10 +73,12 @@ namespace AGLatency
                 try
                 {
                     DirectoryCopy(htmlPath, outputPath, true);
+                    return true;
                 }
                 catch (Exception e)
                 {
                     Logger.LogMessage("[ERROR]CopyHtmlFiles:" + e.Message);
+                    return false;
                 }
 
                 //modify report.html and change its title
@@ -93,6 +95,7 @@ namespace AGLatency
                 catch (Exception ex)
                 {
                     Logger.LogMessage("[ERROR]CopyHtmlFiles:Modify title:" + ex.Message);
+                    return false;
                 }
 
             }
@@ -100,6 +103,8 @@ namespace AGLatency
             else
             {
                 Logger.LogMessage("[ERROR]" + htmlPath + " not found.");
+
+                return false;
             }
 
         }
