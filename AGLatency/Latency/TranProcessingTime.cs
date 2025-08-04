@@ -11,6 +11,7 @@ using Microsoft.SqlServer.XEvent;
 using Microsoft.SqlServer.XEvent.Linq;
 using System.Data.SQLite;
 using System.IO;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AGLatency.Latency
 {

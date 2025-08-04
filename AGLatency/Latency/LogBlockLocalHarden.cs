@@ -10,7 +10,8 @@ using System.Data.SQLite;
 using System.IO;
 
  
-using System.Windows.Forms.DataVisualization.Charting;
+//using System.Windows.Forms.DataVisualization.Charting;
+using Microsoft.AspNetCore.Mvc;
  
 
 
