@@ -655,7 +655,7 @@ namespace AGLatency
 
             if (!Utility.CopyHtmlFiles(PageTemplate.HtmlPageOutput.reportOutputFolder))
             {
-                Done("Failed to copy HTML files to output folder.");
+                Done("Failed to copy HTML files to report folder.");
             }    
 
             Logger.LogMessage("Output folder:" + PageTemplate.HtmlPageOutput.reportOutputFolder);
