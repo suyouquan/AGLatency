@@ -36,8 +36,8 @@ namespace AGLatency
 
             Init();
 
-
-            try
+            //removing this part as update service doesn't work for now
+            /*try
             {
                 UpdateService myweb = new UpdateService(VersionUpdate);
                 updateTD = new Thread(myweb.VersionUpdate);
@@ -47,7 +47,7 @@ namespace AGLatency
             catch (Exception e)
             {
                 Logger.LogException(e, Thread.CurrentThread);
-            }
+            }*/
 
         }
 

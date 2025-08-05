@@ -26,7 +26,6 @@
     <Reference Include="Microsoft.SqlServer.XEvent.Linq">
       <HintPath>XEvent\SQL2025\Microsoft.SqlServer.XEvent.Linq.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.119" />
