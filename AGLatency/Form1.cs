@@ -632,7 +632,7 @@ namespace AGLatency
             Controller.CancellationToken = cTokenSource.Token;
 
         }
-        private void Start()
+        private bool Start()
         {
             //primary_secondary.GetPerfPointData(@"C:\AGLatency\AGLatency\bin\Debug\Primary_To_Secondary_2__2018-08-02_21_47_45.791.SQLiteDB");
 
@@ -655,7 +655,15 @@ namespace AGLatency
 
             if (!Utility.CopyHtmlFiles(PageTemplate.HtmlPageOutput.reportOutputFolder))
             {
-                Done("Failed to copy HTML files to report folder.");
+                //Done("Failed to copy HTML files to report folder.");
+
+                string errorMessage = "Failed to copy HTML files to report folder. \r\n Please reinstall AG Latency and make sure html folder is present in the application path";
+
+                MessageBox.Show(errorMessage, "HTML copy Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                Logger.LogMessage("Failed to copy HTML files to report folder.");
+
+                return false;
             }    
 
             Logger.LogMessage("Output folder:" + PageTemplate.HtmlPageOutput.reportOutputFolder);
@@ -786,6 +794,7 @@ namespace AGLatency
 
             Thread proProcess = new Thread(PreProcessing);
             proProcess.Start();
+            return true;
         }
 
         private void DoStop(bool flag)
@@ -870,9 +879,14 @@ namespace AGLatency
                 button1.Image = Properties.Resources.red2;
                 button1.ImageAlign = ContentAlignment.MiddleLeft;
 
-                Start();
-                notStarted = false;
-                isAbort = false;
+                if (Start())
+                {
+                    notStarted = false;
+                    isAbort = false;
+                } else
+                {
+                    DoStop(true);
+                }
             }
             else
             {
