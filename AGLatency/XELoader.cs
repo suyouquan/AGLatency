@@ -104,6 +104,7 @@ namespace AGLatency
                     if (data != null)
                     {
                         count = GetCount(data);
+                        //count = EstimateEventCount(data, fileOrFolder);
                         Logger.LogMessage("GetEventCount:" + fileOrFolder + "==>" + count);
                     }
                     else
@@ -114,6 +115,7 @@ namespace AGLatency
                 }
 
                 else //if it is folder
+                // we will perform estimate event count
                 {
                     if (Directory.Exists(fileOrFolder))
                     {
@@ -121,25 +123,47 @@ namespace AGLatency
                         var xelFiles = Utility.GetFileListFromFolder(fileOrFolder, masks);
  
                         totalFile = xelFiles.Count;
-                        foreach (string f in xelFiles)
+                        if (totalFile > 0)
                         {
-                            if (Controller.CancellationToken.IsCancellationRequested)
-                            {
-                                Logger.LogMessage("Cancellation requested");
-                                return;
-                            }
-                            fileNum2++;
+                            string f = xelFiles.First();
                             var data = Open(f);
                             if (data != null)
                             {
+                                // get the first file exact count
                                 UInt64 k = GetCount(data);
-                                Logger.LogMessage("GetEventCount:" + f + "==>" + k);
-                                count += k;
-                            } 
-                            else 
-                            {
-                                Logger.LogMessage("GetEventCount: " + f + " is not a valid XEL file.");
+                                
+                                // Get file size
+                                var fileInfo = new FileInfo(f);
+                                long fileSize = fileInfo.Length;
+
+                                // Estimate event count based on file size and first file's event count
+                                double singleEventSize = (double) fileSize / k;
+                                count = k;
+                                foreach (string file in xelFiles.Skip(1))
+                                {
+                                    if (Controller.CancellationToken.IsCancellationRequested)
+                                    {
+                                        Logger.LogMessage("Cancellation requested by user.");
+                                        return;
+                                    }
+                                    fileInfo = new FileInfo(file);
+                                    fileSize = fileInfo.Length;
+                                    k =  (ulong) fileSize / (ulong) singleEventSize;
+                                    count += k;
+                                    fileNum2++;
+                                    fn_UpdateMsg($"File: {fileNum2}/{totalFile}, Caculating {count}");
+                                    Logger.LogMessage($"GetEventCount - estimate:{file} ==> {k}");
+                                   
+                                }
+
+                                
+                                eventCount = count;
                             }
+                            else
+                            {
+                                Logger.LogMessage($"GetEventCount:{f} is not a valid XEL file.");
+                            }
+
                         }
                     }
 
@@ -299,9 +323,8 @@ namespace AGLatency
             }
         }
 
-        public UInt64 GetCount(QueryableXEventData data)
+        public UInt64 GetCount(QueryableXEventData data, int filenum=1)
         {
-           
             foreach (PublishedEvent x_event in data)
             {
                 if (Controller.CancellationToken.IsCancellationRequested)
@@ -312,13 +335,13 @@ namespace AGLatency
 
                 if (eventCount % 8000==0)
                 {
-                    fn_UpdateMsg("File:" + fileNum2 + "/" + totalFile + ", Caculating " + eventCount);
+                    fn_UpdateMsg($"File: {fileNum}/{totalFile}, Caculating {eventCount}");
                 }
 
                 eventCount++;    
 
             }
-
+            
             return eventCount;
         }
         public void ProcessEvent(QueryableXEventData data)
@@ -390,10 +413,10 @@ namespace AGLatency
 
                 if (reads % 4000 == 0)
                 {
-                    //UInt64 i = GetAllCount();
-                    var percent = (int)(reads * 100 / eventCount);
+                    UInt64 i = GetAllCount();
+                    int percent = (int)(reads * 100 / eventCount);
 
-                    fn_UpdateMsg("File:" + fileNum + "/" + totalFile + ", Processing " + reads.ToString()+"/"+eventCount.ToString()+" ("+ percent.ToString()+"%)");
+                    fn_UpdateMsg($"File: {fileNum}/{totalFile}, Processing {reads}/{eventCount} ({percent}%)");
                     int cnt = GetAllQueueLength();
                     if (cnt > 5000) //need to wait for a while
                     {
