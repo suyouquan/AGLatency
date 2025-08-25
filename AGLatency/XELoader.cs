@@ -25,6 +25,9 @@ namespace AGLatency
         public UInt64 eventCount = 0;
         // Dictionary<string, Import> imports = new Dictionary<string, Import>();
         public static List<EventLatency> eventLatencies = new List<EventLatency>();
+        private static object _dblock = new object();
+        private static object _readlock = new object();
+        private static object _uilock = new object();
 
 
 
@@ -64,11 +67,6 @@ namespace AGLatency
 
         }
        
-
-        
-
-        
-
         public XELoader(string fileFolder, Replica repl, outputCallBack fn)
         {
             this.fileOrFolder = fileFolder;
@@ -151,7 +149,8 @@ namespace AGLatency
                                     k =  (ulong) fileSize / (ulong) singleEventSize;
                                     count += k;
                                     fileNum2++;
-                                    fn_UpdateMsg($"File: {fileNum2}/{totalFile}, Caculating {count}");
+                                    lock (_uilock)
+                                        fn_UpdateMsg($"File: {fileNum2}/{totalFile}, Caculating {count}");
                                     Logger.LogMessage($"GetEventCount - estimate:{file} ==> {k}");
                                    
                                 }
@@ -207,7 +206,37 @@ namespace AGLatency
                     var masks = new[] { "*.xel" };
                     var xelFiles = Utility.GetFileListFromFolder(fileOrFolder, masks);
                     totalFile = xelFiles.Count;
-                    
+
+                    var parallelOptions = new ParallelOptions
+                    {
+                        CancellationToken = Controller.CancellationToken,
+                        MaxDegreeOfParallelism = Math.Min(Environment.ProcessorCount, 8)
+                    };
+
+                    Parallel.ForEach(xelFiles, parallelOptions, f =>
+                    {
+                        parallelOptions.CancellationToken.ThrowIfCancellationRequested();
+
+                        var localFileName = Path.GetFileName(f);
+                        var localFileNum = Interlocked.Increment(ref fileNum);
+
+                        Logger.LogMessage($"Processing File: {f}");
+
+                        var data = Open(f);
+                        if (data == null)
+                        {
+                            Logger.LogMessage("File is not a valid XEL file: " + f);
+                            return;
+                        }
+
+                        // Safe: AddTable is locked; duplicate creates are filtered inside
+                        CreateTablesFromMetadata(data);
+
+                        // Push() is locked; each eventDB has its own queue/worker
+                        ProcessEvent(data);
+                    });
+                    // Sequential processing (commented out)
+                    /*
                     foreach (string f in xelFiles)
                     {
                         if (Controller.CancellationToken.IsCancellationRequested)
@@ -227,7 +256,7 @@ namespace AGLatency
                         CreateTablesFromMetadata(data);
                         ProcessEvent(data);
 
-                    }
+                    }*/
                 }
 
             }
@@ -335,7 +364,8 @@ namespace AGLatency
 
                 if (eventCount % 8000==0)
                 {
-                    fn_UpdateMsg($"File: {fileNum}/{totalFile}, Caculating {eventCount}");
+                    lock (_uilock)
+                        fn_UpdateMsg($"File: {fileNum}/{totalFile}, Caculating {eventCount}");
                 }
 
                 eventCount++;    
@@ -354,11 +384,16 @@ namespace AGLatency
                     Logger.LogMessage("Processing cancelled by user.");
                     return;
                 }
-
                 string name = x_event.Name;
-                reads++;
 
-
+                // thread-safe increment and snapshot
+                ulong r;
+                lock (_readlock)
+                {
+                    reads++;
+                    r = reads;
+                }
+                
                 if (server == Replica.Primary)
                 {
                     foreach (EventLatency el in eventLatencies)
@@ -411,12 +446,12 @@ namespace AGLatency
                 }
 
 
-                if (reads % 4000 == 0)
+                if (r % 4000 == 0)
                 {
                     UInt64 i = GetAllCount();
-                    int percent = eventCount ==0 ? 0: (int)(reads * 100 / eventCount);
-
-                    fn_UpdateMsg($"File: {fileNum}/{totalFile}, Processing {reads}/{eventCount} ({percent}%)");
+                    int percent = eventCount ==0 ? 0: (int)(r * 100 / eventCount);
+                    lock(_uilock)
+                        fn_UpdateMsg($"File: {fileNum}/{totalFile}, Processing {r}/{eventCount} ({percent}%)");
                     int cnt = GetAllQueueLength();
                     if (cnt > 5000) //need to wait for a while
                     {
@@ -471,13 +506,6 @@ namespace AGLatency
                                     }
                                 }
                             }
-
-
-
-
-
-
-
 
                         }
                         else if (server == Replica.Secondary)

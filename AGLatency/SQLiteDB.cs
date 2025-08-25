@@ -39,21 +39,18 @@ namespace AGLatency
 
         public void AddTable(IEventMetadata e)
         {
-            if (tables.ContainsKey(e.Name)) return;
-
             lock (_dblock)
             {
+                if (tables.ContainsKey(e.Name)) return;
                 string tableName = e.Name;
                 string tableSchema = Tables.GetTableSchema(e);
                 
                 tables.Add(tableName, tableSchema);
                 
-
                 Execute(tableSchema);
-               
             }
-
         }
+
         public SqliteConnection GetConnection()
         {
             return sqliteConn;
