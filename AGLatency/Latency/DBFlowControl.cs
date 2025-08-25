@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.SqlServer.XEvent;
 using Microsoft.SqlServer.XEvent.Linq;
-using System.Data.SQLite;
+using Microsoft.Data.Sqlite;
 using System.IO;
 using Microsoft.AspNetCore.Mvc;
 
@@ -86,7 +86,7 @@ namespace AGLatency.Latency
             db.Open(dbfile);
 
             String databaseNum = "SELECT DISTINCT database_replica_id  FROM hadr_database_flow_control_action WHERE local_availability_replica_id='"+NetworkLatency.replicaId+"'";
-            SQLiteDataReader replicaDr =
+            SqliteDataReader replicaDr =
             db.ExecuteReader(databaseNum);
             if (replicaDr == null) return null;
 
@@ -119,7 +119,7 @@ namespace AGLatency.Latency
 
 
 
-            SQLiteDataReader dr =
+            SqliteDataReader dr =
             db.ExecuteReader(select);
 
             if (dr == null) return dict;

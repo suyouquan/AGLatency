@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 using Microsoft.SqlServer.XEvent;
 using Microsoft.SqlServer.XEvent.Linq;
-using System.Data.SQLite;
+using Microsoft.Data.Sqlite;
 using System.IO;
 
 
@@ -18,7 +18,7 @@ namespace AGLatency
         private CancellationTokenSource cts = new CancellationTokenSource();
         public string SQLiteDBFile = "";
         public string databaseName = "";
-        SQLiteConnection sqliteConn;
+        SqliteConnection sqliteConn;
         private static uint dbid = 0;
         private Thread dataLoopThread;
         
@@ -35,7 +35,7 @@ namespace AGLatency
         public UInt32 errorCount = 0;
         private uint inserted = 0;
   
-        private SQLiteTransaction _sqLiteTransaction = null;
+        private SqliteTransaction _sqLiteTransaction = null;
 
         public void AddTable(IEventMetadata e)
         {
@@ -54,7 +54,7 @@ namespace AGLatency
             }
 
         }
-        public SQLiteConnection GetConnection()
+        public SqliteConnection GetConnection()
         {
             return sqliteConn;
         }
@@ -174,7 +174,10 @@ namespace AGLatency
             {
                 try
                 {
-                    SQLiteConnection.CreateFile(dbFile);
+                    using (var connection = new SqliteConnection(string.Format("Data Source={0};Mode=ReadWriteCreate", dbFile)))
+                    {
+                        connection.Open();
+                    }
                 }
                 catch(Exception ex)
                 {
@@ -190,7 +193,7 @@ namespace AGLatency
 
             try
             {
-                sqliteConn = new SQLiteConnection(string.Format("Data Source={0}", dbFile));
+                sqliteConn = new SqliteConnection(string.Format("Data Source={0}", dbFile));
                 sqliteConn.Open();
                 Execute("PRAGMA synchronous = OFF");
                 Execute("PRAGMA journal_mode = MEMORY");
@@ -212,7 +215,7 @@ namespace AGLatency
             {
                 //   string sql = "create table highscores (name varchar(20), score int)";
 
-                SQLiteCommand command = new SQLiteCommand(sql, sqliteConn);
+                SqliteCommand command = new SqliteCommand(sql, sqliteConn);
                 command.ExecuteNonQuery();
                 Logger.LogMessage("Executed:"+sql);
             }
@@ -224,7 +227,7 @@ namespace AGLatency
 
         }
         //execute query and return result set
-        public SQLiteDataReader ExecuteReader(string sql)
+        public SqliteDataReader ExecuteReader(string sql)
         {
 
 
@@ -233,7 +236,7 @@ namespace AGLatency
             {
                 //   string sql = "create table highscores (name varchar(20), score int)";
 
-                SQLiteCommand command = new SQLiteCommand(sql, sqliteConn);
+                SqliteCommand command = new SqliteCommand(sql, sqliteConn);
                 return command.ExecuteReader();
             }
             catch (Exception ex)
@@ -243,15 +246,6 @@ namespace AGLatency
 
             return null;
         }
-
-
-
-
-
-
-
-
-
 
         public void ProcessEvent(CancellationToken token)
         {
@@ -298,10 +292,9 @@ namespace AGLatency
                 inserted = 0;
             }
 
-            
-            SQLiteCommand cmd = Tables.PrepareInsertCmd(sqliteConn, x_event);
 
-           
+            SqliteCommand cmd = Tables.PrepareInsertCmd(sqliteConn, x_event);
+
 
             try
             {

@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.SqlServer.XEvent;
 using Microsoft.SqlServer.XEvent.Linq;
-using System.Data.SQLite;
+using Microsoft.Data.Sqlite;
 using System.IO;
 
 
@@ -90,14 +90,11 @@ namespace AGLatency
         }
 
         static readonly object cmdObj = new object();
-        public static SQLiteCommand PrepareInsertCmd(SQLiteConnection conn, PublishedEvent e)
+        public static SqliteCommand PrepareInsertCmd(SqliteConnection conn, PublishedEvent e)
         {
-            SQLiteCommand cmd = new SQLiteCommand(conn);
+            SqliteCommand cmd = conn.CreateCommand();
             lock (cmdObj)
             {
-
-             
-
                 if (!insertSQLMap.ContainsKey(e.Name))
                 {
                     string insert = Tables.GetInsertSQL(e);
@@ -111,20 +108,23 @@ namespace AGLatency
             try
             {
 
-                cmd.Parameters.Add(new SQLiteParameter("@EventTimeStamp", e.Timestamp.Ticks));
-                cmd.Parameters.Add(new SQLiteParameter("@TimeDelta", null));
+                cmd.Parameters.Add(new SqliteParameter("@EventTimeStamp", e.Timestamp.Ticks));
+                cmd.Parameters.Add(new SqliteParameter("@TimeDelta", DBNull.Value));
 
                 foreach (PublishedEventField xe_field in e.Fields)
                 {
-                    string colName = xe_field.Name;
-                    if (xe_field.Type == typeof(System.Guid))
+                    object value = xe_field.Value ?? DBNull.Value;
+                    if (xe_field.Type == typeof(System.Guid) && xe_field.Value != null)
                     {
-                        cmd.Parameters.Add(new SQLiteParameter("@" + colName, xe_field.Value.ToString()));
+                        value = xe_field.Value.ToString();
                     }
-                    else
+                    if (xe_field.Type == typeof(MapValue) && xe_field.Value != null)
                     {
-                        cmd.Parameters.Add(new SQLiteParameter("@" + colName, xe_field.Value));
+                        value = xe_field.Value.ToString();
                     }
+
+                    var p = new SqliteParameter("@" + xe_field.Name, value);
+                    cmd.Parameters.Add(p);
                 }
 
 

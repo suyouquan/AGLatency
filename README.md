@@ -4,8 +4,8 @@ AGLatency is a tool to analyze AG log block movement latency between replicas an
 
 ![alt text](https://github.com/suyouquan/AGLatency/blob/master/AGLatency.png)
 
-You can download version 2.2 here:
-https://github.com/suyouquan/AGLatency/releases/download/V2.2/AGLatencyV2.2.zip
+You can download version 2.3 here:
+https://github.com/suyouquan/AGLatency/releases/download/V2.3/AGLatency_2.3.zip
 
 Video:
 https://github.com/suyouquan/AGLatency/blob/master/AGLatency_HowTo.mp4

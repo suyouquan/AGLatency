@@ -10,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.SqlServer.XEvent;
 using Microsoft.SqlServer.XEvent.Linq;
-using System.Data.SQLite;
+using Microsoft.Data.Sqlite;
 using System.IO;
 
 namespace AGLatency.Latency
@@ -126,7 +126,7 @@ namespace AGLatency.Latency
             db.Open(dbfile);
 
             String databaseNum = "SELECT DISTINCT database_id FROM hadr_db_commit_mgr_harden WHERE database_id>4";
-            SQLiteDataReader dbidDR =
+            SqliteDataReader dbidDR =
             db.ExecuteReader(databaseNum);
 
             
@@ -168,7 +168,7 @@ namespace AGLatency.Latency
 
             Logger.LogMessage(select);
 
-            SQLiteDataReader dr =
+            SqliteDataReader dr =
             db.ExecuteReader(select);
 
             if (dr == null) return list;

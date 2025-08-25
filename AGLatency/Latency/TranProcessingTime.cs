@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.SqlServer.XEvent;
 using Microsoft.SqlServer.XEvent.Linq;
-using System.Data.SQLite;
+using Microsoft.Data.Sqlite;
 using System.IO;
 using Microsoft.AspNetCore.Mvc;
 
@@ -97,7 +97,7 @@ namespace AGLatency.Latency
             db.Open(dbfile);
 
             String databaseNum = "SELECT DISTINCT database_id FROM recovery_unit_harden_log_timestamps WHERE database_id>4";
-            SQLiteDataReader dbidDR =
+            SqliteDataReader dbidDR =
             db.ExecuteReader(databaseNum);
 
             List<int> databases = new List<int>();
@@ -120,7 +120,7 @@ namespace AGLatency.Latency
             //    String select = "SELECT   (EventTimeStamp/10000000) as EventTimeStamp,database_id, AVG(duration) as Avg_Duration,SUM(duration) as Sum_Duration, COUNT(*) as Flushes,SUM(write_size) as Sum_write_size from log_flush_complete group by  EventTimeStamp/10000000,database_id ORDER BY EventTimeStamp / 10000000,database_id";
             String select = "SELECT   (EventTimeStamp/10000000) as EventTimeStamp,database_id, COUNT(*) as TranCommits, AVG(processing_time) as Avg_Duration,SUM(processing_time) as Sum_Duration, max(processing_time) as Max_duration, min(processing_time) as Min_duration  from recovery_unit_harden_log_timestamps WHERE database_id>4 group by  EventTimeStamp/10000000,database_id ORDER BY EventTimeStamp / 10000000,database_id";
 
-            SQLiteDataReader dr =
+            SqliteDataReader dr =
             db.ExecuteReader(select);
 
             if (dr == null) return dict;

@@ -784,7 +784,6 @@ namespace AGLatency
             xel2 = new XELoader(this.textBox2.Text, Replica.Secondary, UpdateProgress2);
 
 
-
             td1 = new Thread(xel.GetTotalEventCount);
             td2 = new Thread(xel2.GetTotalEventCount);
             td1.Start();
@@ -904,8 +903,8 @@ namespace AGLatency
 
             if (isAbort) return;
 
-            UInt64 totalCount = xel.eventCount + xel2.eventCount;
-            Logger.LogMessage("Total events:" + totalCount);
+            //UInt64 totalCount = xel.eventCount + xel2.eventCount;
+            //Logger.LogMessage($"Total events: {totalCount}");
 
 
             mythread.Start();
