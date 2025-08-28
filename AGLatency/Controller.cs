@@ -10,6 +10,7 @@ namespace AGLatency
    public static class Controller
     {
         public static int MaxDOP = 1;
+        public static int BatchSize = 5000;
 
         public  static List<PageTemplate.PageObject> pageObjs = new List<PageTemplate.PageObject>();
         public static Dictionary<string, int> latencySummaryDict = new Dictionary<string, int>();
@@ -66,8 +67,10 @@ namespace AGLatency
             if (vProcessorCount > 3) 
                 MaxDOP = Math.Min((int)((vProcessorCount - 2) / 2), vMaxDOP);
 
-            Logger.LogMessage($"MaxDOP is set to {MaxDOP.ToString()}");
-
+            Logger.LogMessage($"MaxDOP is set to {MaxDOP}");
+              
+            BatchSize = Math.Max(5000, settings.Processing.BatchSize);
+            Logger.LogMessage($"BatchSize is set to {BatchSize}");
 
         }
 

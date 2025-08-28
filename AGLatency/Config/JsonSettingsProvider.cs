@@ -49,6 +49,15 @@ namespace AGLatency.Config
                     settings.Processing.MaxDOP = m;
                     Logger.LogMessage($"Loaded MaxDegreeOfParallelism from app.config: {m}");
                 }
+
+                var batchSize = ConfigurationManager.AppSettings["Processing.BatchSize"]
+                        ?? ConfigurationManager.AppSettings["BatchSize"];
+                if (int.TryParse(batchSize, out var b))
+                {
+                    settings.Processing ??= new ProcessingSettings();
+                    settings.Processing.BatchSize = b;
+                    Logger.LogMessage($"Loaded BatchSize from app.config: {b}");
+                }
             }
             catch (Exception ex)
             {

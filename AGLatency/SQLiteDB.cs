@@ -10,7 +10,6 @@ using Microsoft.SqlServer.XEvent.Linq;
 using Microsoft.Data.Sqlite;
 using System.IO;
 
-
 namespace AGLatency
 {
     public class SQLiteDB
@@ -21,9 +20,8 @@ namespace AGLatency
         SqliteConnection sqliteConn;
         private static uint dbid = 0;
         private Thread dataLoopThread;
-        
+
         public Dictionary<string, string> tables = new Dictionary<string, string>();
-      
 
         private Queue<PublishedEvent> eventsQueue = new Queue<PublishedEvent>();
         private AutoResetEvent autoEvent;
@@ -31,11 +29,18 @@ namespace AGLatency
 
         public UInt64 count = 0;
 
-        public UInt64 batchSize = 5000;
+        // Controls commit size per transaction when draining the queue
+        public UInt64 batchSize = (UInt64)Controller.BatchSize;
         public UInt32 errorCount = 0;
-        private uint inserted = 0;
-  
+
+        // Transaction for batch inserts
         private SqliteTransaction _sqLiteTransaction = null;
+
+        // Prepared insert commands per event/table for reuse
+        private readonly Dictionary<string, SqliteCommand> _insertCmdCache = new(StringComparer.OrdinalIgnoreCase);
+        private readonly object _cmdLock = new();
+
+        static readonly object _dblock = new object();
 
         public void AddTable(IEventMetadata e)
         {
@@ -44,19 +49,15 @@ namespace AGLatency
                 if (tables.ContainsKey(e.Name)) return;
                 string tableName = e.Name;
                 string tableSchema = Tables.GetTableSchema(e);
-                
+
                 tables.Add(tableName, tableSchema);
-                
+
                 Execute(tableSchema);
             }
         }
 
-        public SqliteConnection GetConnection()
-        {
-            return sqliteConn;
-        }
+        public SqliteConnection GetConnection() => sqliteConn;
 
-        static readonly object _dblock = new object();
         public void Init(string dbName)
         {
             lock (_dblock)
@@ -65,15 +66,27 @@ namespace AGLatency
                 this.databaseName = dbName;
                 dbid++;
                 Open(SQLiteDBFile);
+
+                // Important: set pragmas on fresh DB before any table creation
+                Execute("PRAGMA page_size = 4096");                   // or 8192 based on storage
+                Execute("PRAGMA temp_store = MEMORY");
+                Execute("PRAGMA cache_size = -65536");                // ~64MB cache
+                Execute("PRAGMA mmap_size = 134217728");              // 128MB
+                Execute("PRAGMA locking_mode = EXCLUSIVE");
+                Execute("PRAGMA synchronous = OFF");                  // durability trade-off for speed
+                Execute("PRAGMA journal_mode = MEMORY");              // or WAL if you need concurrent reads
             }
             autoEvent = new AutoResetEvent(false);
             StartDataLoopThread();
         }
 
-
         public void StartDataLoopThread()
         {
-            dataLoopThread = new Thread(() => DataLoop(cts.Token));
+            dataLoopThread = new Thread(() => DataLoop(cts.Token))
+            {
+                IsBackground = true,
+                Priority = ThreadPriority.AboveNormal
+            };
             dataLoopThread.Start();
         }
 
@@ -84,11 +97,14 @@ namespace AGLatency
 
         public void Push(PublishedEvent e)
         {
+            bool shouldSignal = false;
             lock (_lock)
             {
+                // Signal only on transition from empty to non-empty to reduce wake-ups
+                shouldSignal = eventsQueue.Count == 0;
                 eventsQueue.Enqueue(e);
             }
-            Signal();
+            if (shouldSignal) autoEvent.Set();
         }
 
         public void Signal()
@@ -98,17 +114,23 @@ namespace AGLatency
 
         public void CloseConnection()
         {
-            sqliteConn.Close();
-
+            sqliteConn?.Close();
         }
 
         public void CleanUp()
         {
-            if (_sqLiteTransaction != null)
+            try
             {
-                _sqLiteTransaction.Commit();
-                _sqLiteTransaction.Dispose();
-                _sqLiteTransaction = null;
+                if (_sqLiteTransaction != null)
+                {
+                    _sqLiteTransaction.Commit();
+                    _sqLiteTransaction.Dispose();
+                    _sqLiteTransaction = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException(ex, Thread.CurrentThread);
             }
 
             CloseConnection();
@@ -116,57 +138,38 @@ namespace AGLatency
             {
                 Logger.LogMessage("Cancelling data loop thread.");
                 cts.Cancel();
-               // dataLoopThread.Join();
             }
-
         }
-
 
         public static void DeleteOldFile()
         {
             string path = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            //string path2 = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
-
             string dbFolder = Path.Combine(path, "SQLiteDB");
-            List<string> files = Utility.GetFileListFromFolder(dbFolder, new string[]{ "*.*"});
+            List<string> files = Utility.GetFileListFromFolder(dbFolder, new string[] { "*.*" });
             foreach (string f in files)
             {
-                try
-                {
-                    File.Delete(f);
-
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogException(ex, Thread.CurrentThread);
-                }
+                try { File.Delete(f); }
+                catch (Exception ex) { Logger.LogException(ex, Thread.CurrentThread); }
             }
             if (!Directory.Exists(dbFolder)) Directory.CreateDirectory(dbFolder);
-
-            
         }
-        public   void CreateDBFile(string dbName)
+
+        public void CreateDBFile(string dbName)
         {
-           
             string path = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            //string path2 = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
-           
-            var filename = dbName+ System.DateTime.Now.ToString("_yyyy-MM-dd_HH_mm_ss.fff") + ".SQLiteDB";
+            var filename = dbName + System.DateTime.Now.ToString("_yyyy-MM-dd_HH_mm_ss.fff") + ".SQLiteDB";
 
             string logFolder = Path.Combine(path, "SQLiteDB");
             if (!Directory.Exists(logFolder)) Directory.CreateDirectory(logFolder);
 
-           
-
             string dbFile = Path.Combine(logFolder, filename);
-
             SQLiteDBFile = dbFile;
 
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
             }
-           
+
             if (!File.Exists(dbFile))
             {
                 try
@@ -176,64 +179,46 @@ namespace AGLatency
                         connection.Open();
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Logger.LogException(ex, Thread.CurrentThread);
                 }
             }
-        }//create DB 
-
+        }//create DB
 
         public void Open(string dbFile)
         {
-            
-
             try
             {
                 sqliteConn = new SqliteConnection(string.Format("Data Source={0}", dbFile));
                 sqliteConn.Open();
-                Execute("PRAGMA synchronous = OFF");
-                Execute("PRAGMA journal_mode = MEMORY");
+                // Additional pragmas moved to Init to ensure order for fresh DBs
             }
             catch (Exception ex)
             {
                 Logger.LogException(ex, Thread.CurrentThread);
             }
-
         }
-
 
         public void Execute(string sql)
         {
-        
-
-
             try
             {
-                //   string sql = "create table highscores (name varchar(20), score int)";
-
-                SqliteCommand command = new SqliteCommand(sql, sqliteConn);
+                using var command = new SqliteCommand(sql, sqliteConn);
                 command.ExecuteNonQuery();
-                Logger.LogMessage("Executed:"+sql);
+                Logger.LogMessage("Executed:" + sql);
             }
             catch (Exception ex)
             {
                 Logger.LogException(ex, Thread.CurrentThread);
             }
-
-
         }
-        //execute query and return result set
+
         public SqliteDataReader ExecuteReader(string sql)
         {
-
-
-
             try
             {
-                //   string sql = "create table highscores (name varchar(20), score int)";
-
-                SqliteCommand command = new SqliteCommand(sql, sqliteConn);
+                var command = new SqliteCommand(sql, sqliteConn);
                 return command.ExecuteReader();
             }
             catch (Exception ex)
@@ -244,25 +229,7 @@ namespace AGLatency
             return null;
         }
 
-        public void ProcessEvent(CancellationToken token)
-        {
-            PublishedEvent e = null;
-            // Logger.LogMessage("ProcessEvent:" + eventsQueue.Count);
-            while (eventsQueue.Count > 0)
-            {
-                if (token.IsCancellationRequested)
-                {
-                    break;
-                }
-
-                lock (_lock)
-                {
-                    e = eventsQueue.Dequeue();
-
-                }
-                if (e != null) Insert(e);
-            }
-        }
+        // Centralize transaction lifecycle around draining batches in DataLoop
         private void CommitTran()
         {
             if (_sqLiteTransaction != null)
@@ -272,58 +239,85 @@ namespace AGLatency
                 _sqLiteTransaction = null;
             }
         }
+
         private void BeginTran()
         {
-            _sqLiteTransaction = sqliteConn.BeginTransaction();
-
+            if (_sqLiteTransaction == null)
+                _sqLiteTransaction = sqliteConn.BeginTransaction();
         }
-        public void Insert(PublishedEvent x_event)
+
+        // Reuse prepared insert command per event/table; update parameter values only
+        private SqliteCommand GetOrCreateInsertCommand(PublishedEvent e)
         {
-            bool ok = true;
-            if (inserted == batchSize)
+            lock (_cmdLock)
             {
+                if (_insertCmdCache.TryGetValue(e.Name, out var cached))
+                    return cached;
 
-                CommitTran();
+                var cmd = sqliteConn.CreateCommand();
+                cmd.Transaction = _sqLiteTransaction;
+                cmd.CommandText = Tables.GetInsertSQL(e);
 
-                BeginTran();
-                inserted = 0;
-            }
+                // Static parameters (always present)
+                cmd.Parameters.Add(new SqliteParameter("@EventTimeStamp", e.Timestamp.Ticks));
+                cmd.Parameters.Add(new SqliteParameter("@TimeDelta", DBNull.Value));
 
-
-            SqliteCommand cmd = Tables.PrepareInsertCmd(sqliteConn, x_event);
-
-
-            try
-            {
-
-                if (cmd != null) cmd.ExecuteNonQuery();
-                else
+                // One parameter per field in fixed order
+                foreach (PublishedEventField xe_field in e.Fields)
                 {
-                    ok = false;
-                    errorCount++;
-                    Logger.LogMessage("[ERROR]cmd is null!");
+                    object value = xe_field.Value ?? DBNull.Value;
+                    if (xe_field.Type == typeof(System.Guid) && xe_field.Value != null)
+                        value = xe_field.Value.ToString();
+                    if (xe_field.Type == typeof(MapValue) && xe_field.Value != null)
+                        value = xe_field.Value.ToString();
 
+                    cmd.Parameters.Add(new SqliteParameter("@" + xe_field.Name, value));
                 }
 
+                _insertCmdCache[e.Name] = cmd;
+                return cmd;
             }
-            catch (Exception e)
-            {
-                ok = false;
-                errorCount++;
-                Logger.LogException(e, Thread.CurrentThread);
-            }
-            if(cmd!=null) cmd.Dispose();
-
-            if (ok)
-            {
-                count++;
-                inserted++;
-            }
-            // Logger.LogMessage(this.TableName + ":" + count+" processed.");
-
-           
-            
         }
+
+        private void UpdateInsertParameters(SqliteCommand cmd, PublishedEvent e)
+        {
+            // Order matches construction above: EventTimeStamp, TimeDelta, then fields
+            cmd.Transaction = _sqLiteTransaction;
+
+            int idx = 0;
+            cmd.Parameters[idx++].Value = e.Timestamp.Ticks;   // @EventTimeStamp
+            cmd.Parameters[idx++].Value = DBNull.Value;        // @TimeDelta
+
+            foreach (PublishedEventField xe_field in e.Fields)
+            {
+                object value = xe_field.Value ?? DBNull.Value;
+                if (xe_field.Type == typeof(System.Guid) && xe_field.Value != null)
+                    value = xe_field.Value.ToString();
+                if (xe_field.Type == typeof(MapValue) && xe_field.Value != null)
+                    value = xe_field.Value.ToString();
+
+                cmd.Parameters[idx++].Value = value;
+            }
+        }
+
+        // Perform a single-row insert using prepared command reuse (no transaction mgmt here)
+        public void Insert(PublishedEvent x_event)
+        {
+            try
+            {
+                var cmd = GetOrCreateInsertCommand(x_event);
+                UpdateInsertParameters(cmd, x_event);
+                cmd.ExecuteNonQuery();
+                count++;
+            }
+            catch (Exception ex)
+            {
+                errorCount++;
+                Logger.LogException(ex, Thread.CurrentThread);
+            }
+        }
+
+        // Drain the queue in batches with a transaction
         public void DataLoop(CancellationToken token)
         {
             while (true)
@@ -331,11 +325,42 @@ namespace AGLatency
                 if (token.IsCancellationRequested) return;
 
                 autoEvent.WaitOne();
-                //Now data arrive, process it.
-                ProcessEvent(cts.Token);
+                if (token.IsCancellationRequested) return;
+
+                BeginTran();
+                try
+                {
+                    UInt64 inTxn = 0;
+
+                    while (true)
+                    {
+                        if (token.IsCancellationRequested) break;
+
+                        PublishedEvent e = null;
+                        lock (_lock)
+                        {
+                            if (eventsQueue.Count > 0)
+                                e = eventsQueue.Dequeue();
+                        }
+                        if (e == null)
+                            break;
+
+                        Insert(e);
+                        inTxn++;
+
+                        if (inTxn >= batchSize)
+                        {
+                            CommitTran();
+                            BeginTran();
+                            inTxn = 0;
+                        }
+                    }
+                }
+                finally
+                {
+                    CommitTran();
+                }
             }
-
         }
-
     }
 }

@@ -236,8 +236,8 @@ namespace AGLatency
                             // Push() is locked; each eventDB has its own queue/worker
                             ProcessEvent(data);
                         });
-                    } 
-                    catch (OperationCanceledException ) 
+                    }
+                    catch (OperationCanceledException) 
                     {
                         Logger.LogMessage("Processing cancelled by user.");
                     }
