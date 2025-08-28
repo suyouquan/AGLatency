@@ -9,8 +9,10 @@ namespace AGLatency
 {
    public static class Controller
     {
-      public  static List<PageTemplate.PageObject> pageObjs = new List<PageTemplate.PageObject>();
-       public static Dictionary<string, int> latencySummaryDict = new Dictionary<string, int>();
+        public static int MaxDOP = 1;
+
+        public  static List<PageTemplate.PageObject> pageObjs = new List<PageTemplate.PageObject>();
+        public static Dictionary<string, int> latencySummaryDict = new Dictionary<string, int>();
         public static Dictionary<string, List<string>> chartsData = new Dictionary<string, List<string>>();
         public static string primaryFolder = "";
         public static string secondaryFolder = "";
@@ -56,6 +58,17 @@ namespace AGLatency
             latencySummaryDict.Clear();
             latencySummaryDict_new.Clear();
             chartsData_new.Clear();
+            var settings = new AGLatency.Config.JsonSettingsProvider().Load();
+            int vMaxDOP = Math.Max(1, settings.Processing.MaxDOP);
+            Logger.LogMessage($"MaxDOP from settings is {vMaxDOP}");
+            int vProcessorCount = Environment.ProcessorCount;
+            Logger.LogMessage($"Processor count is {vProcessorCount}");
+            if (vProcessorCount > 3) 
+                MaxDOP = Math.Min((int)((vProcessorCount - 2) / 2), vMaxDOP);
+
+            Logger.LogMessage($"MaxDOP is set to {MaxDOP.ToString()}");
+
+
         }
 
     }

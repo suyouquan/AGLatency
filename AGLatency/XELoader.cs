@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -210,31 +211,41 @@ namespace AGLatency
                     var parallelOptions = new ParallelOptions
                     {
                         CancellationToken = Controller.CancellationToken,
-                        MaxDegreeOfParallelism = Math.Min(Environment.ProcessorCount, 8)
+                        MaxDegreeOfParallelism = Controller.MaxDOP
                     };
-
-                    Parallel.ForEach(xelFiles, parallelOptions, f =>
-                    {
-                        parallelOptions.CancellationToken.ThrowIfCancellationRequested();
-
-                        var localFileName = Path.GetFileName(f);
-                        var localFileNum = Interlocked.Increment(ref fileNum);
-
-                        Logger.LogMessage($"Processing File: {f}");
-
-                        var data = Open(f);
-                        if (data == null)
+                    try { 
+                        Parallel.ForEach(xelFiles, parallelOptions, f =>
                         {
-                            Logger.LogMessage("File is not a valid XEL file: " + f);
-                            return;
-                        }
+                            parallelOptions.CancellationToken.ThrowIfCancellationRequested();
 
-                        // Safe: AddTable is locked; duplicate creates are filtered inside
-                        CreateTablesFromMetadata(data);
+                            var localFileName = Path.GetFileName(f);
+                            var localFileNum = Interlocked.Increment(ref fileNum);
 
-                        // Push() is locked; each eventDB has its own queue/worker
-                        ProcessEvent(data);
-                    });
+                            Logger.LogMessage($"Processing File: {f}");
+
+                            var data = Open(f);
+                            if (data == null)
+                            {
+                                Logger.LogMessage("File is not a valid XEL file: " + f);
+                                return;
+                            }
+
+                            // Safe: AddTable is locked; duplicate creates are filtered inside
+                            CreateTablesFromMetadata(data);
+
+                            // Push() is locked; each eventDB has its own queue/worker
+                            ProcessEvent(data);
+                        });
+                    } 
+                    catch (OperationCanceledException ) 
+                    {
+                        Logger.LogMessage("Processing cancelled by user.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogException(ex, Thread.CurrentThread);
+                        Logger.LogMessage("Error in processing files: " + ex.Message);
+                    }
                     // Sequential processing (commented out)
                     /*
                     foreach (string f in xelFiles)
