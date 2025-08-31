@@ -29,229 +29,238 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.button3 = new System.Windows.Forms.Button();
-            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.tSQLScriptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.logToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.userManualToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.videoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.lbVersion = new System.Windows.Forms.Label();
-            this.button2 = new System.Windows.Forms.Button();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.menuStrip1.SuspendLayout();
-            this.SuspendLayout();
+            label1 = new System.Windows.Forms.Label();
+            label2 = new System.Windows.Forms.Label();
+            textBox2 = new System.Windows.Forms.TextBox();
+            label3 = new System.Windows.Forms.Label();
+            label4 = new System.Windows.Forms.Label();
+            button3 = new System.Windows.Forms.Button();
+            menuStrip1 = new System.Windows.Forms.MenuStrip();
+            fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            tSQLScriptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            logToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            userManualToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            videoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            lbVersion = new System.Windows.Forms.Label();
+            button2 = new System.Windows.Forms.Button();
+            textBox1 = new System.Windows.Forms.TextBox();
+            button1 = new System.Windows.Forms.Button();
+            saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            chkBox_UseLogScout = new System.Windows.Forms.CheckBox();
+            menuStrip1.SuspendLayout();
+            SuspendLayout();
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(46, 91);
-            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(49, 20);
-            this.label1.TabIndex = 4;
-            this.label1.Text = "        ";
+            label1.AutoSize = true;
+            label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
+            label1.Location = new System.Drawing.Point(58, 142);
+            label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(60, 25);
+            label1.TabIndex = 4;
+            label1.Text = "        ";
             // 
             // label2
             // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(46, 191);
-            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(44, 20);
-            this.label2.TabIndex = 5;
-            this.label2.Text = "       ";
+            label2.AutoSize = true;
+            label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
+            label2.Location = new System.Drawing.Point(58, 298);
+            label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            label2.Name = "label2";
+            label2.Size = new System.Drawing.Size(54, 25);
+            label2.TabIndex = 5;
+            label2.Text = "       ";
             // 
             // textBox2
             // 
-            this.textBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox2.Location = new System.Drawing.Point(46, 158);
-            this.textBox2.Margin = new System.Windows.Forms.Padding(2);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(674, 27);
-            this.textBox2.TabIndex = 6;
+            textBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
+            textBox2.Location = new System.Drawing.Point(58, 247);
+            textBox2.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
+            textBox2.Name = "textBox2";
+            textBox2.Size = new System.Drawing.Size(842, 30);
+            textBox2.TabIndex = 6;
             // 
             // label3
             // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(46, 35);
-            this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(72, 20);
-            this.label3.TabIndex = 7;
-            this.label3.Text = "Primary:";
+            label3.AutoSize = true;
+            label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
+            label3.Location = new System.Drawing.Point(58, 55);
+            label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            label3.Name = "label3";
+            label3.Size = new System.Drawing.Size(91, 25);
+            label3.TabIndex = 7;
+            label3.Text = "Primary:";
             // 
             // label4
             // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(46, 135);
-            this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(93, 20);
-            this.label4.TabIndex = 7;
-            this.label4.Text = "Secondary:";
+            label4.AutoSize = true;
+            label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
+            label4.Location = new System.Drawing.Point(58, 211);
+            label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            label4.Name = "label4";
+            label4.Size = new System.Drawing.Size(121, 25);
+            label4.TabIndex = 7;
+            label4.Text = "Secondary:";
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(737, 156);
-            this.button3.Margin = new System.Windows.Forms.Padding(2);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(79, 30);
-            this.button3.TabIndex = 8;
-            this.button3.Text = "Browse";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            button3.Location = new System.Drawing.Point(921, 244);
+            button3.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
+            button3.Name = "button3";
+            button3.Size = new System.Drawing.Size(99, 47);
+            button3.TabIndex = 8;
+            button3.Text = "Browse";
+            button3.UseVisualStyleBackColor = true;
+            button3.Click += button3_Click;
             // 
             // menuStrip1
             // 
-            this.menuStrip1.ImageScalingSize = new System.Drawing.Size(32, 32);
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem,
-            this.helpToolStripMenuItem});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Padding = new System.Windows.Forms.Padding(4, 1, 0, 1);
-            this.menuStrip1.Size = new System.Drawing.Size(874, 26);
-            this.menuStrip1.TabIndex = 9;
-            this.menuStrip1.Text = "menuStrip1";
+            menuStrip1.ImageScalingSize = new System.Drawing.Size(32, 32);
+            menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { fileToolStripMenuItem, helpToolStripMenuItem });
+            menuStrip1.Location = new System.Drawing.Point(0, 0);
+            menuStrip1.Name = "menuStrip1";
+            menuStrip1.Padding = new System.Windows.Forms.Padding(5, 2, 0, 2);
+            menuStrip1.Size = new System.Drawing.Size(1092, 33);
+            menuStrip1.TabIndex = 9;
+            menuStrip1.Text = "menuStrip1";
+            menuStrip1.ItemClicked += menuStrip1_ItemClicked;
             // 
             // fileToolStripMenuItem
             // 
-            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tSQLScriptToolStripMenuItem,
-            this.logToolStripMenuItem});
-            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(46, 24);
-            this.fileToolStripMenuItem.Text = "File";
+            fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { tSQLScriptToolStripMenuItem, logToolStripMenuItem });
+            fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            fileToolStripMenuItem.Size = new System.Drawing.Size(54, 29);
+            fileToolStripMenuItem.Text = "File";
             // 
             // tSQLScriptToolStripMenuItem
             // 
-            this.tSQLScriptToolStripMenuItem.Name = "tSQLScriptToolStripMenuItem";
-            this.tSQLScriptToolStripMenuItem.Size = new System.Drawing.Size(168, 26);
-            this.tSQLScriptToolStripMenuItem.Text = "TSQL Script";
-            this.tSQLScriptToolStripMenuItem.Click += new System.EventHandler(this.tSQLScriptToolStripMenuItem_Click);
+            tSQLScriptToolStripMenuItem.Name = "tSQLScriptToolStripMenuItem";
+            tSQLScriptToolStripMenuItem.Size = new System.Drawing.Size(205, 34);
+            tSQLScriptToolStripMenuItem.Text = "TSQL Script";
+            tSQLScriptToolStripMenuItem.Click += tSQLScriptToolStripMenuItem_Click;
             // 
             // logToolStripMenuItem
             // 
-            this.logToolStripMenuItem.Name = "logToolStripMenuItem";
-            this.logToolStripMenuItem.Size = new System.Drawing.Size(168, 26);
-            this.logToolStripMenuItem.Text = "Log";
-            this.logToolStripMenuItem.Click += new System.EventHandler(this.logToolStripMenuItem_Click);
+            logToolStripMenuItem.Name = "logToolStripMenuItem";
+            logToolStripMenuItem.Size = new System.Drawing.Size(205, 34);
+            logToolStripMenuItem.Text = "Log";
+            logToolStripMenuItem.Click += logToolStripMenuItem_Click;
             // 
             // helpToolStripMenuItem
             // 
-            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.userManualToolStripMenuItem,
-            this.videoToolStripMenuItem,
-            this.aboutToolStripMenuItem1});
-            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(55, 24);
-            this.helpToolStripMenuItem.Text = "Help";
+            helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { userManualToolStripMenuItem, videoToolStripMenuItem, aboutToolStripMenuItem1 });
+            helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            helpToolStripMenuItem.Size = new System.Drawing.Size(65, 29);
+            helpToolStripMenuItem.Text = "Help";
             // 
             // userManualToolStripMenuItem
             // 
-            this.userManualToolStripMenuItem.Name = "userManualToolStripMenuItem";
-            this.userManualToolStripMenuItem.Size = new System.Drawing.Size(182, 26);
-            this.userManualToolStripMenuItem.Text = "User Manual";
-            this.userManualToolStripMenuItem.Click += new System.EventHandler(this.userManualToolStripMenuItem_Click);
+            userManualToolStripMenuItem.Name = "userManualToolStripMenuItem";
+            userManualToolStripMenuItem.Size = new System.Drawing.Size(220, 34);
+            userManualToolStripMenuItem.Text = "User Manual";
+            userManualToolStripMenuItem.Click += userManualToolStripMenuItem_Click;
             // 
             // videoToolStripMenuItem
             // 
-            this.videoToolStripMenuItem.Name = "videoToolStripMenuItem";
-            this.videoToolStripMenuItem.Size = new System.Drawing.Size(182, 26);
-            this.videoToolStripMenuItem.Text = "HowTo Video";
-            this.videoToolStripMenuItem.Click += new System.EventHandler(this.videoToolStripMenuItem_Click);
+            videoToolStripMenuItem.Name = "videoToolStripMenuItem";
+            videoToolStripMenuItem.Size = new System.Drawing.Size(220, 34);
+            videoToolStripMenuItem.Text = "HowTo Video";
+            videoToolStripMenuItem.Click += videoToolStripMenuItem_Click;
             // 
             // aboutToolStripMenuItem1
             // 
-            this.aboutToolStripMenuItem1.Name = "aboutToolStripMenuItem1";
-            this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(182, 26);
-            this.aboutToolStripMenuItem1.Text = "About";
-            this.aboutToolStripMenuItem1.Click += new System.EventHandler(this.aboutToolStripMenuItem1_Click);
+            aboutToolStripMenuItem1.Name = "aboutToolStripMenuItem1";
+            aboutToolStripMenuItem1.Size = new System.Drawing.Size(220, 34);
+            aboutToolStripMenuItem1.Text = "About";
+            aboutToolStripMenuItem1.Click += aboutToolStripMenuItem1_Click;
             // 
             // lbVersion
             // 
-            this.lbVersion.AutoSize = true;
-            this.lbVersion.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.lbVersion.Location = new System.Drawing.Point(631, 6);
-            this.lbVersion.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lbVersion.Name = "lbVersion";
-            this.lbVersion.Size = new System.Drawing.Size(64, 16);
-            this.lbVersion.TabIndex = 10;
-            this.lbVersion.Text = "lbVersion";
-            this.lbVersion.Click += new System.EventHandler(this.lbVersion_Click);
+            lbVersion.AutoSize = true;
+            lbVersion.ForeColor = System.Drawing.SystemColors.HotTrack;
+            lbVersion.Location = new System.Drawing.Point(789, 9);
+            lbVersion.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            lbVersion.Name = "lbVersion";
+            lbVersion.Size = new System.Drawing.Size(85, 25);
+            lbVersion.TabIndex = 10;
+            lbVersion.Text = "lbVersion";
+            lbVersion.Click += lbVersion_Click;
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(737, 60);
-            this.button2.Margin = new System.Windows.Forms.Padding(2);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(79, 30);
-            this.button2.TabIndex = 8;
-            this.button2.Text = "Browse";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            button2.Location = new System.Drawing.Point(921, 94);
+            button2.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
+            button2.Name = "button2";
+            button2.Size = new System.Drawing.Size(99, 47);
+            button2.TabIndex = 8;
+            button2.Text = "Browse";
+            button2.UseVisualStyleBackColor = true;
+            button2.Click += button2_Click;
             // 
             // textBox1
             // 
-            this.textBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox1.Location = new System.Drawing.Point(46, 61);
-            this.textBox1.Margin = new System.Windows.Forms.Padding(2);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(674, 27);
-            this.textBox1.TabIndex = 0;
+            textBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
+            textBox1.Location = new System.Drawing.Point(58, 95);
+            textBox1.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
+            textBox1.Name = "textBox1";
+            textBox1.Size = new System.Drawing.Size(842, 30);
+            textBox1.TabIndex = 0;
             // 
             // button1
             // 
-            this.button1.Image = global::AGLatency.Properties.Resources.green2;
-            this.button1.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.button1.Location = new System.Drawing.Point(358, 256);
-            this.button1.Margin = new System.Windows.Forms.Padding(2);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(134, 59);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "Start";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            button1.Image = Properties.Resources.green2;
+            button1.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            button1.Location = new System.Drawing.Point(448, 400);
+            button1.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
+            button1.Name = "button1";
+            button1.Size = new System.Drawing.Size(168, 92);
+            button1.TabIndex = 1;
+            button1.Text = "Start";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
+            // 
+            // chkBox_UseLogScout
+            // 
+            chkBox_UseLogScout.AutoSize = true;
+            chkBox_UseLogScout.Checked = true;
+            chkBox_UseLogScout.CheckState = System.Windows.Forms.CheckState.Checked;
+            chkBox_UseLogScout.Location = new System.Drawing.Point(758, 463);
+            chkBox_UseLogScout.Name = "chkBox_UseLogScout";
+            chkBox_UseLogScout.Size = new System.Drawing.Size(262, 29);
+            chkBox_UseLogScout.TabIndex = 11;
+            chkBox_UseLogScout.Text = "Files are from SQL LogScout";
+            chkBox_UseLogScout.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(874, 335);
-            this.Controls.Add(this.lbVersion);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.textBox2);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.menuStrip1);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MainMenuStrip = this.menuStrip1;
-            this.Margin = new System.Windows.Forms.Padding(2);
-            this.Name = "Form1";
-            this.Text = "AGLatency - AlwaysON AG Log Block Movement Latency Report Tool";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
-            this.menuStrip1.ResumeLayout(false);
-            this.menuStrip1.PerformLayout();
-            this.ResumeLayout(false);
-            this.PerformLayout();
+            AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            ClientSize = new System.Drawing.Size(1092, 523);
+            Controls.Add(chkBox_UseLogScout);
+            Controls.Add(lbVersion);
+            Controls.Add(button3);
+            Controls.Add(button2);
+            Controls.Add(label4);
+            Controls.Add(label3);
+            Controls.Add(textBox2);
+            Controls.Add(label2);
+            Controls.Add(label1);
+            Controls.Add(button1);
+            Controls.Add(textBox1);
+            Controls.Add(menuStrip1);
+            Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+            MainMenuStrip = menuStrip1;
+            Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
+            Name = "Form1";
+            Text = "AGLatency - AlwaysON AG Log Block Movement Latency Report Tool";
+            FormClosing += Form1_FormClosing;
+            menuStrip1.ResumeLayout(false);
+            menuStrip1.PerformLayout();
+            ResumeLayout(false);
+            PerformLayout();
 
         }
 
@@ -274,6 +283,8 @@
         private System.Windows.Forms.ToolStripMenuItem videoToolStripMenuItem;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog1;
+        private System.Windows.Forms.CheckBox chkBox_UseLogScout;
     }
 }
 

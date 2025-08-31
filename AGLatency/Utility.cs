@@ -12,8 +12,13 @@ namespace AGLatency
     
     public static class Utility
     {
-        private static Boolean? _useLogScoutFiles = null;
+        private static Boolean? _useLogScoutFiles {
+            get { return Controller.useLogScoutFiles; }
+            set { Controller.useLogScoutFiles = value; }
+        }
+
         private static readonly object _useLogScoutFilesLock = new object();
+
 
         private static void DirectoryCopy(
         string sourceDirName, string destDirName, bool copySubDirs)

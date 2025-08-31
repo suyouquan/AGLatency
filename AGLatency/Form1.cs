@@ -786,6 +786,9 @@ namespace AGLatency
             Logger.LogMessage("Primary:" + this.textBox1.Text);
             Logger.LogMessage("Secondary:" + this.textBox2.Text);
 
+            if (chkBox_UseLogScout.Checked) 
+                Controller.useLogScoutFiles = true;
+
             xel = new XELoader(this.textBox1.Text, Replica.Primary, UpdateProgress1);
 
 
@@ -896,7 +899,8 @@ namespace AGLatency
                 {
                     notStarted = false;
                     isAbort = false;
-                } else
+                }
+                else
                 {
                     DoStop(true);
                 }
@@ -912,9 +916,9 @@ namespace AGLatency
 
         public void PreProcessing()
         {
-            if (td1 == null || 
-                td2 == null || 
-                td1.ThreadState == System.Threading.ThreadState.Unstarted || 
+            if (td1 == null ||
+                td2 == null ||
+                td1.ThreadState == System.Threading.ThreadState.Unstarted ||
                 td2.ThreadState == System.Threading.ThreadState.Unstarted)
             {
                 Logger.LogMessage("Threads are not started error.");
@@ -997,10 +1001,11 @@ namespace AGLatency
                 if (TryFindTopologyXml(path, out fileName))
                 {
                     Controller.primaryXmlFile = fileName;
-                } else
+                }
+                else
                 {
-                    Controller.primaryXmlFile = string.Empty; 
-                }    
+                    Controller.primaryXmlFile = string.Empty;
+                }
             }
 
         }
@@ -1025,7 +1030,8 @@ namespace AGLatency
                 if (TryFindTopologyXml(path, out fileName))
                 {
                     Controller.secondaryXmlFile = fileName;
-                } else
+                }
+                else
                 {
                     Controller.secondaryXmlFile = string.Empty;
                 }
@@ -1048,7 +1054,8 @@ namespace AGLatency
                 {
                     e.Cancel = true;
                 }
-            } else
+            }
+            else
             {
                 // MessageBox.Show("You haven't started the process yet, so you can exit now.", "Exit Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 DoStop(true);
@@ -1093,7 +1100,7 @@ namespace AGLatency
             MessageBox.Show(msg, "Version Update");
         }
 
-        
+
 
         private void aboutToolStripMenuItem1_Click(object sender, EventArgs e)
         {
@@ -1110,7 +1117,7 @@ namespace AGLatency
                 var file = Path.Combine(path, "AGLatencyTool_UserManual_V2.pdf");
                 System.Diagnostics.Process.Start(file);
             }
-            catch(Exception ex )
+            catch (Exception ex)
             {
                 Logger.LogException(ex, Thread.CurrentThread);
             }
@@ -1128,6 +1135,11 @@ namespace AGLatency
             {
                 Logger.LogException(ex, Thread.CurrentThread);
             }
+        }
+
+        private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+
         }
     }
 }

@@ -31,7 +31,6 @@ namespace AGLatency
         private static object _uilock = new object();
 
 
-
         public delegate void outputCallBackFunction(UInt64 count);
         outputCallBackFunction fn_UpdateRowCount = null;
 

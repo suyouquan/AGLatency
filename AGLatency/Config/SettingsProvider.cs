@@ -10,42 +10,27 @@ namespace AGLatency.Config
         AppSettings Load();
     }
 
-    public sealed class JsonSettingsProvider : ISettingsProvider
+    public sealed class SettingsProvider : ISettingsProvider
     {
-        private readonly string _path;
-        public JsonSettingsProvider(string? path = null)
+
+        public SettingsProvider()
         {
-            _path = path ?? Path.Combine(AppContext.BaseDirectory, "appsettings.json");
-            Logger.LogMessage($"Settings path: {_path}");
+
         }
 
         public AppSettings Load()
         {
-            // 1) Try JSON first
-            if (File.Exists(_path))
-            {
-                Logger.LogMessage($"Loading settings from JSON file: {_path}");
-
-                var json = File.ReadAllText(_path);
-                return JsonSerializer.Deserialize<AppSettings>(json, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                }) ?? new AppSettings();
-            }
-
-            // 2) Fallback to app.config (AGLatency.dll.config)
+           
             var settings = new AppSettings();
+            settings.Processing ??= new ProcessingSettings();
             try
             {
                 Logger.LogMessage("Loading settings from app.config");
 
                 var s = ConfigurationManager.AppSettings["Processing.MaxDegreeOfParallelism"]
                         ?? ConfigurationManager.AppSettings["MaxDegreeOfParallelism"];
-                
-
                 if (int.TryParse(s, out var m))
                 {
-                    settings.Processing ??= new ProcessingSettings();
                     settings.Processing.MaxDOP = m;
                     Logger.LogMessage($"Loaded MaxDegreeOfParallelism from app.config: {m}");
                 }
@@ -54,7 +39,6 @@ namespace AGLatency.Config
                         ?? ConfigurationManager.AppSettings["BatchSize"];
                 if (int.TryParse(batchSize, out var b))
                 {
-                    settings.Processing ??= new ProcessingSettings();
                     settings.Processing.BatchSize = b;
                     Logger.LogMessage($"Loaded BatchSize from app.config: {b}");
                 }

@@ -30,6 +30,7 @@ namespace AGLatency
         public static AGInfo primaryInfo;
         public static AGInfo secondaryInfo;
         public static CancellationToken CancellationToken = new CancellationToken();
+        public static bool? useLogScoutFiles;
 
         public static void AddChartData(string name,List<string> data)
         {
@@ -40,8 +41,6 @@ namespace AGLatency
         public static void AddChartData_new(int order,string name, List<string> data)
         {
             chartsData_new.Add(order, new KeyValuePair<string, List<string>>(name, data));
-            
-        
         }
 
         public static void AddChartDataSummary_new(int order, string name, int value)
@@ -59,7 +58,7 @@ namespace AGLatency
             latencySummaryDict.Clear();
             latencySummaryDict_new.Clear();
             chartsData_new.Clear();
-            var settings = new AGLatency.Config.JsonSettingsProvider().Load();
+            var settings = new AGLatency.Config.SettingsProvider().Load();
             int vMaxDOP = Math.Max(1, settings.Processing.MaxDOP);
             Logger.LogMessage($"MaxDOP from settings is {vMaxDOP}");
             int vProcessorCount = Environment.ProcessorCount;
@@ -71,6 +70,7 @@ namespace AGLatency
               
             BatchSize = Math.Max(5000, settings.Processing.BatchSize);
             Logger.LogMessage($"BatchSize is set to {BatchSize}");
+            useLogScoutFiles = null;
 
         }
 
