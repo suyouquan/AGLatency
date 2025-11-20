@@ -7,12 +7,14 @@ using System.Threading.Tasks;
 using System.Net;
 using System.IO;
 using System.Threading;
+using System.ComponentModel;
 
 namespace AGLatency
 {
 
     public class ExtendedWebClient : WebClient
     {
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public int Timeout { get; set; }
 
         protected override WebRequest GetWebRequest(Uri address)
