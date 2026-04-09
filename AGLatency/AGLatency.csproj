@@ -10,6 +10,8 @@
     <ApplicationIcon>AGLatency_icon.ico</ApplicationIcon>
 	<VersionPrefix>3.0.0</VersionPrefix>
 	<VersionSuffix>Core</VersionSuffix>
+	<AssemblyVersion>$(VersionPrefix).0</AssemblyVersion>
+	<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
 	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
 	<SelfContained>true</SelfContained>
 	<PublishSingleFile>true</PublishSingleFile>

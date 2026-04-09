@@ -36,6 +36,14 @@ namespace AGLatency
 
             InitializeComponent();
 
+            // Label and tooltip for LogScout option
+            chkBox_UseLogScout.Text = "Files are from SQL LogScout (DataMovement)";
+            var toolTip = new ToolTip { AutomaticDelay = 200 };
+            toolTip.SetToolTip(
+                chkBox_UseLogScout,
+                "Check if the selected folders contain SQL LogScout DataMovement output. Enables LogScout-specific parsing and file naming conventions."
+            );
+
             Init();
 
             //removing this part as update service doesn't work for now
@@ -65,9 +73,8 @@ namespace AGLatency
 
         public void Init()
         {
-
-            string version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            this.Text = "AGLatency Report tool, Version " + version;
+            //get app title and version from AppInfo
+            this.Text = AppInfo.Title;
             lbVersion.Text = "";
 
             mylable1 = label1;
@@ -380,8 +387,6 @@ namespace AGLatency
             /*************************/
 
 
-
-
             /*************************/
             UpdateProgress2("Creating recovery_unit_harden_log_timestamps page");
             Logger.LogMessage("Creating recovery_unit_harden_log_timestamps page");
@@ -409,8 +414,6 @@ namespace AGLatency
             Controller.pageObjs.Add(pageObj3);
 
             /*************************/
-
-
 
 
             /*************************/
@@ -792,8 +795,6 @@ namespace AGLatency
             xel = new XELoader(this.textBox1.Text, Replica.Primary, UpdateProgress1);
 
 
-
-
             mythread = new Thread(xel.Start);
 
 
@@ -1090,8 +1091,7 @@ namespace AGLatency
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string msg = "AGLatency Report Tool. Version " + typeof(Program).Assembly.GetName().Version + "\nhttps://github.com/suyouquan/AGLatency";
-            MessageBox.Show(msg, "About");
+            MessageBox.Show($"{AppInfo.Name}. Version {AppInfo.Version}\n{AppInfo.Url}", "About");
         }
 
         private void lbVersion_Click(object sender, EventArgs e)
@@ -1101,13 +1101,6 @@ namespace AGLatency
         }
 
 
-
-        private void aboutToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-
-            string msg = "AGLatency Report Tool. Version " + typeof(Program).Assembly.GetName().Version + "\nhttps://github.com/suyouquan/AGLatency";
-            MessageBox.Show(msg, "About");
-        }
 
         private void userManualToolStripMenuItem_Click(object sender, EventArgs e)
         {

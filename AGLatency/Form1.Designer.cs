@@ -123,7 +123,7 @@
             menuStrip1.Location = new System.Drawing.Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Padding = new System.Windows.Forms.Padding(5, 2, 0, 2);
-            menuStrip1.Size = new System.Drawing.Size(1092, 33);
+            menuStrip1.Size = new System.Drawing.Size(1145, 33);
             menuStrip1.TabIndex = 9;
             menuStrip1.Text = "menuStrip1";
             menuStrip1.ItemClicked += menuStrip1_ItemClicked;
@@ -175,7 +175,7 @@
             aboutToolStripMenuItem1.Name = "aboutToolStripMenuItem1";
             aboutToolStripMenuItem1.Size = new System.Drawing.Size(220, 34);
             aboutToolStripMenuItem1.Text = "About";
-            aboutToolStripMenuItem1.Click += aboutToolStripMenuItem1_Click;
+            aboutToolStripMenuItem1.Click += aboutToolStripMenuItem_Click;
             // 
             // lbVersion
             // 
@@ -238,7 +238,7 @@
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(1092, 523);
+            ClientSize = new System.Drawing.Size(1145, 523);
             Controls.Add(chkBox_UseLogScout);
             Controls.Add(lbVersion);
             Controls.Add(button3);

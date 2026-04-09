@@ -201,7 +201,7 @@ namespace AGLatency
                 {
                     string serverVersion = version.Replace("[\"AGLatencyLatestVersion\",\"", "").Replace("\"]", "");
 
-                    string currentVersion = typeof(Program).Assembly.GetName().Version.ToString();
+                    string currentVersion = AppInfo.Version;
 
                     string info = "";
                     if (String.Compare(serverVersion, currentVersion) > 0)

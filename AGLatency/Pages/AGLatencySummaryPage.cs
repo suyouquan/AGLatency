@@ -142,9 +142,7 @@ namespace AGLatency.Pages
             this.page.pageDescription += "<br><br>" + chart;
             //   this.page.PagingCount = -1;
 
-            string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            this.page.pageSummary = "<br><br><hr>AGLatency Report tool. Version " + version;
-
+            this.page.pageSummary = $"<br><br><hr>{AppInfo.Name}. Version {AppInfo.Version}";
         }
 
 
