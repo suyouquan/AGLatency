@@ -129,33 +129,55 @@ namespace AGLatency
                             {
                                 // get the first file exact count
                                 UInt64 k = GetCount(data);
-                                
+
                                 // Get file size
                                 var fileInfo = new FileInfo(f);
                                 long fileSize = fileInfo.Length;
 
-                                // Estimate event count based on file size and first file's event count
-                                double singleEventSize = (double) fileSize / k;
                                 count = k;
-                                foreach (string file in xelFiles.Skip(1))
+
+                                if (k == 0 || fileSize == 0)
                                 {
-                                    if (Controller.CancellationToken.IsCancellationRequested)
+                                    Logger.LogMessage("First file had 0 events or 0 bytes; falling back to exact counting.");
+                                    foreach (string file in xelFiles.Skip(1))
                                     {
-                                        Logger.LogMessage("Cancellation requested by user.");
-                                        return;
+                                        if (Controller.CancellationToken.IsCancellationRequested)
+                                        {
+                                            Logger.LogMessage("Cancellation requested by user.");
+                                            return;
+                                        }
+                                        var nextData = Open(file);
+                                        if (nextData != null)
+                                        {
+                                            count += GetCount(nextData);
+                                            fileNum2++;
+                                            lock (_uilock)
+                                                fn_UpdateMsg($"File: {fileNum2}/{totalFile}, Counting {count}");
+                                        }
                                     }
-                                    fileInfo = new FileInfo(file);
-                                    fileSize = fileInfo.Length;
-                                    k =  (ulong) fileSize / (ulong) singleEventSize;
-                                    count += k;
-                                    fileNum2++;
-                                    lock (_uilock)
-                                        fn_UpdateMsg($"File: {fileNum2}/{totalFile}, Caculating {count}");
-                                    Logger.LogMessage($"GetEventCount - estimate:{file} ==> {k}");
-                                   
+                                }
+                                else
+                                {
+                                    double avgEventSize = (double)fileSize / k;
+
+                                    foreach (string file in xelFiles.Skip(1))
+                                    {
+                                        if (Controller.CancellationToken.IsCancellationRequested)
+                                        {
+                                            Logger.LogMessage("Cancellation requested by user.");
+                                            return;
+                                        }
+                                        fileInfo = new FileInfo(file);
+                                        double estimated = fileInfo.Length / avgEventSize;
+                                        k = estimated > 0 ? (ulong)Math.Min(estimated, (double)ulong.MaxValue - count) : 0;
+                                        count += k;
+                                        fileNum2++;
+                                        lock (_uilock)
+                                            fn_UpdateMsg($"File: {fileNum2}/{totalFile}, Caculating {count}");
+                                        Logger.LogMessage($"GetEventCount - estimate:{file} ==> {k}");
+                                    }
                                 }
 
-                                
                                 eventCount = count;
                             }
                             else
