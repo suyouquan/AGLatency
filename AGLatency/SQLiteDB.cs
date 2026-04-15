@@ -119,26 +119,31 @@ namespace AGLatency
 
         public void CleanUp()
         {
-            try
+            // 1. Signal cancellation
+            cts.Cancel();
+
+            // 2. Wake the thread if blocked on WaitOne()
+            autoEvent.Set();
+
+            // 3. Wait for dataLoopThread to finish (it commits its own transaction in the finally block)
+            if (dataLoopThread != null && dataLoopThread.IsAlive)
             {
-                if (_sqLiteTransaction != null)
+                Logger.LogMessage("Waiting for data loop thread to exit...");
+                if (!dataLoopThread.Join(TimeSpan.FromSeconds(10)))
                 {
-                    _sqLiteTransaction.Commit();
-                    _sqLiteTransaction.Dispose();
-                    _sqLiteTransaction = null;
+                    Logger.LogMessage("Data loop thread did not exit within timeout.");
                 }
             }
-            catch (Exception ex)
-            {
-                Logger.LogException(ex, Thread.CurrentThread);
-            }
 
-            CloseConnection();
-            if (dataLoopThread != null)
+            // 4. Dispose prepared commands
+            foreach (var cmd in _insertCmdCache.Values)
             {
-                Logger.LogMessage("Cancelling data loop thread.");
-                cts.Cancel();
+                cmd.Dispose();
             }
+            _insertCmdCache.Clear();
+
+            // 5. Now safe to close connection (worker is done)
+            CloseConnection();
         }
 
         public static void DeleteOldFile()
