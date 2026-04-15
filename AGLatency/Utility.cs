@@ -2,24 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace AGLatency
 {
     
     public static class Utility
     {
-        private static Boolean? _useLogScoutFiles {
-            get { return Controller.useLogScoutFiles; }
-            set { Controller.useLogScoutFiles = value; }
-        }
-
-        private static readonly object _useLogScoutFilesLock = new object();
-
-
         private static void DirectoryCopy(
         string sourceDirName, string destDirName, bool copySubDirs)
         {
@@ -147,35 +136,14 @@ namespace AGLatency
 
             }
 
-            // check if there are AlwaysOn_Data_Movement XEL files 
-            // which suggests this is Sql LogScout collection
-            // Ask user if they want to filter only these files
-
-            var alwaysOnFiles = files.Where(f => Path.GetFileName(f).Contains("AlwaysOn_Data_Movement")).ToList();
-
-            if (alwaysOnFiles.Any())
+            if (Controller.useLogScoutFiles == true)
             {
-                lock (_useLogScoutFilesLock)
+                var alwaysOnFiles = files.Where(f => Path.GetFileName(f).Contains("AlwaysOn_Data_Movement")).ToList();
+                if (alwaysOnFiles.Any())
                 {
-                    if (_useLogScoutFiles == null)
-                    {
-                        _useLogScoutFiles = MessageBox.Show(
-                            "Found AlwaysOn_Data_Movement XEL files. \r\n Do you want to use these files?",
-                            "Use LogScout Files",
-                            MessageBoxButtons.YesNo,
-                            MessageBoxIcon.Question) == DialogResult.Yes;
-                    }
-
-
-                    if (_useLogScoutFiles == true)
-                    {
-                        files = alwaysOnFiles;
-                    }
+                    files = alwaysOnFiles;
                 }
-
             }
-
-
 
             return files;
         }

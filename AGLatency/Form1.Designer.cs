@@ -231,7 +231,7 @@
             chkBox_UseLogScout.Name = "chkBox_UseLogScout";
             chkBox_UseLogScout.Size = new System.Drawing.Size(262, 29);
             chkBox_UseLogScout.TabIndex = 11;
-            chkBox_UseLogScout.Text = "Files are from SQL LogScout";
+            chkBox_UseLogScout.Text = "Files are from SQL LogScout (DataMovement)";
             chkBox_UseLogScout.UseVisualStyleBackColor = true;
             // 
             // Form1

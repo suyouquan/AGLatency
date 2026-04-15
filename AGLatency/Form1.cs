@@ -36,8 +36,6 @@ namespace AGLatency
 
             InitializeComponent();
 
-            // Label and tooltip for LogScout option
-            chkBox_UseLogScout.Text = "Files are from SQL LogScout (DataMovement)";
             var toolTip = new ToolTip { AutomaticDelay = 200 };
             toolTip.SetToolTip(
                 chkBox_UseLogScout,
@@ -789,9 +787,6 @@ namespace AGLatency
             Logger.LogMessage("Primary:" + this.textBox1.Text);
             Logger.LogMessage("Secondary:" + this.textBox2.Text);
 
-            if (chkBox_UseLogScout.Checked) 
-                Controller.useLogScoutFiles = true;
-
             xel = new XELoader(this.textBox1.Text, Replica.Primary, UpdateProgress1);
 
 
@@ -858,22 +853,10 @@ namespace AGLatency
 
             Controller.primaryFolder = textBox1.Text.Trim();
             Controller.secondaryFolder = textBox2.Text.Trim();
+            Controller.useLogScoutFiles = chkBox_UseLogScout.Checked;
 
-            if (String.IsNullOrEmpty(Controller.primaryXmlFile))
-            {
-                xmlFilesForm.ShowDialog();
-            }
-            //Controller.primaryXmlFile = txtBxPrimaryXMLFile.Text.Trim();
-            //Controller.secondaryXmlFile = txtBxSecondaryXMLFile.Text.Trim();
-
-            //check to see if primary.xml and secondary.xml exists or not:
-
-            if (!File.Exists(Path.Combine(Controller.primaryFolder, Controller.primaryXmlFile)))
-            {
-                MessageBox.Show("primary.xml not found in [" + Controller.primaryFolder + "]");
+            if (!ResolveXmlFiles())
                 return;
-
-            }
 
 
 
@@ -966,25 +949,94 @@ namespace AGLatency
             return "";
         }
 
-        private bool TryFindTopologyXml(string folderPath, out string fileName)
+        private static bool TryFindLogScoutXml(string folderPath, out string fileName)
         {
             fileName = null;
             if (string.IsNullOrEmpty(folderPath) || !Directory.Exists(folderPath))
                 return false;
 
-            // Search for "primary.xml" and "*GetAGTopology.xml" in the folder (not recursive)
-            var files = Directory.GetFiles(folderPath, "primary.xml", SearchOption.TopDirectoryOnly)
-                .Concat(Directory.GetFiles(folderPath, "*GetAGTopology.xml", SearchOption.TopDirectoryOnly))
-                .Concat(Directory.GetFiles(folderPath, "secondary.xml", SearchOption.TopDirectoryOnly))
-                .ToList();
-
-            if (files.Count == 1)
+            var files = Directory.GetFiles(folderPath, "*GetAGTopology.xml", SearchOption.TopDirectoryOnly);
+            if (files.Length == 1)
             {
                 fileName = Path.GetFileName(files[0]);
                 return true;
             }
-            // If more than one or none found, return false
             return false;
+        }
+
+        private static bool TryFindStandardXml(string folderPath, out string fileName)
+        {
+            fileName = null;
+            if (string.IsNullOrEmpty(folderPath) || !Directory.Exists(folderPath))
+                return false;
+
+            var files = Directory.GetFiles(folderPath, "primary.xml", SearchOption.TopDirectoryOnly)
+                .Concat(Directory.GetFiles(folderPath, "secondary.xml", SearchOption.TopDirectoryOnly))
+                .ToArray();
+            if (files.Length == 1)
+            {
+                fileName = Path.GetFileName(files[0]);
+                return true;
+            }
+            return false;
+        }
+
+        private bool TryFindXmlForFolder(string folderPath, out string fileName)
+        {
+            fileName = null;
+            if (chkBox_UseLogScout.Checked)
+            {
+                // Checkbox ON: LogScout first, then standard
+                return TryFindLogScoutXml(folderPath, out fileName)
+                    || TryFindStandardXml(folderPath, out fileName);
+            }
+            else
+            {
+                // Checkbox OFF: standard first, then LogScout
+                return TryFindStandardXml(folderPath, out fileName)
+                    || TryFindLogScoutXml(folderPath, out fileName);
+            }
+        }
+
+        private bool ResolveXmlFiles()
+        {
+            string pFile = Controller.primaryXmlFile;
+            string sFile = Controller.secondaryXmlFile;
+
+            // Try auto-detecting primary XML
+            if (string.IsNullOrEmpty(pFile))
+                TryFindXmlForFolder(Controller.primaryFolder, out pFile);
+
+            // Try auto-detecting secondary XML
+            if (string.IsNullOrEmpty(sFile))
+                TryFindXmlForFolder(Controller.secondaryFolder, out sFile);
+
+            Controller.primaryXmlFile = pFile ?? string.Empty;
+            Controller.secondaryXmlFile = sFile ?? string.Empty;
+
+            // If either is still missing, let the user pick manually
+            if (string.IsNullOrEmpty(Controller.primaryXmlFile)
+                || !File.Exists(Path.Combine(Controller.primaryFolder, Controller.primaryXmlFile))
+                || string.IsNullOrEmpty(Controller.secondaryXmlFile)
+                || !File.Exists(Path.Combine(Controller.secondaryFolder, Controller.secondaryXmlFile)))
+            {
+                if (xmlFilesForm.ShowDialog() != DialogResult.OK)
+                    return false;
+            }
+
+            // Final validation
+            if (!File.Exists(Path.Combine(Controller.primaryFolder, Controller.primaryXmlFile)))
+            {
+                MessageBox.Show("XML topology file not found in [" + Controller.primaryFolder + "]");
+                return false;
+            }
+            if (!File.Exists(Path.Combine(Controller.secondaryFolder, Controller.secondaryXmlFile)))
+            {
+                MessageBox.Show("XML topology file not found in [" + Controller.secondaryFolder + "]");
+                return false;
+            }
+
+            return true;
         }
 
 
@@ -997,16 +1049,11 @@ namespace AGLatency
 
             if (!String.IsNullOrEmpty(path))
             {
-                string fileName = "";
                 this.textBox1.Text = path;
-                if (TryFindTopologyXml(path, out fileName))
-                {
+                if (TryFindXmlForFolder(path, out string fileName))
                     Controller.primaryXmlFile = fileName;
-                }
                 else
-                {
                     Controller.primaryXmlFile = string.Empty;
-                }
             }
 
         }
@@ -1026,16 +1073,11 @@ namespace AGLatency
 
             if (!String.IsNullOrEmpty(path))
             {
-                string fileName = "";
                 this.textBox2.Text = path;
-                if (TryFindTopologyXml(path, out fileName))
-                {
+                if (TryFindXmlForFolder(path, out string fileName))
                     Controller.secondaryXmlFile = fileName;
-                }
                 else
-                {
                     Controller.secondaryXmlFile = string.Empty;
-                }
             }
         }
 
