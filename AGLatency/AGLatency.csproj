@@ -26,10 +26,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.XE.Core">
-      <HintPath>XEvent\SQL2025\Microsoft.SqlServer.XE.Core.dll</HintPath>
+      <HintPath>XEvent\Microsoft.SqlServer.XE.Core.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.SqlServer.XEvent.Linq">
-      <HintPath>XEvent\SQL2025\Microsoft.SqlServer.XEvent.Linq.dll</HintPath>
+      <HintPath>XEvent\Microsoft.SqlServer.XEvent.Linq.dll</HintPath>
     </Reference>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.8" />
