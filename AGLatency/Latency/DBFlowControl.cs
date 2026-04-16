@@ -1,14 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.SqlServer.XEvent;
-using Microsoft.SqlServer.XEvent.Linq;
-using System.Data.SQLite;
-using System.IO;
+using Microsoft.Data.Sqlite;
 
 namespace AGLatency.Latency
 {
@@ -79,13 +71,14 @@ namespace AGLatency.Latency
         {
             Dictionary<string, List<FlowControl_Sec>> dict = new Dictionary<string, List<FlowControl_Sec>>();
 
-
             string dbfile = sqliteDBFile;// @"C:\AGLatency\AGLatency\bin\Debug\SQLiteDB\LocalHarden_Primary_2__2018-07-27_22_06_38.175.SQLiteDB";
             SQLiteDB db = new SQLiteDB();
             db.Open(dbfile);
 
-            String databaseNum = "SELECT DISTINCT database_replica_id  FROM hadr_database_flow_control_action WHERE local_availability_replica_id='"+NetworkLatency.replicaId+"'";
-            SQLiteDataReader replicaDr =
+            String databaseNum = @$"SELECT DISTINCT database_replica_id  
+                                   FROM hadr_database_flow_control_action 
+                                   WHERE local_availability_replica_id='{NetworkLatency.replicaId}'";
+            SqliteDataReader replicaDr =
             db.ExecuteReader(databaseNum);
             if (replicaDr == null) return null;
 
@@ -98,33 +91,37 @@ namespace AGLatency.Latency
 
             replicas.Sort();
 
-
             foreach (string r in replicas)
             {
                 dict.Add(r, new List<FlowControl_Sec>());
             }
 
-            
             string idx1 = "CREATE INDEX lb ON hadr_database_flow_control_action (local_availability_replica_id,control_action)";
             db.Execute(idx1);
 
-            string select = @"
-             SELECT   (EventTimeStamp/10000000) as EventTimeStamp,database_replica_id, COUNT(*) as Occurence, AVG(Duration) as Avg_latency,SUM(Duration) as Sum_latency, max(Duration) as Max_latency, min(Duration) as Min_latency
+            string select = @$"
+             SELECT   (EventTimeStamp/10000000) as EventTimeStamp
+                     , database_replica_id
+                     , COUNT(*) as Occurence
+                     , AVG(Duration) as Avg_latency
+                     , SUM(Duration) as Sum_latency
+                     , max(Duration) as Max_latency
+                     , min(Duration) as Min_latency
              FROM hadr_database_flow_control_action  
-             WHERE local_availability_replica_id = '" + NetworkLatency.replicaId + "' AND control_action='Cleared'"
+             WHERE local_availability_replica_id = '{NetworkLatency.replicaId}' 
+             AND control_action='Cleared'
+             GROUP BY  EventTimeStamp/10000000,database_replica_id 
+             ORDER BY EventTimeStamp / 10000000,database_replica_id";
 
-           + " GROUP BY  EventTimeStamp/10000000,database_replica_id ORDER BY EventTimeStamp / 10000000,database_replica_id";
-
-
-
-
-            SQLiteDataReader dr =
+            SqliteDataReader dr =
             db.ExecuteReader(select);
 
-            if (dr == null) return dict;
-
-
-
+            if (dr == null)
+            {
+                Logger.LogMessage("[WARNING] No data found in hadr_database_flow_control_action!");
+                return dict;
+            }
+                
             bool isFirst = true;
 
             Int64 firstTimeStamp = 0;
@@ -132,6 +129,7 @@ namespace AGLatency.Latency
             {
 
                 FlowControl_Sec pfp = new FlowControl_Sec();
+                    
                 Int64 EventTimeStamp = dr.GetInt64(0) + 1;//Add one more second , say, 1.220 should be map to 2.00 
 
                 pfp.EventTimeStamp = new DateTime(EventTimeStamp * 10000000);
@@ -144,17 +142,12 @@ namespace AGLatency.Latency
                 pfp.Max_Duration = Math.Max(0, dr.GetInt64(5) / 1000);
                 pfp.Min_Duration = Math.Max(0, dr.GetInt64(6) / 1000);
 
-              
-
-
                 if (isFirst)
                 {
                     firstTimeStamp = EventTimeStamp;
 
                     isFirst = false;
                 }
-
-
 
                 pfp.secondDistance = EventTimeStamp - firstTimeStamp;
 

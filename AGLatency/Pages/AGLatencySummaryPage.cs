@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Reflection;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AGLatency.Pages
 {
@@ -141,9 +142,7 @@ namespace AGLatency.Pages
             this.page.pageDescription += "<br><br>" + chart;
             //   this.page.PagingCount = -1;
 
-            string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            this.page.pageSummary = "<br><br><hr>AGLatency Report tool. Version " + version;
-
+            this.page.pageSummary = $"<br><br><hr>{AppInfo.Name}. Version {AppInfo.Version}";
         }
 
 

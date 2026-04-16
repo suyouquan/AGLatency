@@ -1,18 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 
 namespace AGLatency
 {
     public static class Logger
     {
+        private static readonly object _initLock = new object();
         public static string LogFile = "";
-        private static StreamWriter LoggingSW = null;
+        private static TextWriter LoggingSW = null;
         private static bool InitDone = false;
         /// <summary>
         /// Delete older logs, only keep 30 latest logs
@@ -56,7 +59,12 @@ namespace AGLatency
 
                 LogFile = logfile;
 
-                LoggingSW = new StreamWriter(logfile, false);
+                // Use UTF8, larger buffer, and thread-safe wrapper
+                var sw = new StreamWriter(logfile, append: false, encoding: new UTF8Encoding(encoderShouldEmitUTF8Identifier: false), bufferSize: 64 * 1024)
+                {
+                    AutoFlush = true
+                };
+                LoggingSW = TextWriter.Synchronized(sw);
             }
             catch (Exception ex)
             {
@@ -84,18 +92,28 @@ namespace AGLatency
 
         public static void LogMessage(string msg)
         {
-            if (!InitDone)
+            try
             {
-                InitDone = true;
-                CreateLogFile();
-                LogHeader();
+                lock (_initLock)
+                {
+                    if (InitDone == false)
+                    {
+                        InitDone = true;
+                        CreateLogFile();
+                        LogHeader();
+                    }
+                }
+                
+
+                string txt = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "  " + msg;
+                Console.WriteLine(txt);
+                LoggingSW.WriteLine(txt);
+                LoggingSW.Flush();
             }
-
-            string txt = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "  " + msg;
-            Console.WriteLine(txt);
-            LoggingSW.WriteLine(txt);
-            LoggingSW.Flush();
-
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+            }
         }
 
 

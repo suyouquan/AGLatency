@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,7 +26,9 @@ namespace AGLatency
         public UInt64 eventCount = 0;
         // Dictionary<string, Import> imports = new Dictionary<string, Import>();
         public static List<EventLatency> eventLatencies = new List<EventLatency>();
-
+        private static object _dblock = new object();
+        private static object _readlock = new object();
+        private static object _uilock = new object();
 
 
         public delegate void outputCallBackFunction(UInt64 count);
@@ -64,11 +67,6 @@ namespace AGLatency
 
         }
        
-
-        
-
-        
-
         public XELoader(string fileFolder, Replica repl, outputCallBack fn)
         {
             this.fileOrFolder = fileFolder;
@@ -104,6 +102,7 @@ namespace AGLatency
                     if (data != null)
                     {
                         count = GetCount(data);
+                        //count = EstimateEventCount(data, fileOrFolder);
                         Logger.LogMessage("GetEventCount:" + fileOrFolder + "==>" + count);
                     }
                     else
@@ -114,6 +113,7 @@ namespace AGLatency
                 }
 
                 else //if it is folder
+                // we will perform estimate event count
                 {
                     if (Directory.Exists(fileOrFolder))
                     {
@@ -121,20 +121,70 @@ namespace AGLatency
                         var xelFiles = Utility.GetFileListFromFolder(fileOrFolder, masks);
  
                         totalFile = xelFiles.Count;
-                        foreach (string f in xelFiles)
+                        if (totalFile > 0)
                         {
-                            fileNum2++;
+                            string f = xelFiles.First();
                             var data = Open(f);
                             if (data != null)
                             {
+                                // get the first file exact count
                                 UInt64 k = GetCount(data);
-                                Logger.LogMessage("GetEventCount:" + f + "==>" + k);
-                                count += k;
-                            } 
-                            else 
-                            {
-                                Logger.LogMessage("GetEventCount: " + f + " is not a valid XEL file.");
+
+                                // Get file size
+                                var fileInfo = new FileInfo(f);
+                                long fileSize = fileInfo.Length;
+
+                                count = k;
+
+                                if (k == 0 || fileSize == 0)
+                                {
+                                    Logger.LogMessage("First file had 0 events or 0 bytes; falling back to exact counting.");
+                                    foreach (string file in xelFiles.Skip(1))
+                                    {
+                                        if (Controller.CancellationToken.IsCancellationRequested)
+                                        {
+                                            Logger.LogMessage("Cancellation requested by user.");
+                                            return;
+                                        }
+                                        var nextData = Open(file);
+                                        if (nextData != null)
+                                        {
+                                            count += GetCount(nextData);
+                                            fileNum2++;
+                                            lock (_uilock)
+                                                fn_UpdateMsg($"File: {fileNum2}/{totalFile}, Counting {count}");
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    double avgEventSize = (double)fileSize / k;
+
+                                    foreach (string file in xelFiles.Skip(1))
+                                    {
+                                        if (Controller.CancellationToken.IsCancellationRequested)
+                                        {
+                                            Logger.LogMessage("Cancellation requested by user.");
+                                            return;
+                                        }
+                                        fileInfo = new FileInfo(file);
+                                        double estimated = fileInfo.Length / avgEventSize;
+                                        k = estimated > 0 ? (ulong)Math.Min(estimated, (double)ulong.MaxValue - count) : 0;
+                                        count += k;
+                                        fileNum2++;
+                                        lock (_uilock)
+                                            fn_UpdateMsg($"File: {fileNum2}/{totalFile}, Calculating {count}");
+                                        Logger.LogMessage($"GetEventCount - estimate:{file} ==> {k}");
+                                    }
+                                }
+
+                                eventCount = count;
                             }
+                            else
+                            {
+                                Logger.LogMessage($"GetEventCount:{f} is not a valid XEL file.");
+                            }
+
                         }
                     }
 
@@ -178,9 +228,54 @@ namespace AGLatency
                     var masks = new[] { "*.xel" };
                     var xelFiles = Utility.GetFileListFromFolder(fileOrFolder, masks);
                     totalFile = xelFiles.Count;
-                    
+
+                    var parallelOptions = new ParallelOptions
+                    {
+                        CancellationToken = Controller.CancellationToken,
+                        MaxDegreeOfParallelism = Controller.MaxDOP
+                    };
+                    try { 
+                        Parallel.ForEach(xelFiles, parallelOptions, f =>
+                        {
+                            parallelOptions.CancellationToken.ThrowIfCancellationRequested();
+
+                            var localFileName = Path.GetFileName(f);
+                            var localFileNum = Interlocked.Increment(ref fileNum);
+
+                            Logger.LogMessage($"Processing File: {f}");
+
+                            var data = Open(f);
+                            if (data == null)
+                            {
+                                Logger.LogMessage("File is not a valid XEL file: " + f);
+                                return;
+                            }
+
+                            // Safe: AddTable is locked; duplicate creates are filtered inside
+                            CreateTablesFromMetadata(data);
+
+                            // Push() is locked; each eventDB has its own queue/worker
+                            ProcessEvent(data);
+                        });
+                    }
+                    catch (OperationCanceledException) 
+                    {
+                        Logger.LogMessage("Processing cancelled by user.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogException(ex, Thread.CurrentThread);
+                        Logger.LogMessage("Error in processing files: " + ex.Message);
+                    }
+                    // Sequential processing (commented out)
+                    /*
                     foreach (string f in xelFiles)
                     {
+                        if (Controller.CancellationToken.IsCancellationRequested)
+                        {
+                            Logger.LogMessage("Processing cancelled by user.");
+                            return;
+                        }
                         fileName = Path.GetFileName(f);
                         fileNum++;
                         Logger.LogMessage("Processing File:" + f);
@@ -193,7 +288,7 @@ namespace AGLatency
                         CreateTablesFromMetadata(data);
                         ProcessEvent(data);
 
-                    }
+                    }*/
                 }
 
             }
@@ -206,6 +301,11 @@ namespace AGLatency
 
             foreach (EventLatency el in eventLatencies)
             {
+                if (Controller.CancellationToken.IsCancellationRequested)
+                {
+                    Logger.LogMessage("Cancellation requested by user.");
+                    return cnt;
+                }
                 cnt = cnt + el.eventDB.GetQueueLength();
             }
 
@@ -218,6 +318,11 @@ namespace AGLatency
             UInt64 cnt = 0;
             foreach (EventLatency el in eventLatencies)
             {
+                if (Controller.CancellationToken.IsCancellationRequested)
+                {
+                    Logger.LogMessage("Cancellation requested by user.");
+                    return cnt;
+                }   
                 cnt = cnt + el.eventDB.count;
             }
             return cnt;
@@ -231,7 +336,7 @@ namespace AGLatency
 
         public static void CleanUp()
         {
-            Logger.LogMessage("Clean Up...");
+            Logger.LogMessage($"Clean Up {eventLatencies.Count} events ..." );
 
             foreach (EventLatency el in eventLatencies)
             {
@@ -240,12 +345,14 @@ namespace AGLatency
                 el.eventDB.Signal();
 
             }
+            Logger.LogMessage("Finished EventLatency");
 
             while (true)
             {
                 //wait for queue to be drain up
                 foreach (EventLatency el in eventLatencies)
                 {
+                    Logger.LogMessage("Signal eventDB");
 
                     //  imp.CleanUp();
                     //last chance to get them drain up their queue
@@ -277,20 +384,26 @@ namespace AGLatency
             }
         }
 
-        public UInt64 GetCount(QueryableXEventData data)
+        public UInt64 GetCount(QueryableXEventData data, int filenum=1)
         {
-           
             foreach (PublishedEvent x_event in data)
             {
-             if(eventCount % 8000==0)
+                if (Controller.CancellationToken.IsCancellationRequested)
                 {
-                    fn_UpdateMsg("File:" + fileNum2 + "/" + totalFile + ", Caculating " + eventCount);
+                    Logger.LogMessage("Cancellation requested by user");
+                    return eventCount;
+                }
+
+                if (eventCount % 8000==0)
+                {
+                    lock (_uilock)
+                        fn_UpdateMsg($"File: {fileNum}/{totalFile}, Calculating {eventCount}");
                 }
 
                 eventCount++;    
 
             }
-
+            
             return eventCount;
         }
         public void ProcessEvent(QueryableXEventData data)
@@ -298,10 +411,21 @@ namespace AGLatency
 
             foreach (PublishedEvent x_event in data)
             {
+                if (Controller.CancellationToken.IsCancellationRequested)
+                {
+                    Logger.LogMessage("Processing cancelled by user.");
+                    return;
+                }
                 string name = x_event.Name;
-                reads++;
 
-
+                // thread-safe increment and snapshot
+                ulong r;
+                lock (_readlock)
+                {
+                    reads++;
+                    r = reads;
+                }
+                
                 if (server == Replica.Primary)
                 {
                     foreach (EventLatency el in eventLatencies)
@@ -331,6 +455,12 @@ namespace AGLatency
                     {
                         foreach (EventWithMode em in el.secondaryEvents)
                         {
+                            if (Controller.CancellationToken.IsCancellationRequested)
+                            {
+                                Logger.LogMessage("Cancellation requested by user.");
+                                return;
+                            }
+
                             if (em.e.ToString() == name)
                             {
                                 if (em.mode == -1 || em.mode == EventMetaData.GetEventMode(x_event))
@@ -348,12 +478,12 @@ namespace AGLatency
                 }
 
 
-                if (reads % 4000 == 0)
+                if (r % 4000 == 0)
                 {
-                    //UInt64 i = GetAllCount();
-                    var percent = (int)(reads * 100 / eventCount);
-
-                    fn_UpdateMsg("File:" + fileNum + "/" + totalFile + ", Processing " + reads.ToString()+"/"+eventCount.ToString()+" ("+ percent.ToString()+"%)");
+                    UInt64 i = GetAllCount();
+                    int percent = eventCount ==0 ? 0: (int)(r * 100 / eventCount);
+                    lock(_uilock)
+                        fn_UpdateMsg($"File: {fileNum}/{totalFile}, Processing {r}/{eventCount} ({percent}%)");
                     int cnt = GetAllQueueLength();
                     if (cnt > 5000) //need to wait for a while
                     {
@@ -408,13 +538,6 @@ namespace AGLatency
                                     }
                                 }
                             }
-
-
-
-
-
-
-
 
                         }
                         else if (server == Replica.Secondary)

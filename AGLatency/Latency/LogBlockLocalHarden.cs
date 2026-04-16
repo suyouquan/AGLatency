@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 
 using Microsoft.SqlServer.XEvent;
 using Microsoft.SqlServer.XEvent.Linq;
-using System.Data.SQLite;
+using Microsoft.Data.Sqlite;
 using System.IO;
 
  
-using System.Windows.Forms.DataVisualization.Charting;
+//using System.Windows.Forms.DataVisualization.Charting;
+using Microsoft.AspNetCore.Mvc;
  
 
 
@@ -135,7 +136,7 @@ ON log_flush_start.log_block_id=log_flush_complete.log_block_id
             db.Open(dbfile);
 
             String databaseNum = "SELECT DISTINCT database_id FROM log_flush_complete WHERE database_id>4";
-            SQLiteDataReader dbidDR =
+            SqliteDataReader dbidDR =
             db.ExecuteReader(databaseNum);
 
             List<int> databases = new List<int>();
@@ -158,7 +159,7 @@ ON log_flush_start.log_block_id=log_flush_complete.log_block_id
             //    String select = "SELECT   (EventTimeStamp/10000000) as EventTimeStamp,database_id, AVG(duration) as Avg_Duration,SUM(duration) as Sum_Duration, COUNT(*) as Flushes,SUM(write_size) as Sum_write_size from log_flush_complete group by  EventTimeStamp/10000000,database_id ORDER BY EventTimeStamp / 10000000,database_id";
             String select = "SELECT   (EventTimeStamp/10000000) as EventTimeStamp,database_id, COUNT(*) as LogBlocks, AVG(duration) as Avg_Duration,SUM(duration) as Sum_Duration, max(duration) as Max_duration, min(duration) as Min_duration, AVG(write_size) as Avg_write_size, SUM(write_size) as Sum_write_size, max(write_size) as Max_write_size,min(write_size) as Min_write_size from log_flush_complete WHERE database_id>4 group by  EventTimeStamp/10000000,database_id ORDER BY EventTimeStamp / 10000000,database_id";
 
-            SQLiteDataReader dr =
+            SqliteDataReader dr =
             db.ExecuteReader(select);
 
             if (dr == null) return dict;
@@ -218,7 +219,7 @@ ON log_flush_start.log_block_id=log_flush_complete.log_block_id
             db.Open(dbfile);
 
             String databaseNum = "SELECT DISTINCT database_id FROM log_flush_complete";
-            SQLiteDataReader dbidDR =
+            SqliteDataReader dbidDR =
             db.ExecuteReader(databaseNum);
 
             List<int> databases = new List<int>();
@@ -234,7 +235,7 @@ ON log_flush_start.log_block_id=log_flush_complete.log_block_id
             String select = "SELECT   (EventTimeStamp/10000000) as EventTimeStamp,database_id, AVG(duration) as Avg_Duration,SUM(duration) as Sum_Duration, COUNT(*) as LogBlocks, max(duration) as Max_duration, min(duration) as Min_duration, max( from log_flush_complete group by  EventTimeStamp/10000000,database_id ORDER BY EventTimeStamp / 10000000,database_id";
 
 
-            SQLiteDataReader dr =
+            SqliteDataReader dr =
             db.ExecuteReader(select);
 
             if (dr == null) return;

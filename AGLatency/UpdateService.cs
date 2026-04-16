@@ -7,12 +7,14 @@ using System.Threading.Tasks;
 using System.Net;
 using System.IO;
 using System.Threading;
+using System.ComponentModel;
 
 namespace AGLatency
 {
 
     public class ExtendedWebClient : WebClient
     {
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public int Timeout { get; set; }
 
         protected override WebRequest GetWebRequest(Uri address)
@@ -199,7 +201,7 @@ namespace AGLatency
                 {
                     string serverVersion = version.Replace("[\"AGLatencyLatestVersion\",\"", "").Replace("\"]", "");
 
-                    string currentVersion = typeof(Program).Assembly.GetName().Version.ToString();
+                    string currentVersion = AppInfo.Version;
 
                     string info = "";
                     if (String.Compare(serverVersion, currentVersion) > 0)

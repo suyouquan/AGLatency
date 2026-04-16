@@ -10,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.SqlServer.XEvent;
 using Microsoft.SqlServer.XEvent.Linq;
-using System.Data.SQLite;
+using Microsoft.Data.Sqlite;
 using System.IO;
 
 namespace AGLatency.Latency
@@ -126,7 +126,7 @@ namespace AGLatency.Latency
             db.Open(dbfile);
 
             String databaseNum = "SELECT DISTINCT database_id FROM hadr_db_commit_mgr_harden WHERE database_id>4";
-            SQLiteDataReader dbidDR =
+            SqliteDataReader dbidDR =
             db.ExecuteReader(databaseNum);
 
             
@@ -158,17 +158,18 @@ namespace AGLatency.Latency
             PreProcessing(db,preprocessingQueries);
  
             //    String select = "SELECT   (EventTimeStamp/10000000) as EventTimeStamp,database_id, AVG(duration) as Avg_Duration,SUM(duration) as Sum_Duration, COUNT(*) as Flushes,SUM(write_size) as Sum_write_size from log_flush_complete group by  EventTimeStamp/10000000,database_id ORDER BY EventTimeStamp / 10000000,database_id";
-           String select = @"SELECT   (EventTimeStamp/10000000) as EventTimeStamp,
-                 COUNT(*) as count, AVG("
-                 + processTimeFieldName + ") as Avg_ProcessingTime,SUM("
-                 + processTimeFieldName + ") as Sum_ProcessingTime, MAX("
-                 + processTimeFieldName + ") as Max_ProcessingTime, MIN("
-                 + processTimeFieldName + ") as Min_ProcessingTime  FROM "
-                 + eventName+"    GROUP BY EventTimeStamp/10000000 ";
+           String select = @$"SELECT   (EventTimeStamp/10000000) as EventTimeStamp,
+                  COUNT(*) as count
+                , AVG({processTimeFieldName}) as Avg_ProcessingTime
+                , SUM({processTimeFieldName}) as Sum_ProcessingTime
+                , MAX({processTimeFieldName }) as Max_ProcessingTime
+                , MIN({processTimeFieldName }) as Min_ProcessingTime  
+                FROM {eventName}    
+                GROUP BY EventTimeStamp/10000000 ";
 
             Logger.LogMessage(select);
 
-            SQLiteDataReader dr =
+            SqliteDataReader dr =
             db.ExecuteReader(select);
 
             if (dr == null) return list;

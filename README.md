@@ -4,8 +4,10 @@ AGLatency is a tool to analyze AG log block movement latency between replicas an
 
 ![alt text](https://github.com/suyouquan/AGLatency/blob/master/AGLatency.png)
 
-You can download version 2.3 here:
-https://github.com/suyouquan/AGLatency/releases/download/V2.3/AGLatency_2.3.zip
+## Version 3.0.0
+
+You can download the latest version here:
+https://github.com/suyouquan/AGLatency/releases
 
 Video:
 https://github.com/suyouquan/AGLatency/blob/master/AGLatency_HowTo.mp4
@@ -13,6 +15,40 @@ https://github.com/suyouquan/AGLatency/blob/master/AGLatency_HowTo.mp4
 Manual:  
 https://github.com/suyouquan/AGLatency/blob/master/AGLatencyTool_UserManual_V2.pdf
 
+### What's New in v3.0
+
+#### .NET 9 & Self-Contained Publish
+- Migrated from **.NET Framework 4.8.1** to **.NET 9** (Windows Forms).
+- Published as a **self-contained, single-file executable** (`win-x64`) — no .NET runtime installation required on the target machine.
+
+#### SQL Server 2025 XEvent Support
+- Updated XEvent libraries (`Microsoft.SqlServer.XE.Core`, `Microsoft.SqlServer.XEvent.Linq`) to **SQL Server 2025 RTM** versions with .NET Core support.
+
+#### SQLite Driver Migration
+- Switched from the deprecated `System.Data.SQLite` driver to **Microsoft.Data.Sqlite** for database operations.
+
+#### Parallel Processing & Batch Inserts
+- Added **parallel file processing** with configurable `MaxDegreeOfParallelism` (up to 8 files per replica).
+- Introduced **batch insert processing** with configurable `BatchSize` for significantly improved performance on large trace collections.
+
+#### Configurable Settings via `app.config`
+- `Processing.MaxDegreeOfParallelism` — controls parallel file loading (default: 8).
+- `Processing.QueueHighWatermark` — controls queue back-pressure threshold (default: 5000).
+- `Processing.BatchSize` — controls transaction commit size (default: 20000).
+
+#### Cancellation Support
+- Replaced deprecated `Thread.Abort()` with **CancellationToken**-based cancellation for clean, safe stop operations.
+
+#### SQL LogScout Integration
+- Automatic detection of **SQL LogScout** `GetAGTopology.xml` files.
+- Checkbox option to select LogScout data movement files.
+
+#### Other Improvements
+- Improved event count estimation instead of slow file-by-file counting.
+- Enhanced error handling (e.g. missing HTML folder).
+- Application icon and updated UI title with version display.
+
+---
 
 You capture log block Xevent trace from both primary and secondary replica for 5-10 minutes and then this tool will 
 generate report about the latency of the log block movement.
