@@ -11,6 +11,9 @@ namespace AGLatency
     {
         public static int MaxDOP = 1;
         public static int BatchSize = 5000;
+        // TODO: Implement back-pressure in SQLiteDB.Push() using QueueHighWatermark
+        // to throttle producers when the queue exceeds this threshold.
+        public static int QueueHighWatermark = 5000;
 
         public  static List<PageTemplate.PageObject> pageObjs = new List<PageTemplate.PageObject>();
         public static Dictionary<string, int> latencySummaryDict = new Dictionary<string, int>();
@@ -70,6 +73,10 @@ namespace AGLatency
               
             BatchSize = Math.Max(5000, settings.Processing.BatchSize);
             Logger.LogMessage($"BatchSize is set to {BatchSize}");
+
+            QueueHighWatermark = Math.Max(1000, settings.Processing.QueueHighWatermark);
+            Logger.LogMessage($"QueueHighWatermark is set to {QueueHighWatermark}");
+
             useLogScoutFiles = null;
 
         }

@@ -75,8 +75,8 @@ namespace AGLatency
             this.Text = AppInfo.Title;
             lbVersion.Text = "";
 
-            mylable1 = label1;
-            mylable2 = label2;
+            mylable1 = lblPrimaryProgress;
+            mylable2 = lblSecondaryProgress;
 
             DoStop(false);
 
@@ -235,6 +235,7 @@ namespace AGLatency
             Logger.LogMessage($"All Done, Total Reads:{reads} Total Committed:{cnt}");
             UpdateProgress1($"All Done, Total Reads:{reads} Total Committed:{cnt}");
             UpdateProgress2("Done.Creating report...");
+            UpdateStatus("Generating report...");
             CreateReport();
             //Now kick off network latency
 
@@ -246,6 +247,12 @@ namespace AGLatency
 
             UpdateProgress2($"Done.Report created:{url}");
             Logger.LogMessage($"Done.Report created:{url}");
+
+            if (_runStopWatch != null)
+            {
+                var el = _runStopWatch.Elapsed;
+                UpdateStatus("Done", $"Elapsed: {el:hh\\:mm\\:ss}", $"Reads: {reads}  Committed: {cnt}");
+            }
 
             // Stop and log total time
             if (_runStopWatch != null && _runStopWatch.IsRunning)
@@ -784,17 +791,17 @@ namespace AGLatency
             //lite.Execute("create table highscores (name varchar(20), score int)");
 
 
-            Logger.LogMessage("Primary:" + this.textBox1.Text);
-            Logger.LogMessage("Secondary:" + this.textBox2.Text);
+            Logger.LogMessage("Primary:" + this.txtPrimaryFolder.Text);
+            Logger.LogMessage("Secondary:" + this.txtSecondaryFolder.Text);
 
-            xel = new XELoader(this.textBox1.Text, Replica.Primary, UpdateProgress1);
+            xel = new XELoader(this.txtPrimaryFolder.Text, Replica.Primary, UpdateProgress1);
 
 
             mythread = new Thread(xel.Start);
 
 
             //  Thread.Sleep(1000);//wait for one second to avoid duplicate filename
-            xel2 = new XELoader(this.textBox2.Text, Replica.Secondary, UpdateProgress2);
+            xel2 = new XELoader(this.txtSecondaryFolder.Text, Replica.Secondary, UpdateProgress2);
 
 
             td1 = new Thread(xel.GetTotalEventCount);
@@ -814,35 +821,58 @@ namespace AGLatency
             Stop(flag);
             notStarted = true;
 
-            button1.Text = "   Start";
-            button1.Image = Properties.Resources.green2;
-            button1.ImageAlign = ContentAlignment.MiddleLeft;
+            btnStart.Text = "   Start";
+            btnStart.Image = Properties.Resources.green2;
+            btnStart.ImageAlign = ContentAlignment.MiddleLeft;
+            SetInputsEnabled(true);
+            UpdateStatus("Ready");
             if (flag) //if aborted.
             {
-                label1.Text = "";
-                label2.Text = "";
+                lblPrimaryProgress.Text = "";
+                lblSecondaryProgress.Text = "";
             }
         }
 
-
-        private void button1_Click(object sender, EventArgs e)
+        private void SetInputsEnabled(bool enabled)
         {
-            if (!Utility.isValidfolder(textBox1.Text))
+            txtPrimaryFolder.Enabled = enabled;
+            txtSecondaryFolder.Enabled = enabled;
+            btnBrowsePrimary.Enabled = enabled;
+            btnBrowseSecondary.Enabled = enabled;
+            chkBox_UseLogScout.Enabled = enabled;
+        }
+
+        private void UpdateStatus(string status, string elapsed = null, string events = null)
+        {
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke((MethodInvoker)delegate { UpdateStatus(status, elapsed, events); });
+                return;
+            }
+            tsslStatus.Text = status;
+            if (elapsed != null) tsslElapsed.Text = elapsed;
+            if (events != null) tsslEvents.Text = events;
+        }
+
+
+        private void btnStart_Click(object sender, EventArgs e)
+        {
+            if (!Utility.isValidfolder(txtPrimaryFolder.Text))
 
             {
-                MessageBox.Show("Primary folder [" + textBox1.Text + "] doesn't exist!");
+                MessageBox.Show("Primary folder [" + txtPrimaryFolder.Text + "] doesn't exist!");
                 return;
 
             }
-            if (!Utility.isValidfolder(textBox2.Text))
+            if (!Utility.isValidfolder(txtSecondaryFolder.Text))
 
             {
-                MessageBox.Show("Secondary folder [" + textBox2.Text + "] doesn't exist!");
+                MessageBox.Show("Secondary folder [" + txtSecondaryFolder.Text + "] doesn't exist!");
                 return;
 
             }
 
-            if (textBox1.Text.Trim() == textBox2.Text.Trim())
+            if (txtPrimaryFolder.Text.Trim() == txtSecondaryFolder.Text.Trim())
             {
                 MessageBox.Show("You cannot set primary and secondary to the same folder.");
                 return;
@@ -851,8 +881,8 @@ namespace AGLatency
             }
 
 
-            Controller.primaryFolder = textBox1.Text.Trim();
-            Controller.secondaryFolder = textBox2.Text.Trim();
+            Controller.primaryFolder = txtPrimaryFolder.Text.Trim();
+            Controller.secondaryFolder = txtSecondaryFolder.Text.Trim();
             Controller.useLogScoutFiles = chkBox_UseLogScout.Checked;
 
             if (!ResolveXmlFiles())
@@ -869,15 +899,17 @@ namespace AGLatency
 
 
 
-            button1.Enabled = false;
+            btnStart.Enabled = false;
 
             if (notStarted)
             {
 
 
-                button1.Text = "   Stop";
-                button1.Image = Properties.Resources.red2;
-                button1.ImageAlign = ContentAlignment.MiddleLeft;
+                btnStart.Text = "   Stop";
+                btnStart.Image = Properties.Resources.red2;
+                btnStart.ImageAlign = ContentAlignment.MiddleLeft;
+                SetInputsEnabled(false);
+                UpdateStatus("Processing...");
 
                 if (Start())
                 {
@@ -894,7 +926,7 @@ namespace AGLatency
                 DoStop(true);
             }
 
-            button1.Enabled = true;
+            btnStart.Enabled = true;
 
         }
 
@@ -1040,16 +1072,16 @@ namespace AGLatency
         }
 
 
-        private void button2_Click(object sender, EventArgs e)
+        private void btnBrowsePrimary_Click(object sender, EventArgs e)
         {
             string path = "";
-            if (Utility.isValidfolder(textBox1.Text))
-                path = SelectFolder(textBox1.Text);
+            if (Utility.isValidfolder(txtPrimaryFolder.Text))
+                path = SelectFolder(txtPrimaryFolder.Text);
             else path = SelectFolder();
 
             if (!String.IsNullOrEmpty(path))
             {
-                this.textBox1.Text = path;
+                this.txtPrimaryFolder.Text = path;
                 if (TryFindXmlForFolder(path, out string fileName))
                     Controller.primaryXmlFile = fileName;
                 else
@@ -1058,22 +1090,22 @@ namespace AGLatency
 
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void btnBrowseSecondary_Click(object sender, EventArgs e)
         {
 
             string path = "";
-            if (Utility.isValidfolder(textBox2.Text))
-                path = SelectFolder(textBox2.Text);
+            if (Utility.isValidfolder(txtSecondaryFolder.Text))
+                path = SelectFolder(txtSecondaryFolder.Text);
             else
             {
-                if (Utility.isValidfolder(textBox1.Text))
-                    path = SelectFolder(textBox1.Text);
+                if (Utility.isValidfolder(txtPrimaryFolder.Text))
+                    path = SelectFolder(txtPrimaryFolder.Text);
                 else path = SelectFolder();
             }
 
             if (!String.IsNullOrEmpty(path))
             {
-                this.textBox2.Text = path;
+                this.txtSecondaryFolder.Text = path;
                 if (TryFindXmlForFolder(path, out string fileName))
                     Controller.secondaryXmlFile = fileName;
                 else

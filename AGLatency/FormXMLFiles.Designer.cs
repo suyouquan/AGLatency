@@ -59,7 +59,7 @@
             label6.Name = "label6";
             label6.Size = new System.Drawing.Size(160, 20);
             label6.TabIndex = 21;
-            label6.Text = "Secondary XMLFile:";
+            label6.Text = "Secondary XML File:";
             label6.Click += label6_Click;
             // 
             // txtBxSecondaryXMLFile
@@ -92,7 +92,7 @@
             label5.Name = "label5";
             label5.Size = new System.Drawing.Size(142, 20);
             label5.TabIndex = 18;
-            label5.Text = "Paimray XMLFile:";
+            label5.Text = "Primary XML File:";
             label5.Click += label5_Click;
             // 
             // txtBxPrimaryXMLFile

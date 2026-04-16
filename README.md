@@ -1,5 +1,4 @@
 # AGLatency
-# AGLatency
 
 AGLatency is a tool to analyze AG log block movement latency between replicas and create report accordingly.
 

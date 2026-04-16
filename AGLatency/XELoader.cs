@@ -173,7 +173,7 @@ namespace AGLatency
                                         count += k;
                                         fileNum2++;
                                         lock (_uilock)
-                                            fn_UpdateMsg($"File: {fileNum2}/{totalFile}, Caculating {count}");
+                                            fn_UpdateMsg($"File: {fileNum2}/{totalFile}, Calculating {count}");
                                         Logger.LogMessage($"GetEventCount - estimate:{file} ==> {k}");
                                     }
                                 }
@@ -397,7 +397,7 @@ namespace AGLatency
                 if (eventCount % 8000==0)
                 {
                     lock (_uilock)
-                        fn_UpdateMsg($"File: {fileNum}/{totalFile}, Caculating {eventCount}");
+                        fn_UpdateMsg($"File: {fileNum}/{totalFile}, Calculating {eventCount}");
                 }
 
                 eventCount++;    

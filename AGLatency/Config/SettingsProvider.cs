@@ -1,6 +1,4 @@
 using System;
-using System.IO;
-using System.Text.Json;
 using System.Configuration; // requires System.Configuration.ConfigurationManager NuGet
 
 namespace AGLatency.Config
@@ -41,6 +39,14 @@ namespace AGLatency.Config
                 {
                     settings.Processing.BatchSize = b;
                     Logger.LogMessage($"Loaded BatchSize from app.config: {b}");
+                }
+
+                var queueHW = ConfigurationManager.AppSettings["Processing.QueueHighWatermark"]
+                        ?? ConfigurationManager.AppSettings["QueueHighWatermark"];
+                if (int.TryParse(queueHW, out var q))
+                {
+                    settings.Processing.QueueHighWatermark = q;
+                    Logger.LogMessage($"Loaded QueueHighWatermark from app.config: {q}");
                 }
             }
             catch (Exception ex)

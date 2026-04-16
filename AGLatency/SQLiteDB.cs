@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -39,6 +39,9 @@ namespace AGLatency
         // Prepared insert commands per event/table for reuse
         private readonly Dictionary<string, SqliteCommand> _insertCmdCache = new(StringComparer.OrdinalIgnoreCase);
         private readonly object _cmdLock = new();
+
+        // Commands created by ExecuteReader, tracked so they can be disposed with the connection
+        private readonly List<SqliteCommand> _readerCommands = new();
 
         static readonly object _dblock = new object();
 
@@ -114,6 +117,7 @@ namespace AGLatency
 
         public void CloseConnection()
         {
+            DisposeReaderCommands();
             sqliteConn?.Close();
         }
 
@@ -126,24 +130,29 @@ namespace AGLatency
             autoEvent.Set();
 
             // 3. Wait for dataLoopThread to finish (it commits its own transaction in the finally block)
+            bool threadExited = true;
             if (dataLoopThread != null && dataLoopThread.IsAlive)
             {
                 Logger.LogMessage("Waiting for data loop thread to exit...");
-                if (!dataLoopThread.Join(TimeSpan.FromSeconds(10)))
+                threadExited = dataLoopThread.Join(TimeSpan.FromSeconds(10));
+                if (!threadExited)
                 {
-                    Logger.LogMessage("Data loop thread did not exit within timeout.");
+                    Logger.LogMessage("[WARN] Data loop thread did not exit within timeout. Skipping resource cleanup to avoid race conditions.");
                 }
             }
 
-            // 4. Dispose prepared commands
-            foreach (var cmd in _insertCmdCache.Values)
+            // 4. Only dispose resources if the worker thread has definitively exited
+            if (threadExited)
             {
-                cmd.Dispose();
-            }
-            _insertCmdCache.Clear();
+                foreach (var cmd in _insertCmdCache.Values)
+                {
+                    cmd.Dispose();
+                }
+                _insertCmdCache.Clear();
 
-            // 5. Now safe to close connection (worker is done)
-            CloseConnection();
+                DisposeReaderCommands();
+                CloseConnection();
+            }
         }
 
         public static void DeleteOldFile()
@@ -221,17 +230,30 @@ namespace AGLatency
 
         public SqliteDataReader ExecuteReader(string sql)
         {
+            SqliteCommand command = null;
             try
             {
-                var command = new SqliteCommand(sql, sqliteConn);
-                return command.ExecuteReader();
+                command = new SqliteCommand(sql, sqliteConn);
+                var reader = command.ExecuteReader();
+                _readerCommands.Add(command);
+                return reader;
             }
             catch (Exception ex)
             {
+                command?.Dispose();
                 Logger.LogException(ex, Thread.CurrentThread);
             }
 
             return null;
+        }
+
+        private void DisposeReaderCommands()
+        {
+            foreach (var cmd in _readerCommands)
+            {
+                try { cmd.Dispose(); } catch { }
+            }
+            _readerCommands.Clear();
         }
 
         // Centralize transaction lifecycle around draining batches in DataLoop
